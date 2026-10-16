@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pannello Reparti - Unieuro RC</title>
+  <style>
+    :root {
+      --unieuro-blue: #002B49;
+      --unieuro-orange: #FF6700;
+      --bg-color: #F8FAFC;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 10px;
+      color: #333;
+    }
+    .header-bar {
+      background-color: var(--unieuro-blue);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    @media(min-width: 600px) {
+      .header-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+    select {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-weight: bold;
+    }
+    #loading {
+      text-align: center;
+      font-weight: bold;
+      color: var(--unieuro-orange);
+      margin: 20px 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+    @media(min-width: 768px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-left: 5px solid #ccc;
+    }
+    .card.Aperta { border-left-color: #E63946; }
+    .card.In-lavorazione { border-left-color: #F4A261; }
+    .card.Completata { border-left-color: #2A9D8F; }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .badge {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      color: white;
+      font-size: 11px;
+    }
+    .badge-Aperta { background-color: #E63946; }
+    .badge-In-lavorazione { background-color: #F4A261; }
+    .badge-Completata { background-color: #2A9D8F; }
+    
+    .client-info h3 { margin: 0 0 5px 0; color: var(--unieuro-blue); }
+    .client-info p { margin: 4px 0; font-size: 14px; }
+    
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-family: inherit;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .btn-action {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-call { background-color: var(--unieuro-blue); color: white; }
+    .btn-wa { background-color: #25D366; color: white; }
+    
+    .status-buttons {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .btn-status {
+      flex: 1;
+      padding: 6px;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background: #f1f1f1;
+      cursor: pointer;
+    }
+    .btn-status.active {
+      background: var(--unieuro-blue);
+      color: white;
+      border-color: var(--unieuro-blue);
+    }
+    .img-preview {
+      max-width: 80px;
+      max-height: 80px;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-bar">
+    <h2>📋 Pannello Reparti - Unieuro RC</h2>
+    <div>
+      <label for="repartoSelect">Seleziona Reparto: </label>
+      <select id="repartoSelect" onchange="caricaRichieste()">
+        <option value="Grandi Elettrodomestici">Grandi Elettrodomestici</option>
+        <option value="Ritiro RAEE">Ritiro RAEE</option>
+        <option value="Piccoli Elettrodomestici">Piccoli Elettrodomestici</option>
+        <option value="TV e Audio">TV e Audio</option>
+        <option value="Informatica e Telefonia">Informatica e Telefonia</option>
+        <option value="Amministrazione">Amministrazione</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="loading">Caricamento richieste in corso...</div>
+  <div id="requestsGrid" class="grid"></div>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzwNOu_U9TzjXoMUFA0nt-t48uqphk1ZsIqKNXey-L2cn74cIdTq1N7AcEvRK1D74UO/exec";
+
+    // --- MAPPA NUMERI WHATSAPP PER REPARTO ---
+    const mapWhatsAppReparti = {
+      "Grandi Elettrodomestici": "390965340336",
+      "Ritiro RAEE": "390965340336",
+      "Piccoli Elettrodomestici": "390965340336",
+      "Amministrazione": "390965340336",
+      "TV e Audio": "390965598722",
+      "Informatica e Telefonia": "390965598722"
+    };
+
+    function impostaRepartoDaUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const repartoParam = urlParams.get('reparto');
+      if (repartoParam) {
+        const select = document.getElementById('repartoSelect');
+        select.value = repartoParam;
+      }
+    }
+
+    async function caricaRichieste() {
+      const reparto = document.getElementById('repartoSelect').value;
+      const loadingEl = document.getElementById('loading');
+      const gridEl = document.getElementById('requestsGrid');
+      
+      loadingEl.style.display = 'block';
+      loadingEl.innerText = "Caricamento richieste in corso...";
+      gridEl.innerHTML = '';
+
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?reparto=${encodeURIComponent(reparto)}`);
+        const data = await response.json();
+        loadingEl.style.display = 'none';
+
+        if (data.status !== 'success') {
+          gridEl.innerHTML = `<p style="text-align:center; color:red; grid-column: 1/-1;">Errore dal server: ${data.message || 'Sconosciuto'}</p>`;
+          return;
+        }
+
+        if (!data.requests || data.requests.length === 0) {
+          gridEl.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:#666; font-style:italic;">Nessuna richiesta trovata per questo reparto.</p>';
+          return;
+        }
+
+        data.requests.reverse().forEach(req => {
+          const card = document.createElement('div');
+          const statoVal = String(req.stato || 'Aperta');
+          const statoClass = statoVal.replace(/\s+/g, '-');
+          card.className = `card ${statoClass}`;
+
+          // Pulizia numero e aggiunta dello "0" iniziale per le chiamate esterne Wildix
+          let cleanPhone = String(req.telefono || '').replace(/[^0-9+]/g, '');
+          if (cleanPhone.startsWith('+39')) {
+            cleanPhone = '0' + cleanPhone.substring(3);
+          } else if (!cleanPhone.startsWith('0') && cleanPhone.length > 0) {
+            cleanPhone = '0' + cleanPhone;
+          }
+
+          let imageHtml = '';
+          if (req.immagine && String(req.immagine).length > 50) {
+            imageHtml = `<div style="text-align:center; margin-top:8px;"><p style="margin:2px; font-size:11px; font-weight:bold; color:#FF6700;">Immagine / Offerta:</p><img src="${req.immagine}" class="img-preview" onclick="openFullImg('${req.immagine}')"></div>`;
+          }
+
+          card.innerHTML = `
+            <div class="card-header">
+              <span>${req.timestamp || ''}</span>
+              <span class="badge badge-${statoClass}">${statoVal}</span>
+            </div>
+            <div class="client-info">
+              <h3>${req.nome || 'Cliente'}</h3>
+              <p>📞 <strong>Tel:</strong> ${req.telefono || '-'} | Pref: ${req.preferenza || '-'}</p>
+              <p>🏷️ <strong>Tipo:</strong> ${req.tipo || '-'} (${req.reparto || '-'})</p>
+              <p style="background:#F1F5F9; padding:6px; border-radius:6px; margin-top:8px;">💬 <strong>Note:</strong> ${req.dettagli || '-'}</p>
+            </div>
+            ${imageHtml}
+            <div>
+              <label style="font-size:11px; font-weight:bold; color: var(--unieuro-blue);">Note / Bozza di Risposta:</label>
+              <textarea id="note-${req.id}" rows="2" placeholder="Scrivi qui la risposta o il dettaglio...">${req.noteRepartista || ''}</textarea>
+            </div>
+            <div class="actions">
+              <a class="btn-action btn-call" href="tel:${cleanPhone}" title="Chiama con Wildix">📞 Chiama</a>
+              <button class="btn-action btn-wa" onclick="inoltraWhatsApp('${req.id}', '${req.nome || ''}', '${req.reparto || ''}', '${String(req.telefono || '')}', '${req.reparto || ''}')">💬 WhatsApp</button>
+            </div>
+            <div class="status-buttons">
+              <button class="btn-status ${statoVal === 'Aperta' ? 'active' : ''}" onclick="aggiornaStato('${req.id}', 'Aperta')">🔴 Aperta</button>
+              <button class="btn-status ${statoVal === 'In lavorazione' ? 'active' : ''}" onclick="aggiornaStato('${req.id}', 'In lavorazione')">🟡 In Lav.</button>
+              <button class="btn-status ${statoVal === 'Completata' ? 'active' : ''}" onclick="aggiornaStato('${req.id}', 'Completata')">🟢 Completata</button>
+            </div>
+          `;
+          gridEl.appendChild(card);
+        });
+
+      } catch (err) {
+        loadingEl.style.display = 'none';
+        gridEl.innerHTML = `<p style="text-align:center; color:red; grid-column: 1/-1;">Errore di connessione o script: ${err.message}</p>`;
+      }
+    }
+
+    async function aggiornaStato(id, nuovoStato) {
+      const noteEl = document.getElementById(`note-${id}`);
+      const noteRep = noteEl ? noteEl.value : '';
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'updateStatus',
+            id: id,
+            stato: nuovoStato,
+            noteRepartista: noteRep
+          })
+        });
+        alert(`✅ Pratica aggiornata a: ${nuovoStato}`);
+        setTimeout(caricaRichieste, 800);
+      } catch (err) {
+        alert("Errore nell'aggiornamento dello stato.");
+      }
+    }
+
+    async function inoltraWhatsApp(id, nomeCliente, repartoCliente, telefonoCliente, nomeReparto) {
+      const noteInput = document.getElementById(`note-${id}`);
+      const testoNota = noteInput ? noteInput.value.trim() : '';
+
+      if (!testoNota) {
+        alert("⚠️ ATTENZIONE: Prima di inoltrare a WhatsApp, scrivi una nota o la risposta nel campo apposito!");
+        if(noteInput) { noteInput.style.border = "2px solid #E63946"; noteInput.focus(); }
+        return;
+      }
+
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'updateStatus',
+            id: id,
+            stato: 'In lavorazione',
+            noteRepartista: testoNota
+          })
+        });
+      } catch (err) {
+        console.error("Errore salvataggio nota:", err);
+      }
+
+      const messaggioWhatsApp = `📋 *RICHIESTA UNIEURO RC* \n` +
+                                `🏢 Reparto: ${repartoCliente}\n` +
+                                `👤 Cliente: ${nomeCliente} (${telefonoCliente})\n\n` +
+                                `✍️ *Nota del dipendente:* \n${testoNota}`;
+
+      // Assegnazione automatica del numero in base al reparto della richiesta
+      const numeroReparto = mapWhatsAppReparti[nomeReparto] || "390965340336";
+
+      const urlWa = `https://wa.me/${numeroReparto}?text=${encodeURIComponent(messaggioWhatsApp)}`;
+      window.open(urlWa, '_blank');
+
+      setTimeout(caricaRichieste, 1000);
+    }
+
+    function openFullImg(base64) {
+      const w = window.open("");
+      w.document.write(`<img src="${base64}" style="max-width:100%;"/>`);
+    }
+
+    impostaRepartoDaUrl();
+    caricaRichieste();
+    setInterval(caricaRichieste, 60000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UNIEURO REGGIO CALABRIA IN TASCA</title>
+  
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <!-- PDF.js di Mozilla per rendering reale dei PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <!-- Cropper.js per il ritaglio dinamico -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <style>
+    :root {
+      --unieuro-blue: #002D62;
+      --unieuro-navy: #001F4D;
+      --unieuro-orange: #FF6700;
+      --unieuro-green: #25D366;
+      --unieuro-red: #E63946;
+      --bg-color: #EBF1F6;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 12px;
+      padding-bottom: 90px;
+      color: #1E293B;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* HEADER TOP */
+    .card-header-top {
+      background: var(--unieuro-blue);
+      color: white;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .card-header-top h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+    .card-header-top p {
+      margin: 4px 0 10px 0;
+      font-size: 12px;
+      opacity: 0.9;
+      font-weight: 600;
+    }
+    .btn-maps {
+      background: #3B82F6;
+      color: white;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    
+    .status-open, .status-closed {
+      background: white;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .status-open { color: #15803D; }
+    .status-closed { color: #DC2626; }
+
+    /* CARDS & BUTTONS */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .card-title {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--unieuro-blue);
+      margin-top: 0;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-green-main {
+      background: #22C55E;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 14px;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* SOCIAL & WHATSAPP */
+    .grid-social {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .btn-wa-main {
+      background: #25D366;
+      color: white;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 14px;
+      text-align: center;
+      display: block;
+    }
+    .btn-insta {
+      background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 13px;
+      text-align: center;
+    }
+    .btn-fb {
+      background: #1877F2;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* GRID REPARTI */
+    .grid-departments {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .btn-dept {
+      background: #004080;
+      color: white;
+      border: none;
+      padding: 10px 6px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-dept-full {
+      background: #3B4B58;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      width: 100%;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .btn-deliveries {
+      background: #2C4E6B;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      width: 100%;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .btn-purple {
+      background: #8B5CF6;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 13px;
+      width: 100%;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .btn-orange-full {
+      background: var(--unieuro-orange);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      width: 100%;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .btn-blue-action {
+      background: #0284C7;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      width: 100%;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .btn-green-action {
+      background: #16A34A;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    /* VOLANTINO & PROMO */
+    .volantino-search-box {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .volantino-search-box input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #CBD5E1;
+      font-size: 13px;
+    }
+    .btn-orange-search {
+      background: var(--unieuro-orange);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .page-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .pill-page {
+      background: #002D62;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .nav-pager {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .btn-nav-page {
+      background: #002D62;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .pdf-canvas-container {
+      width: 100%;
+      text-align: center;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      background: #FFF;
+    }
+    .pdf-canvas-container canvas {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* PROMO APP...ETITOSE */
+    .card-promo-red {
+      border: 2px solid #EF4444;
+      background: #FEF2F2;
+    }
+    .btn-red-action {
+      background: #DC2626;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 13px;
+      width: 100%;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    /* TESSERA CLUB */
+    .tessera-input-box {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+    .tessera-input-box input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #CBD5E1;
+      font-weight: bold;
+      text-align: center;
+    }
+    .btn-navy-save {
+      background: #001F4D;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .barcode-container {
+      border: 2px dashed #CBD5E1;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      background: white;
+      margin-bottom: 12px;
+    }
+    .btn-join-new-club {
+      background: var(--unieuro-orange);
+      color: white;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 13px;
+      text-align: center;
+      display: block;
+      margin-top: 8px;
+      box-shadow: 0 2px 6px rgba(255,103,0,0.3);
+    }
+
+    .btn-review {
+      background: #22C55E;
+      color: white;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 13px;
+      text-align: center;
+      display: block;
+    }
+    .footer-bar {
+      background: #001F4D;
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    /* MODALI */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 440px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-content label {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--unieuro-navy);
+      display: block;
+      margin-top: 10px;
+    }
+    .modal-content input, .modal-content select, .modal-content textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #CBD5E1;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- HEADER TOP -->
+    <div class="card-header-top">
+      <h1>UNIEURO REGGIO CALABRIA IN TASCA</h1>
+      <p>VIALE LA BOCCETTA N. 110</p>
+      <a href="https://maps.google.com" target="_blank" class="btn-maps">📍 Come Raggiungerci (Mappe)</a>
+      <div>
+        <div id="statusStoreBox" class="status-open" onclick="apriOrariModal()">Verifica orario...</div>
+      </div>
+    </div>
+
+    <!-- INSTALLA PWA -->
+    <button class="btn-green-main">📲 Installa App su Schermata Home</button>
+
+    <!-- CONTATTACI SUBITO -->
+    <div class="card">
+      <div class="card-title">💬 Contattaci Subito</div>
+      <a href="https://wa.me/390965340336" target="_blank" class="btn-wa-main">💬 Chatta direttamente su WhatsApp</a>
+      <div class="grid-social">
+        <a href="https://instagram.com" target="_blank" class="btn-insta">📷 Instagram</a>
+        <a href="https://facebook.com" target="_blank" class="btn-fb">📘 Facebook</a>
+      </div>
+    </div>
+
+    <!-- INVIA RICHIESTA AL NEGOZIO -->
+    <div class="card">
+      <div class="card-title">📋 Invia una Richiesta al Negozio</div>
+      <p style="text-align:center; font-size:12px; color:#64748B; margin-top:0; margin-bottom:12px;">Compila il modulo per inviare la tua richiesta direttamente ai nostri operatori:</p>
+      
+      <div class="grid-departments">
+        <button class="btn-dept" onclick="apriFormRichiesta('Grandi Elettrodomestici', 'Info Prodotto')">🧺 Grandi Elettr.</button>
+        <button class="btn-dept" onclick="apriFormRichiesta('Informatica e Telefonia', 'Info Prodotto')">📱 Telefonia / PC</button>
+        <button class="btn-dept" onclick="apriFormRichiesta('TV e Audio', 'Info Prodotto')">📺 TV & Audio</button>
+        <button class="btn-dept" onclick="apriFormRichiesta('Piccoli Elettrodomestici', 'Info Prodotto')">☕ Piccoli Elettr.</button>
+      </div>
+
+      <button class="btn-dept-full" onclick="apriFormRichiesta('Amministrazione', 'Info Contabilità')">💼 Amministrazione / Contabilità</button>
+      
+      <button class="btn-deliveries" onclick="apriFormRichiesta('Grandi Elettrodomestici', 'Consegne Odierne')">
+        🚚 SQUADRA CONSEGNE (Chiamata diretta)<br>
+        <span style="font-size:10px; font-weight:normal;">Valido per consegne stabilite nella giornata odierna</span>
+      </button>
+
+      <button class="btn-purple" onclick="apriFormRichiesta('Amministrazione', 'Prenotazione Turno')">🎟️ Prenota il tuo turno in negozio</button>
+      <button class="btn-orange-full" onclick="apriFormRichiesta('Informatica e Telefonia', 'Cerca Prodotto')">🔎 CERCHI UN MODELLO PRECISO? CLICCA QUI..</button>
+      <button class="btn-blue-action" onclick="apriFormRichiesta('Grandi Elettrodomestici', 'Assistenza Elettrodomestico')">🛠️ Richiedi qui assistenza per il tuo elettrodomestico</button>
+      <button class="btn-green-action" onclick="apriFormRichiesta('Ritiro RAEE', 'Ritiro RAEE')">♻️ Ritiro RAEE (Smaltimento Usato)</button>
+    </div>
+
+    <!-- ISTRUZIONI VOCALI -->
+    <button class="btn-green-main" style="background:#10B981;">🔊 Ascolta Istruzioni Vocali</button>
+
+    <!-- VOLANTINO UFFICIALE OFFERTE -->
+    <div class="card">
+      <div class="card-title">📰 Volantino Ufficiale Offerte</div>
+      
+      <div class="volantino-search-box">
+        <input type="text" id="volantinoSearch" value="Lavatrice" placeholder="Cerca prodotto...">
+        <button class="btn-orange-search" onclick="eseguiRicercaVolantino()">Cerca</button>
+      </div>
+
+      <div style="font-size:12px; font-weight:bold; text-align:center; margin-bottom:6px;">
+        Trovato a pagina:
+      </div>
+
+      <div class="page-pills" id="pillsContainer">
+        <span class="pill-page" onclick="vaiAPaginaVolantino(1)">PAG. 1</span>
+        <span class="pill-page" onclick="vaiAPaginaVolantino(24)">PAG. 24</span>
+        <span class="pill-page" onclick="vaiAPaginaVolantino(26)">PAG. 26</span>
+        <span class="pill-page" onclick="vaiAPaginaVolantino(30)">PAG. 30</span>
+        <span class="pill-page" onclick="vaiAPaginaVolantino(32)">PAG. 32</span>
+        <span class="pill-page" onclick="vaiAPaginaVolantino(33)">PAG. 33</span>
+        <span class="pill-page" onclick="vaiAPaginaVolantino(35)">PAG. 35</span>
+      </div>
+
+      <div class="nav-pager">
+        <button class="btn-nav-page" onclick="cambiaPaginaVolantino(-1)">⬅️ Pag. Prec.</button>
+        <span style="font-size:12px; font-weight:bold;" id="volantinoPagerLabel">Pagina 1</span>
+        <button class="btn-nav-page" onclick="cambiaPaginaVolantino(1)">Pag. Succ. ➡️</button>
+      </div>
+
+      <button class="btn-dept-full" style="background:#002B49; margin-bottom:12px;" onclick="avviaRitaglioDaCanvas('volantinoCanvas')">
+        ✂️ Seleziona l'offerta dal volantino
+      </button>
+
+      <div class="pdf-canvas-container">
+        <canvas id="volantinoCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- PROMO APP...ETITOSE -->
+    <div class="card card-promo-red">
+      <div class="card-title" style="color:#DC2626;">🔥 PROMO APP...ETITOSE</div>
+      <p style="text-align:center; font-size:11px; color:#DC2626; font-weight:bold; margin-top:-8px; margin-bottom:10px;">
+        (Offerte riservate a chi possiede l'App Unieuro Reggio Calabria in Tasca)
+      </p>
+
+      <div class="nav-pager">
+        <button class="btn-nav-page" style="background:#EF4444;" onclick="cambiaPromo(-1)">⬅️ Prec.</button>
+        <span style="font-size:12px; font-weight:bold; color:#DC2626;" id="promoPagerLabel">Pagina 1</span>
+        <button class="btn-nav-page" style="background:#EF4444;" onclick="cambiaPromo(1)">Succ. ➡️</button>
+      </div>
+
+      <button class="btn-red-action" onclick="avviaRitaglioDaCanvas('promoCanvas')">
+        ✂️ Seleziona l'offerta PROMO APP...ETITOSE per chiederne info
+      </button>
+
+      <div class="pdf-canvas-container" style="border-color:#FCA5A5;">
+        <canvas id="promoCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- TESSERA CLUB CON BARCODE E LINK REGISTRAZIONE -->
+    <div class="card">
+      <div class="card-title">💳 Tessera Club</div>
+      <p style="text-align:center; font-size:12px; color:#64748B; margin:0;">Inserisci o modifica il codice della tua tessera:</p>
+
+      <div class="tessera-input-box">
+        <input type="text" id="tesseraInput" value="12345678901thu">
+        <button class="btn-navy-save" onclick="salvaTessera()">Salva</button>
+      </div>
+
+      <div class="barcode-container">
+        <svg id="barcode"></svg>
+      </div>
+
+      <a href="https://www.unieuro.it/online/unieuro-club" target="_blank" class="btn-join-new-club">
+        🎁 Non hai ancora la tessera? Clicca qui per registrarne una nuova
+      </a>
+    </div>
+
+    <!-- RECENSIONE GOOGLE -->
+    <a href="https://g.page/review" target="_blank" class="btn-review">⭐ Lasciaci una Recensione su Google</a>
+
+    <!-- FOOTER -->
+    <div class="footer-bar">
+      " E COME SEMPRE.... GRAZIE "
+    </div>
+
+    <div style="text-align:center; font-size:11px; color:#64748B; margin-top:10px;">
+      ⚡ Powered by <strong>Netlify</strong>
+    </div>
+
+  </div>
+
+  <!-- MODALE ORARI -->
+  <div class="modal-overlay" id="modalOrari">
+    <div class="modal-content" style="text-align:center;">
+      <h3 style="color:var(--unieuro-blue); margin-top:0;">🕒 Orari Unieuro Reggio Calabria</h3>
+      <p style="font-size:12px; color:#64748B; margin-bottom:15px;">Viale La Boccetta n. 110</p>
+      
+      <table style="width:100%; font-size:13px; text-align:left; border-collapse:collapse; margin-bottom:15px;">
+        <tr style="border-bottom:1px solid #E2E8F0;"><td style="padding:6px; font-weight:bold;">Lunedì - Sabato:</td><td style="padding:6px;">09:00 - 13:00 <br> 16:00 - 20:00</td></tr>
+        <tr><td style="padding:6px; font-weight:bold;">Domenica:</td><td style="padding:6px; color:#DC2626; font-weight:bold;">CHIUSO</td></tr>
+      </table>
+
+      <button onclick="chiudiOrariModal()" style="width:100%; padding:10px; background:var(--unieuro-blue); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Chiudi</button>
+    </div>
+  </div>
+
+  <!-- MODALE RITAGLIO CANVASES -->
+  <div class="modal-overlay" id="modalRitaglioCanvas">
+    <div class="modal-content" style="max-width:480px;">
+      <h3 style="margin-top:0; color:var(--unieuro-blue); font-size:15px; text-align:center;">✂️ Seleziona e Ritaglia l'Offerta</h3>
+      <p style="font-size:11px; color:#64748B; text-align:center; margin-top:-5px;">Trascina sui bordi per isolare l'offerta desiderata:</p>
+      
+      <div style="max-height:350px; overflow:hidden;">
+        <img id="imageToCrop" src="" alt="Porzione da ritagliare" style="max-width:100%;">
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:15px;">
+        <button type="button" onclick="chiudiRitaglioModal()" style="flex:1; padding:10px; background:#94A3B8; border:none; color:white; border-radius:8px; font-weight:bold; cursor:pointer;">Annulla</button>
+        <button type="button" onclick="confermaRitaglioEApriForm()" style="flex:1; padding:10px; background:var(--unieuro-orange); border:none; color:white; border-radius:8px; font-weight:bold; cursor:pointer;">Conferma Ritaglio ✂️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE RICHIESTA FORM -->
+  <div class="modal-overlay" id="modalRichiesta">
+    <div class="modal-content">
+      <h3 style="margin-top:0; color:var(--unieuro-blue); font-size:16px;" id="modalTitle">Richiesta al Reparto</h3>
+      
+      <form id="formRichiestaModal" onsubmit="inviaFormNet(event)">
+        <label>Reparto Destinatario</label>
+        <select id="mReparto" required>
+          <option value="Grandi Elettrodomestici">Grandi Elettrodomestici</option>
+          <option value="Ritiro RAEE">Ritiro RAEE</option>
+          <option value="Piccoli Elettrodomestici">Piccoli Elettrodomestici</option>
+          <option value="TV e Audio">TV e Audio</option>
+          <option value="Informatica e Telefonia">Informatica e Telefonia</option>
+          <option value="Amministrazione">Amministrazione</option>
+        </select>
+
+        <label>Tipo Richiesta</label>
+        <input type="text" id="mTipo" readonly style="background:#f1f5f9;">
+
+        <label>Nome e Cognome *</label>
+        <input type="text" id="mNome" required placeholder="Mario Rossi">
+
+        <label>Telefono *</label>
+        <input type="tel" id="mTel" required placeholder="3331234567">
+
+        <label>Preferenza Contatto</label>
+        <select id="mPref">
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="Telefonata">Telefonata</option>
+        </select>
+
+        <label>Dettagli / Note</label>
+        <textarea id="mNote" rows="3"></textarea>
+
+        <div id="ritaglioPreviewBox" style="display:none; margin-top:10px; text-align:center;">
+          <label style="color:var(--unieuro-orange);">✂️ Ritaglio Offerta Allegato:</label>
+          <img id="modalPreviewImg" src="" style="max-width:100%; max-height:140px; border-radius:8px; border:1px solid #FF6700; margin-top:4px;">
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:15px;">
+          <button type="button" onclick="chiudiModal()" style="flex:1; padding:10px; background:#94A3B8; border:none; color:white; border-radius:8px; font-weight:bold; cursor:pointer;">Annulla</button>
+          <button type="submit" id="btnSendModal" style="flex:1; padding:10px; background:var(--unieuro-orange); border:none; color:white; border-radius:8px; font-weight:bold; cursor:pointer;">🚀 INVIA RICHIESTA</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzwNOu_U9TzjXoMUFA0nt-t48uqphk1ZsIqKNXey-L2cn74cIdTq1N7AcEvRK1D74UO/exec";
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+    let pdfVolantinoDoc = null, pdfPromoDoc = null;
+    let pagVolantinoNum = 1, pagPromoNum = 1;
+    let base64ModalImg = "", cropperInstance = null, canvasSorgenteAttivo = "";
+
+    // CARICAMENTO REALE PDF SU CANVAS
+    function caricaPDFDoc(url, canvasId, isPromo) {
+      pdfjsLib.getDocument(url).promise.then(pdf => {
+        if (isPromo) { pdfPromoDoc = pdf; renderizzaPaginaPDF(pdfPromoDoc, pagPromoNum, canvasId, 'promoPagerLabel'); }
+        else { pdfVolantinoDoc = pdf; renderizzaPaginaPDF(pdfVolantinoDoc, pagVolantinoNum, canvasId, 'volantinoPagerLabel'); }
+      }).catch(err => {
+        console.log("PDF non trovato localmente, fallback segnaposto per " + url);
+      });
+    }
+
+    function renderizzaPaginaPDF(pdfDoc, numPagina, canvasId, labelId) {
+      if (!pdfDoc) return;
+      pdfDoc.getPage(numPagina).then(page => {
+        const viewport = page.getViewport({ scale: 1.2 });
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = { canvasContext: ctx, viewport: viewport };
+        page.render(renderContext);
+        document.getElementById(labelId).innerText = `Pagina ${numPagina} di ${pdfDoc.numPages}`;
+      });
+    }
+
+    // CONTROLLO ORARIO
+    function calcolaStatoNegozio() {
+      const ora = new Date();
+      const giorno = ora.getDay();
+      const orarioMinuti = ora.getHours() * 60 + ora.getMinutes();
+
+      const mattinaInizio = 9 * 60, mattinaFine = 13 * 60;
+      const pomeriggioInizio = 16 * 60, pomeriggioFine = 20 * 60;
+
+      const aperto = giorno !== 0 && ((orarioMinuti >= mattinaInizio && orarioMinuti < mattinaFine) || (orarioMinuti >= pomeriggioInizio && orarioMinuti < pomeriggioFine));
+      const box = document.getElementById('statusStoreBox');
+
+      if (aperto) {
+        box.className = "status-open";
+        box.innerHTML = `🟢 In questo momento siamo APERTI <span style="font-size:10px; font-weight:normal; color:#475569;">(Clicca per orari)</span>`;
+      } else {
+        box.className = "status-closed";
+        box.innerHTML = `🔴 In questo momento siamo CHIUSI <span style="font-size:10px; font-weight:normal; color:#475569;">(Clicca per orari)</span>`;
+      }
+    }
+
+    function apriOrariModal() { document.getElementById('modalOrari').style.display = 'flex'; }
+    function chiudiOrariModal() { document.getElementById('modalOrari').style.display = 'none'; }
+
+    // VOLANTINO ACTIONS
+    function vaiAPaginaVolantino(pag) {
+      if (!pdfVolantinoDoc) return;
+      pagVolantinoNum = pag;
+      renderizzaPaginaPDF(pdfVolantinoDoc, pagVolantinoNum, 'volantinoCanvas', 'volantinoPagerLabel');
+    }
+
+    function cambiaPaginaVolantino(delta) {
+      if (!pdfVolantinoDoc) return;
+      if (pagVolantinoNum + delta >= 1 && pagVolantinoNum + delta <= pdfVolantinoDoc.numPages) {
+        pagVolantinoNum += delta;
+        renderizzaPaginaPDF(pdfVolantinoDoc, pagVolantinoNum, 'volantinoCanvas', 'volantinoPagerLabel');
+      }
+    }
+
+    function eseguiRicercaVolantino() {
+      const q = document.getElementById('volantinoSearch').value.toLowerCase().trim();
+      if (q.includes("lavatrice")) vaiAPaginaVolantino(32);
+      else vaiAPaginaVolantino(1);
+    }
+
+    // PROMO ACTIONS
+    function cambiaPromo(delta) {
+      if (!pdfPromoDoc) return;
+      if (pagPromoNum + delta >= 1 && pagPromoNum + delta <= pdfPromoDoc.numPages) {
+        pagPromoNum += delta;
+        renderizzaPaginaPDF(pdfPromoDoc, pagPromoNum, 'promoCanvas', 'promoPagerLabel');
+      }
+    }
+
+    // RITAGLIO DIRETTO DA CANVAS
+    function avviaRitaglioDaCanvas(canvasId) {
+      canvasSorgenteAttivo = canvasId;
+      const srcCanvas = document.getElementById(canvasId);
+      const dataUrl = srcCanvas.toDataURL('image/jpeg');
+
+      const cropTargetImg = document.getElementById('imageToCrop');
+      cropTargetImg.src = dataUrl;
+
+      document.getElementById('modalRitaglioCanvas').style.display = 'flex';
+
+      if (cropperInstance) cropperInstance.destroy();
+      cropperInstance = new Cropper(cropTargetImg, {
+        aspectRatio: NaN,
+        viewMode: 1,
+        autoCropArea: 0.6
+      });
+    }
+
+    function chiudiRitaglioModal() {
+      if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+      document.getElementById('modalRitaglioCanvas').style.display = 'none';
+    }
+
+    function confermaRitaglioEApriForm() {
+      if (!cropperInstance) return;
+      const canvas = cropperInstance.getCroppedCanvas({ width: 600 });
+      base64ModalImg = canvas.toDataURL('image/jpeg', 0.85);
+
+      chiudiRitaglioModal();
+
+      if (canvasSorgenteAttivo === 'volantinoCanvas') {
+        apriFormRichiesta('Grandi Elettrodomestici', 'Ritaglia Offerta Volantino', `[Richiesta info su offerta Volantino Pagina ${pagVolantinoNum}]`);
+      } else {
+        apriFormRichiesta('Grandi Elettrodomestici', 'Ritaglia Promo Ap.petitose', `[Richiesta info su Promo App...etitose Pagina ${pagPromoNum}]`);
+      }
+
+      document.getElementById('ritaglioPreviewBox').style.display = 'block';
+      document.getElementById('modalPreviewImg').src = base64ModalImg;
+    }
+
+    // FORM RICHIESTE
+    function apriFormRichiesta(reparto, tipo = 'Info Prodotto', notaIniziale = '') {
+      document.getElementById('mReparto').value = reparto;
+      document.getElementById('mTipo').value = tipo;
+      document.getElementById('mNote').value = notaIniziale;
+      document.getElementById('modalTitle').innerText = `Richiesta: ${tipo}`;
+      document.getElementById('modalRichiesta').style.display = 'flex';
+    }
+
+    function chiudiModal() {
+      document.getElementById('modalRichiesta').style.display = 'none';
+      document.getElementById('ritaglioPreviewBox').style.display = 'none';
+      base64ModalImg = "";
+    }
+
+    async function inviaFormNet(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSendModal');
+      btn.disabled = true;
+      btn.innerText = "Inviando...";
+
+      const tesseraNum = document.getElementById('tesseraInput').value.trim();
+      let noteFull = document.getElementById('mNote').value.trim();
+      if (tesseraNum) {
+        noteFull += ` [Tessera Club: ${tesseraNum}]`;
+      }
+
+      let repartoMappato = document.getElementById('mReparto').value;
+      if (repartoMappato.includes("Grandi")) repartoMappato = "Grandi Elettrodomestici";
+      if (repartoMappato.includes("Piccoli")) repartoMappato = "Piccoli Elettrodomestici";
+      if (repartoMappato.includes("Telefonia") || repartoMappato.includes("PC")) repartoMappato = "Informatica e Telefonia";
+      if (repartoMappato.includes("TV")) repartoMappato = "TV e Audio";
+
+      const payload = {
+        action: "create",
+        reparto: repartoMappato,
+        tipoRichiesta: document.getElementById('mTipo').value,
+        nomeCliente: document.getElementById('mNome').value,
+        telefono: document.getElementById('mTel').value,
+        preferenzaContatto: document.getElementById('mPref').value,
+        noteCliente: noteFull,
+        image: base64ModalImg || ""
+      };
+
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        alert("✅ Richiesta inviata con successo! Il reparto la prenderà in carico a breve.");
+        chiudiModal();
+        document.getElementById('formRichiestaModal').reset();
+      } catch (err) {
+        alert("Errore nell'invio. Riprova.");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "🚀 INVIA RICHIESTA";
+      }
+    }
+
+    // TESSERA BARCODE
+    function generaBarcode() {
+      const val = document.getElementById('tesseraInput').value.trim();
+      if (val) {
+        JsBarcode("#barcode", val, {
+          format: "CODE128",
+          lineColor: "#000",
+          width: 2,
+          height: 60,
+          displayValue: true
+        });
+      }
+    }
+
+    function salvaTessera() {
+      const val = document.getElementById('tesseraInput').value.trim();
+      if(val) {
+        localStorage.setItem('unieuro_tessera_club', val);
+        generaBarcode();
+        alert("✅ Tessera Club salvata correttamente!");
+      }
+    }
+
+    window.onload = function() {
+      calcolaStatoNegozio();
+      caricaPDFDoc('volantino.pdf', 'volantinoCanvas', false);
+      caricaPDFDoc('promo.pdf', 'promoCanvas', true);
+
+      const saved = localStorage.getItem('unieuro_tessera_club');
+      if (saved) {
+        document.getElementById('tesseraInput').value = saved;
+      }
+      generaBarcode();
+    };
+  </script>
+</body>
+</html>

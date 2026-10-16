@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin - Unieuro RC</title>
+  <style>
+    :root {
+      --unieuro-blue: #002D62;
+      --unieuro-orange: #FF6700;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #F0F3F9;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      background: linear-gradient(135deg, #001F4D, var(--unieuro-blue));
+      color: white;
+      padding: 18px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kpi-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .kpi-card {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border-top: 4px solid var(--unieuro-blue);
+      text-align: center;
+    }
+    .kpi-card h3 { margin: 0; font-size: 13px; color: #64748B; text-transform: uppercase; }
+    .kpi-card .number { font-size: 32px; font-weight: 800; margin: 8px 0; color: #1E293B; }
+
+    .table-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #E2E8F0; }
+    th { background-color: #F8FAFC; color: var(--unieuro-blue); font-weight: bold; }
+    tr:hover { background-color: #F1F5F9; }
+    
+    .badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .badge-Aperta { background: #E63946; }
+    .badge-In-Lavorazione { background: #F1C40F; color: #000; }
+    .badge-Completata { background: #2ECC71; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 style="margin:0; font-size:22px;">📊 Dashboard Direzionale - Unieuro Reggio Calabria</h1>
+    <button onclick="caricaDashboard()" style="background: var(--unieuro-orange); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">🔄 Aggiorna Dati</button>
+  </header>
+
+  <div class="kpi-container">
+    <div class="kpi-card" style="border-top-color: #3B82F6;">
+      <h3>Totale Richieste</h3>
+      <div class="number" id="kpiTotale">0</div>
+    </div>
+    <div class="kpi-card" style="border-top-color: #E63946;">
+      <h3>Richieste Aperte</h3>
+      <div class="number" id="kpiAperte" style="color: #E63946;">0</div>
+    </div>
+    <div class="kpi-card" style="border-top-color: #F1C40F;">
+      <h3>In Lavorazione</h3>
+      <div class="number" id="kpiLav" style="color: #D97706;">0</div>
+    </div>
+    <div class="kpi-card" style="border-top-color: #2ECC71;">
+      <h3>Completate / Fatte</h3>
+      <div class="number" id="kpiCompletate" style="color: #2ECC71;">0</div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h2 style="color: var(--unieuro-blue); font-size: 18px; margin-top:0;">Registro Globale Richieste</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Data/Ora</th>
+          <th>Reparto</th>
+          <th>Cliente</th>
+          <th>Telefono</th>
+          <th>Tipo Richiesta</th>
+          <th>Dettagli</th>
+          <th>Stato</th>
+          <th>Nota / Risposta Reparto</th>
+        </tr>
+      </thead>
+      <tbody id="adminTableBody">
+        <tr><td colspan="8" style="text-align:center;">Caricamento dati...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzwNOu_U9TzjXoMUFA0nt-t48uqphk1ZsIqKNXey-L2cn74cIdTq1N7AcEvRK1D74UO/exec";
+
+    async function caricaDashboard() {
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?reparto=Tutti`);
+        const data = await response.json();
+
+        if (!data.requests) return;
+
+        const requests = data.requests;
+        
+        const totale = requests.length;
+        const aperte = requests.filter(r => r.stato === 'Aperta').length;
+        const inLav = requests.filter(r => r.stato === 'In lavorazione').length;
+        const completate = requests.filter(r => r.stato === 'Completata').length;
+
+        document.getElementById('kpiTotale').innerText = totale;
+        document.getElementById('kpiAperte').innerText = aperte;
+        document.getElementById('kpiLav').innerText = inLav;
+        document.getElementById('kpiCompletate').innerText = completate;
+
+        const tbody = document.getElementById('adminTableBody');
+        tbody.innerHTML = '';
+
+        requests.reverse().forEach(req => {
+          const tr = document.createElement('tr');
+          const statoClass = req.stato.replace(' ', '-');
+          tr.innerHTML = `
+            <td>${req.timestamp}</td>
+            <td><strong>${req.reparto}</strong></td>
+            <td>${req.nome}</td>
+            <td>${req.telefono}</td>
+            <td>${req.tipo}</td>
+            <td>${req.dettagli}</td>
+            <td><span class="badge badge-${statoClass}">${req.stato}</span></td>
+            <td>${req.noteRepartista || '-'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    caricaDashboard();
+    setInterval(caricaDashboard, 30000);
+  </script>
+</body>
+</html>
