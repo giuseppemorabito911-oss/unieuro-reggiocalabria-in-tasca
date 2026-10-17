@@ -3,55 +3,149 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Unieuro Reggio Calabria in Tasca</title>
+  <title>UNIEURO REGGIO CALABRIA IN TASCA</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icona.png">
   <meta name="theme-color" content="#002D62">
 
+  <!-- Cropper.js CSS per la funzione ritaglio -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 
   <style>
     :root {
       --unieuro-blue: #002D62;
-      --unieuro-dark: #001F4D;
+      --unieuro-dark: #001838;
       --unieuro-orange: #FF6700;
-      --bg-color: #F0F3F9;
+      --bg-color: #EEF2F7;
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background-color: var(--bg-color);
-      color: #1E293B;
-      padding-bottom: 40px;
+      color: var(--text-main);
+      padding-bottom: 45px;
     }
 
+    /* HEADER PRINCIPALE */
     header {
       background: linear-gradient(135deg, var(--unieuro-dark), var(--unieuro-blue));
       color: white;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 4px 12px rgba(0, 45, 98, 0.2);
+      padding: 18px 16px 14px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 24, 56, 0.25);
       position: sticky;
       top: 0;
       z-index: 100;
+      border-bottom: 4px solid var(--unieuro-orange);
     }
 
-    header img {
-      width: 42px;
-      height: 42px;
+    .header-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .header-brand img {
+      width: 40px;
+      height: 40px;
       border-radius: 10px;
       background: white;
       padding: 3px;
       object-fit: contain;
+    }
+
+    .header-brand h1 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* BANNER STATO APERTO/CHIUSO + TASTO ORARI */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .status-badge.open {
+      background-color: #16A34A;
+      color: white;
+    }
+
+    .status-badge.closed {
+      background-color: #DC2626;
+      color: white;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: white;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .btn-orari {
+      background: rgba(255, 255, 255, 0.18);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      padding: 7px 14px;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-orari:active {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .orari-popup {
+      display: none;
+      background: rgba(0, 15, 38, 0.95);
+      color: #F8FAFC;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      border: 1px solid var(--unieuro-orange);
     }
 
     .container {
@@ -60,36 +154,94 @@
       padding: 0 14px;
     }
 
-    .card {
-      background: white;
-      border-radius: 14px;
-      padding: 18px;
+    /* BARRA MAPS E SOCIAL */
+    .quick-links {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      gap: 8px;
       margin-bottom: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .quick-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 11px 8px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: white;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      transition: transform 0.1s;
+      text-align: center;
+    }
+
+    .quick-btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-maps {
+      background: linear-gradient(135deg, #10B981, #059669);
+    }
+
+    .btn-instagram {
+      background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF);
+    }
+
+    .btn-facebook {
+      background: linear-gradient(135deg, #1877F2, #0C5DC7);
+    }
+
+    /* CARDS GENERALI */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
       border-top: 4px solid var(--unieuro-blue);
     }
 
-    .card.orange-top {
+    .card.orange-border {
       border-top-color: var(--unieuro-orange);
     }
 
     .card-title {
       font-size: 1.05rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--unieuro-blue);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
+    /* TESSERA UNIEURO CLUB */
     .club-card {
       background: linear-gradient(135deg, var(--unieuro-blue), var(--unieuro-dark));
       color: white;
-      border-radius: 14px;
-      padding: 18px;
+      border-radius: 16px;
+      padding: 16px;
       margin-bottom: 16px;
       box-shadow: 0 6px 16px rgba(0, 45, 98, 0.25);
+    }
+
+    .club-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .badge-orange {
+      background: var(--unieuro-orange);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 800;
     }
 
     .barcode-box {
@@ -98,7 +250,7 @@
       padding: 12px;
       border-radius: 10px;
       text-align: center;
-      margin: 10px 0;
+      margin: 8px 0;
     }
 
     .barcode-lines {
@@ -110,16 +262,181 @@
     .barcode-text {
       font-family: monospace;
       font-size: 1.2rem;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 3px;
+    }
+
+    /* VOLANTINO & PROMO APP...ETITOSE */
+    .pdf-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .tab-btn {
+      padding: 12px 10px;
+      border-radius: 12px;
+      border: 2px solid var(--unieuro-blue);
+      background: white;
+      color: var(--unieuro-blue);
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.25;
+      font-size: 0.92rem;
+    }
+
+    .tab-btn small {
+      font-size: 0.68rem;
+      font-weight: 600;
+      margin-top: 3px;
+      opacity: 0.9;
+    }
+
+    .tab-btn.active {
+      background: var(--unieuro-blue);
+      color: white;
+    }
+
+    .tab-btn.promo-btn {
+      border-color: var(--unieuro-orange);
+      color: #C2410C;
+    }
+
+    .tab-btn.promo-btn.active {
+      background: var(--unieuro-orange);
+      color: white;
+    }
+
+    .pdf-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin: 10px 0;
+      flex-wrap: wrap;
+    }
+
+    .canvas-wrapper {
+      width: 100%;
+      min-height: 270px;
+      background: #E2E8F0;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #pdfCanvas {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .crop-toolbar {
+      display: none;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    /* PULSANTI REPARTI SEPARATI */
+    .reparti-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .reparto-btn {
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      color: var(--unieuro-blue);
+      font-weight: 800;
+      font-size: 0.84rem;
+    }
+
+    .reparto-btn span.icon {
+      font-size: 1.45rem;
+    }
+
+    .reparto-btn small {
+      font-size: 0.68rem;
+      color: var(--unieuro-orange);
+      font-weight: 700;
+    }
+
+    .reparto-btn:hover,
+    .reparto-btn.selected {
+      background: var(--unieuro-blue);
+      border-color: var(--unieuro-blue);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0, 45, 98, 0.2);
+    }
+
+    .reparto-btn.selected small {
+      color: #FFD1B3;
+    }
+
+    .reparto-btn.full-width {
+      grid-column: span 2;
+      background: #FFF7ED;
+      border-color: var(--unieuro-orange);
+    }
+
+    .reparto-btn.full-width.selected {
+      background: var(--unieuro-orange);
+      color: white;
+    }
+
+    /* FORM RICHIESTA A COMPARSA */
+    #formContainerBox {
+      display: none;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px dashed #CBD5E1;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .selected-reparto-banner {
+      background: var(--unieuro-blue);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .form-group { margin-bottom: 12px; }
     .form-group label {
       display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #475569;
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: #334155;
       margin-bottom: 5px;
     }
 
@@ -141,7 +458,7 @@
       border-radius: 10px;
       font-size: 0.95rem;
       background: #F8FAFC;
-      color: #1E293B;
+      color: var(--text-main);
       outline: none;
     }
 
@@ -157,7 +474,7 @@
       border-radius: 10px;
       padding: 11px 16px;
       font-size: 0.92rem;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -172,60 +489,6 @@
     .btn-outline { background: white; color: var(--unieuro-blue); border: 1.5px solid var(--unieuro-blue); }
     .btn-block { width: 100%; }
 
-    .pdf-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .tab-btn {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1.5px solid var(--unieuro-blue);
-      background: white;
-      color: var(--unieuro-blue);
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .tab-btn.active {
-      background: var(--unieuro-blue);
-      color: white;
-    }
-
-    .pdf-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
-      margin: 10px 0;
-      flex-wrap: wrap;
-    }
-
-    .canvas-wrapper {
-      width: 100%;
-      min-height: 280px;
-      background: #E2E8F0;
-      border-radius: 10px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #pdfCanvas {
-      max-width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .crop-toolbar {
-      display: none;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
     .crop-preview-box {
       display: none;
       background: #FFF7ED;
@@ -239,7 +502,7 @@
     }
 
     .crop-preview-box img {
-      max-height: 75px;
+      max-height: 70px;
       border-radius: 6px;
     }
 
@@ -247,32 +510,59 @@
       display: none;
       background: #DCFCE7;
       color: #166534;
-      border: 1px solid #86EFAC;
+      border: 1.5px solid #86EFAC;
       padding: 14px;
-      border-radius: 10px;
-      font-weight: 600;
+      border-radius: 12px;
+      font-weight: 700;
       text-align: center;
-      margin-top: 12px;
+      margin-top: 14px;
     }
   </style>
 </head>
 <body>
 
+  <!-- HEADER + STATO APERTO/CHIUSO + ORARI -->
   <header>
-    <img src="icona.png" alt="Unieuro" onerror="this.style.display='none'">
-    <div>
-      <h1 style="font-size:1.15rem;">Unieuro Reggio Calabria</h1>
-      <span style="font-size:0.8rem; color:#CBD5E1;">Il tuo negozio sempre in tasca</span>
+    <div class="header-brand">
+      <img src="icona.png" alt="Unieuro" onerror="this.style.display='none'">
+      <h1>UNIEURO REGGIO CALABRIA IN TASCA</h1>
+    </div>
+
+    <div class="status-bar">
+      <div id="storeStatusBadge" class="status-badge open">
+        <span class="status-dot"></span>
+        <span id="storeStatusText">VERIFICA ORARIO...</span>
+      </div>
+      <button type="button" class="btn-orari" onclick="toggleOrari()">🕒 Vedi Orari</button>
+    </div>
+
+    <div id="orariPopup" class="orari-popup">
+      <strong>📅 ORARI DI APERTURA NEGOZIO:</strong><br>
+      Lunedì - Sabato: <strong>09:00 - 13:00</strong> e <strong>15:00 - 20:00</strong><br>
+      Domenica: <strong>CHIUSO</strong>
     </div>
   </header>
 
   <div class="container">
 
-    <!-- 1. TESSERA UNIEURO (SEMPRE SALVATA) -->
+    <!-- PULSANTI MAPS E SOCIAL -->
+    <div class="quick-links">
+      <a href="https://maps.app.goo.gl/EuhFSxA1GGnfu1mJ7" target="_blank" rel="noopener" class="quick-btn btn-maps">
+        📍 Raggiungi Negozio
+      </a>
+      <a href="https://www.instagram.com/unieuroreggiocalabria/" target="_blank" rel="noopener" class="quick-btn btn-instagram">
+        📸 Instagram
+      </a>
+      <a href="https://www.facebook.com/search/top?q=unieuro%20reggio%20calabria" target="_blank" rel="noopener" class="quick-btn btn-facebook">
+        👍 Facebook
+      </a>
+    </div>
+
+    <!-- 1. TESSERA UNIEURO CLUB (SEMPRE SALVATA) -->
     <div class="club-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <div class="club-header">
         <strong>💳 La Tua Tessera Unieuro</strong>
-        <span style="background:var(--unieuro-orange); padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:700;">Unieuro Club</span>
+        <span class="badge-orange">Unieuro Club</span>
       </div>
 
       <div id="cardForm">
@@ -293,34 +583,40 @@
       </div>
     </div>
 
-    <!-- 2. VOLANTINO & PROMO CON RICERCA E RITAGLIO PRODOTTO -->
+    <!-- 2. VOLANTINO & PROMO APP...ETITOSE CON RITAGLIO -->
     <div class="card">
       <div class="card-title">
-        <span>📖 Volantino & Promo (Ritaglia Offerta)</span>
+        <span>📖 Sfoglia Offerte e Ritaglia</span>
       </div>
 
       <div class="pdf-tabs">
-        <button type="button" id="btnTabVolantino" class="tab-btn active" onclick="caricaPdf('volantino.pdf', 'btnTabVolantino')">📄 Volantino</button>
-        <button type="button" id="btnTabPromo" class="tab-btn" onclick="caricaPdf('promo.pdf', 'btnTabPromo')">🔥 Promo</button>
+        <button type="button" id="btnTabVolantino" class="tab-btn active" onclick="caricaPdf('volantino.pdf', 'btnTabVolantino')">
+          📄 VOLANTINO
+          <small>Offerte correnti</small>
+        </button>
+        <button type="button" id="btnTabPromo" class="tab-btn promo-btn" onclick="caricaPdf('promo.pdf', 'btnTabPromo')">
+          🔥 PROMO APP...ETITOSE
+          <small>Riservate ai possessori di app Unieuro Reggio Calabria in Tasca</small>
+        </button>
       </div>
 
       <div class="input-row" style="margin-bottom:10px;">
-        <input type="search" id="pdfSearchInput" placeholder="Cerca prodotto nel PDF (es. Lavatrice)..." autocomplete="off">
+        <input type="search" id="pdfSearchInput" placeholder="Cerca prodotto (es. Lavatrice, TV)..." autocomplete="off">
         <button type="button" class="btn btn-blue" onclick="cercaNelPdf()">🔍 Cerca</button>
       </div>
-      <div id="searchStatus" style="font-size:0.83rem; color:var(--unieuro-orange); font-weight:600; margin-bottom:8px; display:none;"></div>
+      <div id="searchStatus" style="font-size:0.83rem; color:var(--unieuro-orange); font-weight:700; margin-bottom:8px; display:none;"></div>
 
       <div class="pdf-controls">
         <div style="display:flex; gap:6px; align-items:center;">
           <button type="button" class="btn btn-outline" onclick="cambiaPagina(-1)">◀</button>
-          <span id="pageIndicator" style="font-size:0.88rem; font-weight:700;">Pag. 1 / 1</span>
+          <span id="pageIndicator" style="font-size:0.88rem; font-weight:800;">Pag. 1 / 1</span>
           <button type="button" class="btn btn-outline" onclick="cambiaPagina(1)">▶</button>
         </div>
         <button type="button" id="btnStartCrop" class="btn btn-orange" onclick="avviaRitaglio()">✂️ Ritaglia Offerta</button>
       </div>
 
       <div id="cropToolbar" class="crop-toolbar">
-        <button type="button" class="btn btn-green btn-block" onclick="confermaRitaglio()">✅ Allega Ritaglio alla Richiesta</button>
+        <button type="button" class="btn btn-green btn-block" onclick="confermaRitaglio()">✅ Allega Ritaglio e Scegli Reparto</button>
         <button type="button" class="btn btn-red" onclick="annullaRitaglio()">✖</button>
       </div>
 
@@ -329,88 +625,115 @@
       </div>
     </div>
 
-    <!-- 3. MODULO INVIO RICHIESTA AL REPARTO -->
-    <div class="card orange-top" id="moduloRichiestaCard">
+    <!-- 3. PULSANTI REPARTI SEPARATI + MODULO A COMPARSA -->
+    <div class="card orange-border" id="sezioneRepartiCard">
       <div class="card-title">
-        <span>📢 Invia Richiesta al Reparto</span>
-        <span style="font-size:0.75rem; color:#64748B; font-weight:normal;">Auto-reset 30s</span>
+        <span>📢 Seleziona il Reparto per Richiesta</span>
+        <span style="font-size:0.72rem; color:var(--text-muted); font-weight:normal;">Auto-reset 30s</span>
       </div>
 
+      <!-- Anteprima ritaglio se presente -->
       <div id="cropPreviewContainer" class="crop-preview-box">
         <div style="display:flex; align-items:center; gap:10px;">
           <img id="cropPreviewImg" src="" alt="Ritaglio">
-          <div style="font-size:0.85rem; font-weight:600; color:var(--unieuro-blue);">
-            📎 Offerta ritagliata allegata alla richiesta!
+          <div style="font-size:0.84rem; font-weight:700; color:var(--unieuro-blue);">
+            📎 Offerta ritagliata pronta! Clicca sul reparto desiderato.
           </div>
         </div>
-        <button type="button" class="btn btn-red" style="padding:6px 10px; font-size:0.8rem;" onclick="rimuoviRitaglio()">Rimuovi</button>
+        <button type="button" class="btn btn-red" style="padding:6px 10px; font-size:0.78rem;" onclick="rimuoviRitaglio()">Rimuovi</button>
       </div>
 
-      <form id="requestForm" onsubmit="inviaRichiestaAlGoogleScript(event)" autocomplete="off">
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="reparto">Reparto *</label>
-            <select id="reparto" required>
-              <option value="">-- Scegli Reparto --</option>
-              <option value="Grandi Elettrodomestici">Grandi Elettrodomestici</option>
-              <option value="Piccoli Elettrodomestici">Piccoli Elettrodomestici</option>
-              <option value="TV e Audio">TV e Audio</option>
-              <option value="Informatica e Telefonia">Informatica e Telefonia</option>
-              <option value="Ritiro RAEE">Ritiro RAEE</option>
-              <option value="Amministrazione">Amministrazione</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="tipoRichiesta">Tipo Richiesta *</label>
-            <select id="tipoRichiesta" required>
-              <option value="Disponibilità Prodotto">Disponibilità Prodotto</option>
-              <option value="Prenotazione / Ordine">Prenotazione / Ordine</option>
-              <option value="Preventivo / Finanziamento">Preventivo / Finanziamento</option>
-              <option value="Consegna / Installazione / RAEE">Consegna / Installazione / RAEE</option>
-              <option value="Assistenza in Corsia">Assistenza in Corsia</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="nomeCliente">Nome e Cognome Cliente *</label>
-          <input type="text" id="nomeCliente" placeholder="Es. Mario Rossi" required>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="telefono">Telefono *</label>
-            <input type="tel" id="telefono" placeholder="Es. 333 1234567" required>
-          </div>
-
-          <div class="form-group">
-            <label for="preferenzaContatto">Preferenza Contatto</label>
-            <select id="preferenzaContatto">
-              <option value="WhatsApp / Telefono">WhatsApp / Telefono</option>
-              <option value="In Negozio (Subito)">In Negozio (Subito)</option>
-              <option value="Email">Email</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="emailCliente">Email Cliente (opzionale)</label>
-          <input type="email" id="emailCliente" placeholder="esempio@email.it">
-        </div>
-
-        <div class="form-group">
-          <label for="noteCliente">Dettagli Prodotto / Note Cliente *</label>
-          <textarea id="noteCliente" rows="3" placeholder="Scrivi qui il prodotto cercato (es. Lavatrice 9kg) o eventuali dettagli..." required></textarea>
-        </div>
-
-        <button type="submit" id="btnSubmit" class="btn btn-orange btn-block" style="padding:14px; font-size:1rem;">
-          🚀 Invia Richiesta al Reparto
+      <!-- Griglia Pulsanti Reparto -->
+      <div class="reparti-grid">
+        <button type="button" class="reparto-btn" onclick="selezionaReparto('GRANDI ELETTRODOMESTICI', this)">
+          <span class="icon">🧺</span>
+          GRANDI ELETTRODOMESTICI
         </button>
-      </form>
+
+        <button type="button" class="reparto-btn" onclick="selezionaReparto('PICCOLI ELETTRODOMESTICI', this)">
+          <span class="icon">☕</span>
+          PICCOLI ELETTRODOMESTICI
+        </button>
+
+        <button type="button" class="reparto-btn" onclick="selezionaReparto('TELEFONIA', this)">
+          <span class="icon">📱</span>
+          TELEFONIA
+        </button>
+
+        <button type="button" class="reparto-btn" onclick="selezionaReparto('TV', this)">
+          <span class="icon">📺</span>
+          TV
+        </button>
+
+        <button type="button" class="reparto-btn" onclick="selezionaReparto('INFORMATICA', this)">
+          <span class="icon">💻</span>
+          INFORMATICA
+        </button>
+
+        <button type="button" class="reparto-btn" onclick="selezionaReparto('ASSISTENZA', this)">
+          <span class="icon">🛠️</span>
+          ASSISTENZA
+        </button>
+
+        <button type="button" class="reparto-btn full-width" onclick="selezionaReparto('RITIRO RAEE', this)">
+          <span class="icon">♻️</span>
+          RITIRO RAEE
+          <small>(da effettuare presso negozio)</small>
+        </button>
+      </div>
+
+      <!-- Modulo che si apre al clic sul reparto -->
+      <div id="formContainerBox">
+        <div class="selected-reparto-banner">
+          <span id="repartoSceltoLabel">Reparto selezionato</span>
+          <button type="button" onclick="chiudiFormReparto()" style="background:none; border:none; color:white; font-weight:800; cursor:pointer;">✖ Chiudi</button>
+        </div>
+
+        <form id="requestForm" onsubmit="inviaRichiesta(event)" autocomplete="off">
+          <input type="hidden" id="repartoHidden" required>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="nomeCliente">Nome *</label>
+              <input type="text" id="nomeCliente" placeholder="Es. Mario" required>
+            </div>
+            <div class="form-group">
+              <label for="cognomeCliente">Cognome *</label>
+              <input type="text" id="cognomeCliente" placeholder="Es. Rossi" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="metodoRicontatto">Metodo di Ricontatto *</label>
+            <select id="metodoRicontatto" onchange="aggiornaCampiContatto()" required>
+              <option value="Telefono">📞 Telefono</option>
+              <option value="Mail">✉️ Mail</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="boxTelefono">
+            <label for="telefonoCliente">Numero di Telefono *</label>
+            <input type="tel" id="telefonoCliente" placeholder="Inserisci il tuo numero di telefono" required>
+          </div>
+
+          <div class="form-group" id="boxEmail" style="display:none;">
+            <label for="emailCliente">Indirizzo Email *</label>
+            <input type="email" id="emailCliente" placeholder="esempio@email.it">
+          </div>
+
+          <div class="form-group">
+            <label for="noteCliente">Note Richiesta *</label>
+            <textarea id="noteCliente" rows="3" placeholder="Scrivi qui i dettagli del prodotto o della tua richiesta..." required></textarea>
+          </div>
+
+          <button type="submit" id="btnSubmit" class="btn btn-orange btn-block" style="padding:14px; font-size:1rem;">
+            🚀 Invia Richiesta al Reparto
+          </button>
+        </form>
+      </div>
 
       <div id="confirmToast" class="toast">
-        ✅ Richiesta registrata e inviata al reparto!
+        ✅ Richiesta inviata con successo! Un nostro addetto ti ricontatterà al più presto.
       </div>
     </div>
 
@@ -420,7 +743,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
+    // =========================================================================
+    // INDIRIZZO GOOGLE APPS SCRIPT E CANALE LIVE
+    // =========================================================================
+    const SCRIPT_URL = "https://script.google.com/macros/library/d/1luBMD8Z6-OMUL0GRiL8190S0xRfxKSknlY0twezx2Sy1iysjwcuFYAxK/12";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
     const CARD_KEY = 'unieuro_tessera_code';
     const REQ_KEY = 'unieuro_requests_db';
@@ -432,6 +758,39 @@
     let cropperInstance = null;
     let croppedBase64 = "";
 
+    // -------------------------------------------------------------------------
+    // 1. CONTROLLO AUTOMATICO APERTO / CHIUSO (LUN-SAB 09-13, 15-20 | DOM CHIUSO)
+    // -------------------------------------------------------------------------
+    function aggiornaStatoNegozio() {
+      const now = new Date();
+      const day = now.getDay(); // 0 = Domenica, 1 = Lunedì ... 6 = Sabato
+      const minutiAttuali = now.getHours() * 60 + now.getMinutes();
+
+      // Mattina: 09:00 (540) - 13:00 (780) | Pomeriggio: 15:00 (900) - 20:00 (1200)
+      const apertoMattina = minutiAttuali >= 540 && minutiAttuali < 780;
+      const apertoPomeriggio = minutiAttuali >= 900 && minutiAttuali < 1200;
+      const isAperto = (day >= 1 && day <= 6) && (apertoMattina || apertoPomeriggio);
+
+      const badge = document.getElementById('storeStatusBadge');
+      const text = document.getElementById('storeStatusText');
+
+      if (isAperto) {
+        badge.className = 'status-badge open';
+        text.textContent = 'SIAMO APERTI';
+      } else {
+        badge.className = 'status-badge closed';
+        text.textContent = 'SIAMO CHIUSI';
+      }
+    }
+
+    function toggleOrari() {
+      const box = document.getElementById('orariPopup');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. GESTIONE TESSERA UNIEURO (SEMPRE SALVATA)
+    // -------------------------------------------------------------------------
     function caricaTessera() {
       const code = localStorage.getItem(CARD_KEY);
       if (code && code.trim() !== '') {
@@ -457,6 +816,9 @@
       document.getElementById('cardSaved').style.display = 'none';
     }
 
+    // -------------------------------------------------------------------------
+    // 3. VOLANTINO & PROMO APP...ETITOSE + RITAGLIO
+    // -------------------------------------------------------------------------
     async function caricaPdf(url, tabId) {
       annullaRitaglio();
       document.getElementById('btnTabVolantino').classList.remove('active');
@@ -468,7 +830,7 @@
         currentPage = 1;
         await renderPagina(currentPage);
       } catch (e) {
-        console.warn("PDF non trovato:", e);
+        console.warn("PDF in caricamento:", e);
       }
     }
 
@@ -500,7 +862,7 @@
       if (!q || !pdfDoc) return;
 
       status.style.display = 'block';
-      status.textContent = '⏳ Ricerca nel documento...';
+      status.textContent = '⏳ Ricerca in corso...';
 
       for (let i = 1; i <= pdfDoc.numPages; i++) {
         const page = await pdfDoc.getPage(i);
@@ -537,7 +899,7 @@
       document.getElementById('cropPreviewImg').src = croppedBase64;
       document.getElementById('cropPreviewContainer').style.display = 'flex';
       annullaRitaglio();
-      document.getElementById('moduloRichiestaCard').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('sezioneRepartiCard').scrollIntoView({ behavior: 'smooth' });
     }
 
     function annullaRitaglio() {
@@ -555,33 +917,102 @@
       document.getElementById('cropPreviewContainer').style.display = 'none';
     }
 
-    async function inviaRichiestaAlGoogleScript(e) {
+    // -------------------------------------------------------------------------
+    // 4. SELEZIONE PULSANTE REPARTO E APERTURA FORM
+    // -------------------------------------------------------------------------
+    function selezionaReparto(nomeReparto, btnElement) {
+      document.querySelectorAll('.reparto-btn').forEach(b => b.classList.remove('selected'));
+      if (btnElement) btnElement.classList.add('selected');
+
+      document.getElementById('repartoHidden').value = nomeReparto;
+      document.getElementById('repartoSceltoLabel').textContent = '📍 Reparto: ' + nomeReparto;
+
+      const formBox = document.getElementById('formContainerBox');
+      formBox.style.display = 'block';
+      formBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function chiudiFormReparto() {
+      document.querySelectorAll('.reparto-btn').forEach(b => b.classList.remove('selected'));
+      document.getElementById('formContainerBox').style.display = 'none';
+    }
+
+    function aggiornaCampiContatto() {
+      const metodo = document.getElementById('metodoRicontatto').value;
+      const boxTel = document.getElementById('boxTelefono');
+      const boxMail = document.getElementById('boxEmail');
+      const inputTel = document.getElementById('telefonoCliente');
+      const inputMail = document.getElementById('emailCliente');
+
+      if (metodo === 'Telefono') {
+        boxTel.style.display = 'block';
+        boxMail.style.display = 'none';
+        inputTel.required = true;
+        inputMail.required = false;
+      } else {
+        boxTel.style.display = 'none';
+        boxMail.style.display = 'block';
+        inputTel.required = false;
+        inputMail.required = true;
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. FORMATTAZIONE NUMERO CON "0" INIZIALE PER 7COLLABORATION
+    // -------------------------------------------------------------------------
+    function formattaNumero7Collaboration(rawPhone) {
+      if (!rawPhone) return "";
+      // Rimuove spazi, trattini e prefisso internazionale +39 o 0039
+      let clean = rawPhone.replace(/[\s\-\.\(\)]/g, '');
+      clean = clean.replace(/^(\+39|0039)/, '');
+      if (!clean) return "";
+      // Aggiunge sempre lo 0 iniziale per impegnare la linea esterna su 7Collaboration
+      if (!clean.startsWith('0')) {
+        clean = '0' + clean;
+      }
+      return clean;
+    }
+
+    async function inviaRichiesta(e) {
       e.preventDefault();
+
+      const reparto = document.getElementById('repartoHidden').value;
+      if (!reparto) {
+        alert('Clicca prima sul pulsante del reparto desiderato.');
+        return;
+      }
 
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
       btn.textContent = '⏳ Invio in corso...';
 
+      const nome = document.getElementById('nomeCliente').value.trim();
+      const cognome = document.getElementById('cognomeCliente').value.trim();
+      const metodo = document.getElementById('metodoRicontatto').value;
+      const telInserito = document.getElementById('telefonoCliente').value.trim();
+      const telefono7Collab = formattaNumero7Collaboration(telInserito);
+      const email = document.getElementById('emailCliente').value.trim();
+      const note = document.getElementById('noteCliente').value.trim();
+
       const idPratica = "REQ-" + Date.now();
       const timestamp = new Date().toLocaleString("it-IT");
-      const repartoVal = document.getElementById('reparto').value;
 
       const payload = {
         action: "create",
         id: idPratica,
         timestamp: timestamp,
-        reparto: repartoVal,
-        tipoRichiesta: document.getElementById('tipoRichiesta').value,
-        nomeCliente: document.getElementById('nomeCliente').value.trim(),
-        telefono: document.getElementById('telefono').value.trim(),
-        emailCliente: document.getElementById('emailCliente').value.trim(),
-        preferenzaContatto: document.getElementById('preferenzaContatto').value,
-        noteCliente: document.getElementById('noteCliente').value.trim(),
+        reparto: reparto,
+        tipoRichiesta: reparto === 'RITIRO RAEE' ? 'Ritiro RAEE (in negozio)' : 'Richiesta Cliente',
+        nomeCliente: `${nome} ${cognome}`.trim(),
+        telefono: telefono7Collab,
+        emailCliente: email,
+        preferenzaContatto: metodo,
+        noteCliente: note,
         stato: "Aperta",
         image: croppedBase64
       };
 
-      // Salvataggio immediato locale + sincronizzazione cloud istantanea di backup
+      // Salvataggio immediato locale + notifica live
       try {
         const lista = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
         lista.unshift(payload);
@@ -612,9 +1043,15 @@
       setTimeout(() => { toast.style.display = 'none'; }, 4000);
     }
 
+    // -------------------------------------------------------------------------
+    // 6. AUTO-RESET A 30 SECONDI E ALL'APERTURA (SALVA SEMPRE LA TESSERA)
+    // -------------------------------------------------------------------------
     function resetCampiTemporanei() {
       const form = document.getElementById('requestForm');
       if (form) form.reset();
+
+      aggiornaCampiContatto();
+      chiudiFormReparto();
 
       const searchInput = document.getElementById('pdfSearchInput');
       if (searchInput) searchInput.value = '';
@@ -637,11 +1074,14 @@
     });
 
     window.addEventListener('pageshow', () => {
+      aggiornaStatoNegozio();
       caricaTessera();
       resetCampiTemporanei();
       riavviaTimer30s();
       if (!pdfDoc) caricaPdf('volantino.pdf', 'btnTabVolantino');
     });
+
+    setInterval(aggiornaStatoNegozio, 60000);
   </script>
 </body>
 </html>
