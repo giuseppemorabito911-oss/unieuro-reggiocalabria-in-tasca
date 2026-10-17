@@ -5,315 +5,599 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Unieuro Reggio Calabria in Tasca</title>
   
-  <!-- Manifest e PWA -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icona.png">
-  <meta name="theme-color" content="#003399">
+  <meta name="theme-color" content="#002D62">
 
-  <!-- PRELOAD & PREFETCH PER MASSIMA VELOCITÀ DI APERTURA -->
+  <!-- PREFETCH PER APERTURA ISTANTANEA DI REPARTI E ADMIN -->
   <link rel="prefetch" href="reparto.html" as="document">
   <link rel="prefetch" href="admin.html" as="document">
-  <link rel="preload" href="volantino.pdf" as="fetch" crossorigin="anonymous">
-  <link rel="preload" href="promo.pdf" as="fetch" crossorigin="anonymous">
-  <link rel="preload" href="icona.png" as="image">
 
   <style>
-    /* STILI BASE E OTTIMIZZAZIONE INTERFACCIA */
+    :root {
+      --unieuro-blue: #002D62;
+      --unieuro-dark: #001F4D;
+      --unieuro-orange: #FF6700;
+      --bg-color: #F0F3F9;
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --success: #16A34A;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: #f4f6f9;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      padding-bottom: 20px;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 30px;
     }
 
     header {
-      background-color: #003399;
-      color: #fff;
-      padding: 15px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      background: linear-gradient(135deg, var(--unieuro-dark), var(--unieuro-blue));
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(0, 45, 98, 0.2);
       position: sticky;
       top: 0;
       z-index: 100;
     }
 
-    header img {
-      max-height: 40px;
-      margin-bottom: 5px;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    header h1 {
-      font-size: 1.1rem;
-      font-weight: 600;
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: contain;
+      background: white;
+      padding: 3px;
     }
 
-    main {
-      padding: 15px;
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .brand-text span {
+      font-size: 0.8rem;
+      color: #CBD5E1;
+    }
+
+    .container {
       max-width: 600px;
-      margin: 0 auto;
-      width: 100%;
-      flex: 1;
+      margin: 18px auto 0;
+      padding: 0 15px;
     }
 
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    .section-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border-top: 4px solid var(--unieuro-blue);
     }
 
-    .card h2 {
-      font-size: 1.1rem;
-      color: #003399;
+    .section-card.orange-top {
+      border-top-color: var(--unieuro-orange);
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--unieuro-blue);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* CARD UNIEURO CLUB */
+    .club-card {
+      background: linear-gradient(135deg, var(--unieuro-blue), var(--unieuro-dark));
+      color: white;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 16px rgba(0, 45, 98, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .club-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 12px;
+    }
+
+    .club-card-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    /* BARRA DI RICERCA PRODOTTO / VOLANTINO */
-    .search-box {
+    .badge-orange {
+      background: var(--unieuro-orange);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .barcode-box {
+      background: white;
+      color: #000;
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .barcode-bars {
+      height: 38px;
+      background: repeating-linear-gradient(
+        90deg,
+        #000 0px, #000 3px,
+        #fff 3px, #fff 6px,
+        #000 6px, #000 8px,
+        #fff 8px, #fff 13px,
+        #000 13px, #000 17px,
+        #fff 17px, #fff 20px
+      );
+      margin-bottom: 8px;
+    }
+
+    .barcode-number {
+      font-family: monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    /* FORM ELEMENTI */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="search"],
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: #F8FAFC;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--unieuro-blue);
+      background: #FFFFFF;
+    }
+
+    .input-row {
       display: flex;
       gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .search-box input {
-      flex: 1;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
-    }
-
-    .search-box input:focus {
-      border-color: #003399;
     }
 
     .btn {
-      background-color: #003399;
-      color: #fff;
       border: none;
+      border-radius: 10px;
       padding: 12px 18px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.95rem;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       text-decoration: none;
-      transition: background 0.2s ease;
+      transition: opacity 0.15s, transform 0.1s;
     }
 
     .btn:active {
-      background-color: #002266;
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--unieuro-blue);
+      color: white;
+    }
+
+    .btn-orange {
+      background: var(--unieuro-orange);
+      color: white;
+    }
+
+    .btn-outline-light {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 8px 14px;
+      font-size: 0.85rem;
     }
 
     .btn-block {
       width: 100%;
     }
 
-    .btn-outline {
-      background: transparent;
-      color: #003399;
-      border: 2px solid #003399;
-    }
-
-    /* SEZIONE TESSERA UNIEURO */
-    .tessera-card {
-      background: linear-gradient(135deg, #003399, #001f66);
-      color: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 4px 10px rgba(0,51,153,0.3);
-      margin-bottom: 15px;
-    }
-
-    .tessera-card h2 {
-      color: #fff;
-    }
-
-    .tessera-input-group {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .tessera-input-group input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      font-size: 1rem;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-
-    .tessera-saved-info {
-      margin-top: 10px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 10px;
-      border-radius: 6px;
+    /* NOTIFICA INVIO RAPIDO */
+    .toast-feedback {
+      display: none;
+      background: #DCFCE7;
+      color: #166534;
+      border: 1px solid #86EFAC;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-top: 12px;
       text-align: center;
-      word-break: break-all;
     }
 
-    /* GRIGLIA NAVIGAZIONE RAPIDA */
-    .grid-nav {
+    /* VOLANTINO & PROMO */
+    .pdf-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .pdf-tab {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1.5px solid var(--unieuro-blue);
+      background: white;
+      color: var(--unieuro-blue);
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .pdf-tab.active {
+      background: var(--unieuro-blue);
+      color: white;
+    }
+
+    .pdf-viewer-frame {
+      width: 100%;
+      height: 360px;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      background: #F1F5F9;
+      margin-top: 10px;
+    }
+
+    /* FOOTER NAVIGAZIONE STAFF */
+    .staff-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
+      margin-top: 10px;
     }
 
-    footer {
+    .btn-staff {
+      background: white;
+      color: var(--unieuro-blue);
+      border: 2px solid var(--unieuro-blue);
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
       text-align: center;
-      font-size: 0.85rem;
-      color: #777;
-      margin-top: 20px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .timer-badge {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: normal;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <img src="icona.png" alt="Unieuro Logo" id="appLogo">
-    <h1>Reggio Calabria in Tasca</h1>
+    <div class="brand">
+      <img src="icona.png" alt="Logo" onerror="this.style.display='none'">
+      <div class="brand-text">
+        <h1>Unieuro Reggio Calabria</h1>
+        <span>Il tuo negozio sempre in tasca</span>
+      </div>
+    </div>
   </header>
 
-  <main>
-    
-    <!-- CARD TESSERA CLUB UNIEURO (SEMPRE CONSERVATA) -->
-    <div class="tessera-card">
-      <h2>💳 La Tua Tessera Unieuro</h2>
-      <div id="tesseraBox">
-        <div class="tessera-input-group">
-          <input type="text" id="numeroTessera" class="tessera-input" placeholder="Inserisci il numero di tessera">
-          <button class="btn" onclick="salvaTessera()" style="background:#ff6600;">Salva</button>
+  <div class="container">
+
+    <!-- 1. TESSERA UNIEURO CLUB (SEMPRE SALVATA) -->
+    <div class="club-card">
+      <div class="club-card-header">
+        <h2>💳 Unieuro Club</h2>
+        <span class="badge-orange">Fidelity Card</span>
+      </div>
+
+      <!-- Form inserimento tessera -->
+      <div id="cardFormBox">
+        <p style="font-size: 0.85rem; margin-bottom: 10px; color: #E2E8F0;">
+          Salva il tuo codice tessera per averlo sempre pronto alla cassa:
+        </p>
+        <div class="input-row">
+          <input type="text" id="cardNumberInput" class="keep-value" placeholder="Numero tessera (es. 2040...)" style="background: white;">
+          <button type="button" class="btn btn-orange" onclick="salvaCard()">Salva</button>
         </div>
       </div>
-      <div id="tesseraDisplay" style="display:none;">
-        <div class="tessera-saved-info" id="tesseraCodice"></div>
-        <button class="btn btn-outline" onclick="modificaTessera()" style="color:#fff; border-color:#fff; margin-top:8px; width:100%;">Modifica codice</button>
+
+      <!-- Visualizzazione tessera salvata -->
+      <div id="cardSavedBox" style="display: none;">
+        <div class="barcode-box">
+          <div class="barcode-bars"></div>
+          <div class="barcode-number" id="cardNumberDisplay"></div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+          <button type="button" class="btn btn-outline-light" onclick="modificaCard()">✏️ Modifica</button>
+        </div>
       </div>
     </div>
 
-    <!-- RICERCA VELOCE PRODOTTO / REPARTO -->
-    <div class="card">
-      <h2>🔍 Cerca o Richiedi Prodotto</h2>
-      <div class="search-box">
-        <input type="text" id="searchQuery" placeholder="Es. Lavatrice, TV, Smartphone..." autocomplete="off">
-        <button class="btn" onclick="inviaRichiestaPWA()">Cerca</button>
+    <!-- 2. RICHIESTA AI REPARTI (SI AZZERA ALL'AVVIO E DOPO 30s DI INATTIVITÀ) -->
+    <div class="section-card orange-top">
+      <div class="section-title">
+        <span>📢 Richiesta Rapida al Reparto</span>
+        <span class="timer-badge" id="inactivityIndicator">Auto-reset 30s</span>
+      </div>
+
+      <form id="repartoRequestForm" onsubmit="inviaRichiestaReparto(event)" autocomplete="off">
+        <div class="form-group">
+          <label for="repartoSelect">Seleziona Reparto</label>
+          <select id="repartoSelect" required>
+            <option value="">-- Scegli il reparto --</option>
+            <option value="Grandi Elettrodomestici (GED)">🧺 Grandi Elettrodomestici (Lavatrici, Frigo...)</option>
+            <option value="Piccoli Elettrodomestici (PED)">☕ Piccoli Elettrodomestici & Casalinghi</option>
+            <option value="TV & Home Cinema">📺 TV, Audio & Smart TV</option>
+            <option value="Telefonia & Wearable">📱 Telefonia, Smartphone & Smartwatch</option>
+            <option value="Informatica & Tablet">💻 Informatica, PC, Stampanti & Tablet</option>
+            <option value="Gaming & Console">🎮 Gaming, Console & Mobilità</option>
+            <option value="Climatizzazione">❄️ Climatizzatori & Trattamento Aria</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="prodottoInput">Cosa stai cercando?</label>
+          <input type="search" id="prodottoInput" placeholder="Es. Lavatrice 9kg, iPhone, Smart TV 55..." autocomplete="off" required>
+        </div>
+
+        <div class="form-group">
+          <label for="clienteInput">Tuo Nome o Riferimento (opzionale)</label>
+          <input type="text" id="clienteInput" placeholder="Es. Mario - Corsia Lavatrici" autocomplete="off">
+        </div>
+
+        <button type="submit" class="btn btn-orange btn-block">
+          🚀 Invia Richiesta al Reparto
+        </button>
+      </form>
+
+      <div id="requestToast" class="toast-feedback">
+        ✅ Richiesta inviata al reparto! Un addetto arriverà a breve.
       </div>
     </div>
 
-    <!-- NAVIGAZIONE RAPIDA AI REPARTI E PANNELLI -->
-    <div class="grid-nav">
-      <a href="reparto.html" class="btn btn-block" style="background:#003399;">
-        🏢 Reparti & Promo
+    <!-- 3. VOLANTINO E PROMO (CON RICERCA CHE SI AZZERA IN AUTOMATICO) -->
+    <div class="section-card">
+      <div class="section-title">
+        <span>📖 Volantino & Offerte Promo</span>
+      </div>
+
+      <div class="pdf-tabs">
+        <button type="button" id="tabVolantino" class="pdf-tab active" onclick="cambiaPdf('volantino.pdf', 'tabVolantino')">
+          📄 Volantino Attivo
+        </button>
+        <button type="button" id="tabPromo" class="pdf-tab" onclick="cambiaPdf('promo.pdf', 'tabPromo')">
+          🔥 Promo Speciale
+        </button>
+      </div>
+
+      <div class="input-row" style="margin-bottom: 10px;">
+        <input type="search" id="volantinoSearchInput" placeholder="Cerca prodotto nel volantino (es. Lavatrice)..." autocomplete="off">
+        <button type="button" class="btn btn-primary" onclick="cercaNelVolantino()">🔍 Cerca</button>
+      </div>
+
+      <div id="volantinoSearchFeedback" style="display:none; font-size:0.85rem; color:var(--unieuro-blue); margin-bottom:8px; font-weight:600;"></div>
+
+      <iframe id="pdfFrame" class="pdf-viewer-frame" src="volantino.pdf#view=FitH" loading="lazy"></iframe>
+
+      <div style="margin-top: 10px; display: flex; gap: 8px;">
+        <a id="openPdfExternal" href="volantino.pdf" target="_blank" class="btn btn-primary btn-block" style="font-size: 0.88rem;">
+          🔎 Apri PDF a Schermo Intero
+        </a>
+      </div>
+    </div>
+
+    <!-- 4. ACCESSO RAPIDO REPARTI E ADMIN -->
+    <div class="staff-grid">
+      <a href="reparto.html" class="btn-staff">
+        🏢 Pannello Reparti
       </a>
-      <a href="admin.html" class="btn btn-block btn-outline">
-        ⚙️ Area Admin
+      <a href="admin.html" class="btn-staff">
+        ⚙️ Dashboard Admin
       </a>
     </div>
 
-  </main>
+  </div>
 
-  <footer>
-    <p>Unieuro Reggio Calabria in Tasca &copy; 2026</p>
-  </footer>
-
-  <!-- LOGICA JAVASCRIPT OTTIMIZZATA -->
   <script>
-    // ----------------------------------------------------
-    // 1. GESTIONE TESSERA UNIEURO (localStorage)
-    // ----------------------------------------------------
-    function caricaTessera() {
-      const tesseraSalvata = localStorage.getItem('unieuro_tessera_code');
-      if (tesseraSalvata) {
-        document.getElementById('tesseraCodice').innerText = 'Codice: ' + tesseraSalvata;
-        document.getElementById('tesseraBox').style.display = 'none';
-        document.getElementById('tesseraDisplay').style.display = 'block';
+    const CARD_STORAGE_KEY = 'unieuro_tessera_code';
+    const REQUESTS_STORAGE_KEY = 'unieuro_requests_db';
+    let currentPdfFile = 'volantino.pdf';
+
+    // --------------------------------------------------------
+    // 1. GESTIONE TESSERA UNIEURO (PERSISTENTE)
+    // --------------------------------------------------------
+    function caricaCard() {
+      const savedCode = localStorage.getItem(CARD_STORAGE_KEY);
+      const formBox = document.getElementById('cardFormBox');
+      const savedBox = document.getElementById('cardSavedBox');
+      const display = document.getElementById('cardNumberDisplay');
+
+      if (savedCode && savedCode.trim() !== '') {
+        display.textContent = savedCode.trim();
+        formBox.style.display = 'none';
+        savedBox.style.display = 'block';
       } else {
-        document.getElementById('tesseraBox').style.display = 'flex';
-        document.getElementById('tesseraDisplay').style.display = 'none';
+        formBox.style.display = 'block';
+        savedBox.style.display = 'none';
       }
     }
 
-    function salvaTessera() {
-      const input = document.getElementById('numeroTessera');
-      const val = input.value.trim();
-      if (val) {
-        localStorage.setItem('unieuro_tessera_code', val);
-        caricaTessera();
+    function salvaCard() {
+      const input = document.getElementById('cardNumberInput');
+      const code = input.value.trim();
+      if (!code) return;
+      localStorage.setItem(CARD_STORAGE_KEY, code);
+      caricaCard();
+    }
+
+    function modificaCard() {
+      const savedCode = localStorage.getItem(CARD_STORAGE_KEY) || '';
+      document.getElementById('cardNumberInput').value = savedCode;
+      document.getElementById('cardFormBox').style.display = 'block';
+      document.getElementById('cardSavedBox').style.display = 'none';
+    }
+
+    // --------------------------------------------------------
+    // 2. INVIO ISTANTANEO RICHIESTA AI REPARTI (ZERO LAG)
+    // --------------------------------------------------------
+    function inviaRichiestaReparto(e) {
+      e.preventDefault();
+
+      const reparto = document.getElementById('repartoSelect').value;
+      const prodotto = document.getElementById('prodottoInput').value.trim();
+      const cliente = document.getElementById('clienteInput').value.trim() || 'Cliente in negozio';
+
+      if (!reparto || !prodotto) return;
+
+      const nuovaRichiesta = {
+        id: Date.now(),
+        reparto: reparto,
+        prodotto: prodotto,
+        cliente: cliente,
+        orario: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
+        data: new Date().toLocaleDateString('it-IT'),
+        stato: 'In attesa'
+      };
+
+      // Salvataggio non bloccante
+      let lista = [];
+      try {
+        lista = JSON.parse(localStorage.getItem(REQUESTS_STORAGE_KEY) || '[]');
+      } catch (err) {
+        lista = [];
       }
+      lista.unshift(nuovaRichiesta);
+      // Mantieni massimo 100 richieste per garantire sempre velocità istantanea
+      if (lista.length > 100) lista = lista.slice(0, 100);
+      localStorage.setItem(REQUESTS_STORAGE_KEY, JSON.stringify(lista));
+
+      // Pulisci subito i campi della richiesta
+      resetCampiTemporanei();
+
+      // Mostra conferma immediata
+      const toast = document.getElementById('requestToast');
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 4000);
     }
 
-    function modificaTessera() {
-      document.getElementById('tesseraBox').style.display = 'flex';
-      document.getElementById('tesseraDisplay').style.display = 'none';
+    // --------------------------------------------------------
+    // 3. GESTIONE VOLANTINO E RICERCA
+    // --------------------------------------------------------
+    function cambiaPdf(fileName, tabId) {
+      currentPdfFile = fileName;
+      document.getElementById('tabVolantino').classList.remove('active');
+      document.getElementById('tabPromo').classList.remove('active');
+      document.getElementById(tabId).classList.add('active');
+
+      document.getElementById('pdfFrame').src = fileName + '#view=FitH';
+      document.getElementById('openPdfExternal').href = fileName;
+      document.getElementById('volantinoSearchFeedback').style.display = 'none';
     }
 
-    // ----------------------------------------------------
-    // 2. RESET AUTOMATICO DELLE RICERCHE (30 SEC INATTIVITÀ)
-    // ----------------------------------------------------
-    function resetSearchForms() {
-      const searchInputs = document.querySelectorAll('input[type="text"], input[type="search"]');
-      searchInputs.forEach(input => {
-        // NON cancella il campo della tessera Unieuro
-        if (!input.classList.contains('tessera-input') && input.id !== 'numeroTessera') {
-          input.value = '';
-        }
-      });
+    function cercaNelVolantino() {
+      const termine = document.getElementById('volantinoSearchInput').value.trim();
+      const fb = document.getElementById('volantinoSearchFeedback');
+      if (!termine) return;
+
+      // Passa il parametro di ricerca al visualizzatore PDF e precompila eventualmente il prodotto
+      document.getElementById('pdfFrame').src = `${currentPdfFile}#search=${encodeURIComponent(termine)}`;
+      fb.textContent = `🔎 Ricerca attiva nel documento per: "${termine}"`;
+      fb.style.display = 'block';
     }
 
-    let inactivityTimer;
-    function resetInactivityTimer() {
-      clearTimeout(inactivityTimer);
-      // Reset dei campi ricerca dopo 30 secondi di inattività
-      inactivityTimer = setTimeout(() => {
-        resetSearchForms();
-      }, 30000);
+    // --------------------------------------------------------
+    // 4. RESET AUTOMATICO ALL'APERTURA E DOPO 30 SECONDI
+    //    (Azzera richieste e ricerche, conserva la Card Unieuro)
+    // --------------------------------------------------------
+    function resetCampiTemporanei() {
+      const reqForm = document.getElementById('repartoRequestForm');
+      if (reqForm) reqForm.reset();
+
+      const volSearch = document.getElementById('volantinoSearchInput');
+      if (volSearch) volSearch.value = '';
+
+      const fb = document.getElementById('volantinoSearchFeedback');
+      if (fb) fb.style.display = 'none';
     }
 
-    // Ascolta i tocchi e le interazioni dell'utente per azzerare il timer
-    ['click', 'touchstart', 'mousemove', 'keydown', 'scroll'].forEach(eventName => {
-      document.addEventListener(eventName, resetInactivityTimer, true);
+    let inactivityTimeout;
+    function riavviaTimerInattivita() {
+      clearTimeout(inactivityTimeout);
+      inactivityTimeout = setTimeout(() => {
+        resetCampiTemporanei();
+      }, 30000); // 30 secondi esatti
+    }
+
+    // Ascolta qualsiasi tocco o interazione
+    ['click', 'touchstart', 'keydown', 'scroll', 'input'].forEach(ev => {
+      document.addEventListener(ev, riavviaTimerInattivita, { passive: true });
     });
 
-    // ----------------------------------------------------
-    // 3. INVIO RICHIESTA PRODOTTO
-    // ----------------------------------------------------
-    function inviaRichiestaPWA() {
-      const query = document.getElementById('searchQuery').value.trim();
-      if (!query) return;
-
-      // Invia direttamente la ricerca alla pagina reparti senza blocchi
-      window.location.href = `reparto.html?search=${encodeURIComponent(query)}`;
-    }
-
-    // ----------------------------------------------------
-    // INIZIALIZZAZIONE ALL'APERTURA DELLA PAGINA
-    // ----------------------------------------------------
-    window.addEventListener('DOMContentLoaded', () => {
-      caricaTessera();
-      resetSearchForms();
-      resetInactivityTimer();
+    // pageshow scatta SIA al primo avvio SIA quando si torna indietro con il tasto Back dello smartphone
+    window.addEventListener('pageshow', () => {
+      caricaCard();
+      resetCampiTemporanei();
+      riavviaTimerInattivita();
     });
   </script>
 </body>
