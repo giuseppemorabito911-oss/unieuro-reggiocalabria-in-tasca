@@ -10,8 +10,8 @@
       --unieuro-orange: #FF6700;
       --bg: #F0F3F9;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-    body { background: var(--bg); padding: 15px; color: #1E293B; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: var(--bg); padding: 16px; color: #1E293B; }
     header {
       background: linear-gradient(135deg, #001F4D, var(--unieuro-blue));
       color: white;
@@ -20,17 +20,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    header h1 { font-size: 1.2rem; }
-    .btn-back {
+    .header-links a {
       background: rgba(255,255,255,0.2);
       color: white;
       text-decoration: none;
-      padding: 8px 14px;
+      padding: 8px 12px;
       border-radius: 8px;
+      font-size: 0.85rem;
       font-weight: 600;
-      font-size: 0.9rem;
     }
     .toolbar {
       background: white;
@@ -39,6 +40,7 @@
       margin-bottom: 16px;
       display: flex;
       gap: 10px;
+      align-items: center;
       flex-wrap: wrap;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
@@ -49,37 +51,44 @@
       border-radius: 8px;
       border: 1.5px solid #CBD5E1;
       font-size: 0.95rem;
+      font-weight: 600;
     }
-    .req-list { display: grid; gap: 12px; }
+    .req-grid { display: grid; gap: 12px; }
     .req-card {
       background: white;
       border-radius: 12px;
       padding: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-left: 6px solid var(--unieuro-orange);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 14px;
     }
-    .req-card.gestita { border-left-color: #16A34A; opacity: 0.75; }
-    .req-info h3 { color: var(--unieuro-blue); font-size: 1.1rem; margin-bottom: 4px; }
-    .req-meta { font-size: 0.85rem; color: #64748B; }
-    .req-actions { display: flex; gap: 8px; }
-    .btn-action {
+    .req-card.completata { border-left-color: #16A34A; opacity: 0.75; }
+    .req-details h3 { color: var(--unieuro-blue); font-size: 1.1rem; margin-bottom: 5px; }
+    .req-meta { font-size: 0.88rem; color: #64748B; line-height: 1.4; }
+    .crop-thumb {
+      margin-top: 10px;
+      max-width: 180px;
+      border-radius: 8px;
+      border: 2px solid var(--unieuro-orange);
+      cursor: pointer;
+    }
+    .btn-complete {
+      background: #16A34A;
+      color: white;
       border: none;
-      padding: 10px 14px;
+      padding: 10px 16px;
       border-radius: 8px;
       font-weight: 700;
       cursor: pointer;
-      font-size: 0.85rem;
     }
-    .btn-complete { background: #16A34A; color: white; }
-    .empty-msg {
-      text-align: center;
+    .empty-box {
       background: white;
       padding: 30px;
+      text-align: center;
       border-radius: 12px;
       color: #64748B;
     }
@@ -88,85 +97,159 @@
 <body>
 
   <header>
-    <h1>🏢 Richieste Reparti</h1>
-    <a href="index.html" class="btn-back">⬅ Torna alla Home</a>
+    <div>
+      <h2 style="font-size:1.2rem;">🏢 Pannello Operativo Reparti</h2>
+      <small style="color:#CBD5E1;">Ricezione richieste clienti in tempo reale</small>
+    </div>
+    <div class="header-links">
+      <a href="admin.html">📊 Area Admin</a>
+    </div>
   </header>
 
   <div class="toolbar">
-    <select id="filtroReparto" onchange="renderRichieste()">
-      <option value="TUTTI">Tutti i Reparti</option>
-      <option value="Grandi Elettrodomestici (GED)">🧺 Grandi Elettrodomestici (GED)</option>
-      <option value="Piccoli Elettrodomestici (PED)">☕ Piccoli Elettrodomestici (PED)</option>
-      <option value="TV & Home Cinema">📺 TV & Home Cinema</option>
-      <option value="Telefonia & Wearable">📱 Telefonia & Wearable</option>
-      <option value="Informatica & Tablet">💻 Informatica & Tablet</option>
-      <option value="Gaming & Console">🎮 Gaming & Console</option>
+    <select id="filtroReparto" onchange="mostraRichieste()">
+      <option value="TUTTI">📋 Tutti i Reparti</option>
+      <option value="GED - Grandi Elettrodomestici">🧺 GED - Grandi Elettrodomestici</option>
+      <option value="PED - Piccoli Elettrodomestici">☕ PED - Piccoli Elettrodomestici</option>
+      <option value="TV & Audio">📺 TV & Audio</option>
+      <option value="Telefonia">📱 Telefonia</option>
+      <option value="Informatica">💻 Informatica</option>
+      <option value="Gaming & Mobilità">🎮 Gaming & Mobilità</option>
       <option value="Climatizzazione">❄️ Climatizzazione</option>
     </select>
   </div>
 
-  <div id="listaContainer" class="req-list"></div>
+  <div id="listaRichieste" class="req-grid"></div>
 
   <script>
-    const REQUESTS_STORAGE_KEY = 'unieuro_requests_db';
+    const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
+    const REQ_KEY = 'unieuro_requests_db';
 
-    function getRichieste() {
+    function leggiArchivioLocale() {
       try {
-        return JSON.parse(localStorage.getItem(REQUESTS_STORAGE_KEY) || '[]');
-      } catch (e) {
-        return [];
+        return JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
+      } catch (e) { return []; }
+    }
+
+    function salvaArchivioLocale(lista) {
+      localStorage.setItem(REQ_KEY, JSON.stringify(lista.slice(0, 80)));
+    }
+
+    function aggiungiSeNuova(req) {
+      if (!req || !req.id) return;
+      const lista = leggiArchivioLocale();
+      if (!lista.some(item => item.id === req.id)) {
+        lista.unshift(req);
+        salvaArchivioLocale(lista);
       }
     }
 
-    function segnaCompletata(id) {
-      const lista = getRichieste().map(item => {
-        if (item.id === id) item.stato = 'Completata';
-        return item;
-      });
-      localStorage.setItem(REQUESTS_STORAGE_KEY, JSON.stringify(lista));
-      renderRichieste();
+    // Se il collega apre la pagina cliccando il link della richiesta, importa subito i parametri URL
+    function controllaParametriLinkCollega() {
+      const params = new URLSearchParams(window.location.search);
+      const repartoParam = params.get('reparto');
+      const idParam = params.get('id');
+      const prodottoParam = params.get('prodotto');
+
+      if (repartoParam) {
+        const select = document.getElementById('filtroReparto');
+        for (let opt of select.options) {
+          if (opt.value === repartoParam) select.value = repartoParam;
+        }
+      }
+
+      if (idParam && prodottoParam) {
+        aggiungiSeNuova({
+          id: Number(idParam),
+          reparto: repartoParam || 'Reparto',
+          prodotto: prodottoParam,
+          cliente: params.get('cliente') || 'Cliente in negozio',
+          orario: params.get('orario') || new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
+          stato: 'In attesa',
+          ritaglio: null
+        });
+      }
     }
 
-    function renderRichieste() {
-      const filtro = document.getElementById('filtroReparto').value;
-      const container = document.getElementById('listaContainer');
-      const tutte = getRichieste();
+    // Sincronizzazione veloce in background dal canale cloud
+    async function sincronizzaDalCloud() {
+      try {
+        const res = await fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=12h`);
+        const text = await res.text();
+        const righe = text.trim().split('\n');
+        righe.forEach(riga => {
+          if (!riga) return;
+          try {
+            const evento = JSON.parse(riga);
+            if (evento.event === 'message' && evento.message) {
+              const datiReq = JSON.parse(evento.message);
+              aggiungiSeNuova(datiReq);
+            }
+          } catch (e) {}
+        });
+        mostraRichieste();
+      } catch (err) {}
+    }
 
-      const filtrate = filtro === 'TUTTI'
-        ? tutte
-        : tutte.filter(r => r.reparto === filtro);
+    function segnaGestita(id) {
+      const lista = leggiArchivioLocale().map(r => {
+        if (r.id === id) r.stato = 'Completata';
+        return r;
+      });
+      salvaArchivioLocale(lista);
+      mostraRichieste();
+    }
+
+    function mostraRichieste() {
+      const filtro = document.getElementById('filtroReparto').value;
+      const container = document.getElementById('listaRichieste');
+      const tutte = leggiArchivioLocale();
+
+      const filtrate = filtro === 'TUTTI' ? tutte : tutte.filter(r => r.reparto === filtro);
 
       if (filtrate.length === 0) {
-        container.innerHTML = '<div class="empty-msg">Nessuna richiesta presente per questo reparto.</div>';
+        container.innerHTML = '<div class="empty-box">Nessuna richiesta in coda per questo reparto.</div>';
         return;
       }
 
       container.innerHTML = filtrate.map(r => `
-        <div class="req-card ${r.stato === 'Completata' ? 'gestita' : ''}">
-          <div class="req-info">
-            <h3>🔎 ${r.prodotto}</h3>
+        <div class="req-card ${r.stato === 'Completata' ? 'completata' : ''}">
+          <div class="req-details">
+            <h3>🛒 ${r.prodotto}</h3>
             <div class="req-meta">
-              <strong>Reparto:</strong> ${r.reparto} | 
-              <strong>Cliente:</strong> ${r.cliente} | 
-              <strong>Ora:</strong> ${r.orario} (${r.stato})
+              <strong>Reparto:</strong> ${r.reparto}<br>
+              <strong>Cliente / Posizione:</strong> ${r.cliente} &bull; <strong>Ora:</strong> ${r.orario} &bull; <strong>Stato:</strong> ${r.stato}
             </div>
+            ${r.ritaglio ? `<img src="${r.ritaglio}" class="crop-thumb" alt="Ritaglio prodotto" onclick="window.open(this.src)">` : ''}
           </div>
-          <div class="req-actions">
+          <div>
             ${r.stato !== 'Completata'
-              ? `<button class="btn-action btn-complete" onclick="segnaCompletata(${r.id})">✔ Completata</button>`
-              : `<span style="color:#16A34A; font-weight:700;">✔ Gestita</span>`
+              ? `<button class="btn-complete" onclick="segnaGestita(${r.id})">✔ Prendi in carico / Completa</button>`
+              : `<span style="color:#16A34A; font-weight:700;">✔ Completata</span>`
             }
           </div>
         </div>
       `).join('');
     }
 
-    // Aggiornamento automatico se arrivano nuove richieste
-    window.addEventListener('storage', renderRichieste);
     window.addEventListener('DOMContentLoaded', () => {
-      // Azzera sempre il filtro su "TUTTI" all'apertura
-      document.getElementById('filtroReparto').selectedIndex = 0;
-      renderRichieste();
+      controllaParametriLinkCollega();
+      mostraRichieste();
+      sincronizzaDalCloud();
+
+      // Ascolto live in tempo reale di nuove richieste
+      try {
+        const sse = new EventSource(`https://ntfy.sh/${NTFY_TOPIC}/sse`);
+        sse.onmessage = (e) => {
+          try {
+            const msg = JSON.parse(e.data);
+            if (msg.message) {
+              aggiungiSeNuova(JSON.parse(msg.message));
+              mostraRichieste();
+            }
+          } catch (err) {}
+        };
+      } catch (e) {}
     });
   </script>
 </body>
