@@ -14,6 +14,7 @@
       background-color: #F0F3F9;
       margin: 0;
       padding: 20px;
+      color: #1E293B;
     }
     header {
       background: linear-gradient(135deg, #001F4D, var(--unieuro-blue));
@@ -24,6 +25,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     .kpi-container {
       display: grid;
@@ -37,134 +40,132 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-top: 4px solid var(--unieuro-blue);
-      text-align: center;
     }
-    .kpi-card h3 { margin: 0; font-size: 13px; color: #64748B; text-transform: uppercase; }
-    .kpi-card .number { font-size: 32px; font-weight: 800; margin: 8px 0; color: #1E293B; }
-
-    .table-card {
+    .kpi-card.orange { border-top-color: var(--unieuro-orange); }
+    .kpi-title { font-size: 0.85rem; color: #64748B; font-weight: 600; }
+    .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--unieuro-blue); margin-top: 6px; }
+    .panel {
       background: white;
-      padding: 20px;
+      padding: 18px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      overflow-x: auto;
+    }
+    .btn {
+      background: var(--unieuro-orange);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 0.9rem;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      margin-top: 15px;
+      font-size: 0.9rem;
     }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #E2E8F0; }
-    th { background-color: #F8FAFC; color: var(--unieuro-blue); font-weight: bold; }
-    tr:hover { background-color: #F1F5F9; }
-    
-    .badge {
-      padding: 4px 8px;
-      border-radius: 6px;
-      color: white;
-      font-size: 11px;
-      font-weight: bold;
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid #E2E8F0;
     }
-    .badge-Aperta { background: #E63946; }
-    .badge-In-Lavorazione { background: #F1C40F; color: #000; }
-    .badge-Completata { background: #2ECC71; }
+    th { color: var(--unieuro-blue); background: #F8FAFC; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1 style="margin:0; font-size:22px;">📊 Dashboard Direzionale - Unieuro Reggio Calabria</h1>
-    <button onclick="caricaDashboard()" style="background: var(--unieuro-orange); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">🔄 Aggiorna Dati</button>
+    <div>
+      <h2 style="margin:0;">📊 Dashboard Admin - Unieuro RC</h2>
+      <small style="color:#CBD5E1;">Monitoraggio richieste e performance</small>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn" onclick="svuotaStorico()">🗑️ Azzera Storico</button>
+      <a href="index.html" class="btn" style="background:rgba(255,255,255,0.2);">⬅ Home</a>
+    </div>
   </header>
 
   <div class="kpi-container">
-    <div class="kpi-card" style="border-top-color: #3B82F6;">
-      <h3>Totale Richieste</h3>
-      <div class="number" id="kpiTotale">0</div>
+    <div class="kpi-card">
+      <div class="kpi-title">RICHIESTE TOTALI</div>
+      <div class="kpi-value" id="kpiTotali">0</div>
     </div>
-    <div class="kpi-card" style="border-top-color: #E63946;">
-      <h3>Richieste Aperte</h3>
-      <div class="number" id="kpiAperte" style="color: #E63946;">0</div>
+    <div class="kpi-card orange">
+      <div class="kpi-title">IN ATTESA</div>
+      <div class="kpi-value" id="kpiAttesa">0</div>
     </div>
-    <div class="kpi-card" style="border-top-color: #F1C40F;">
-      <h3>In Lavorazione</h3>
-      <div class="number" id="kpiLav" style="color: #D97706;">0</div>
-    </div>
-    <div class="kpi-card" style="border-top-color: #2ECC71;">
-      <h3>Completate / Fatte</h3>
-      <div class="number" id="kpiCompletate" style="color: #2ECC71;">0</div>
+    <div class="kpi-card">
+      <div class="kpi-title">COMPLETATE</div>
+      <div class="kpi-value" id="kpiCompletate">0</div>
     </div>
   </div>
 
-  <div class="table-card">
-    <h2 style="color: var(--unieuro-blue); font-size: 18px; margin-top:0;">Registro Globale Richieste</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Data/Ora</th>
-          <th>Reparto</th>
-          <th>Cliente</th>
-          <th>Telefono</th>
-          <th>Tipo Richiesta</th>
-          <th>Dettagli</th>
-          <th>Stato</th>
-          <th>Nota / Risposta Reparto</th>
-        </tr>
-      </thead>
-      <tbody id="adminTableBody">
-        <tr><td colspan="8" style="text-align:center;">Caricamento dati...</td></tr>
-      </tbody>
-    </table>
+  <div class="panel">
+    <h3 style="margin-top:0; color:var(--unieuro-blue);">Elenco Ultime Richieste</h3>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Ora</th>
+            <th>Reparto</th>
+            <th>Prodotto Richiesto</th>
+            <th>Cliente</th>
+            <th>Stato</th>
+          </tr>
+        </thead>
+        <tbody id="adminTableBody"></tbody>
+      </table>
+    </div>
   </div>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzwNOu_U9TzjXoMUFA0nt-t48uqphk1ZsIqKNXey-L2cn74cIdTq1N7AcEvRK1D74UO/exec";
+    const REQUESTS_STORAGE_KEY = 'unieuro_requests_db';
 
-    async function caricaDashboard() {
+    function aggiornaAdmin() {
+      let lista = [];
       try {
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?reparto=Tutti`);
-        const data = await response.json();
+        lista = JSON.parse(localStorage.getItem(REQUESTS_STORAGE_KEY) || '[]');
+      } catch (e) {
+        lista = [];
+      }
 
-        if (!data.requests) return;
+      const totali = lista.length;
+      const attesa = lista.filter(r => r.stato !== 'Completata').length;
+      const completate = lista.filter(r => r.stato === 'Completata').length;
 
-        const requests = data.requests;
-        
-        const totale = requests.length;
-        const aperte = requests.filter(r => r.stato === 'Aperta').length;
-        const inLav = requests.filter(r => r.stato === 'In lavorazione').length;
-        const completate = requests.filter(r => r.stato === 'Completata').length;
+      document.getElementById('kpiTotali').textContent = totali;
+      document.getElementById('kpiAttesa').textContent = attesa;
+      document.getElementById('kpiCompletate').textContent = completate;
 
-        document.getElementById('kpiTotale').innerText = totale;
-        document.getElementById('kpiAperte').innerText = aperte;
-        document.getElementById('kpiLav').innerText = inLav;
-        document.getElementById('kpiCompletate').innerText = completate;
+      const tbody = document.getElementById('adminTableBody');
+      if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#64748B;">Nessuna richiesta registrata</td></tr>';
+        return;
+      }
 
-        const tbody = document.getElementById('adminTableBody');
-        tbody.innerHTML = '';
+      tbody.innerHTML = lista.map(r => `
+        <tr>
+          <td>${r.orario}</td>
+          <td><strong>${r.reparto}</strong></td>
+          <td>${r.prodotto}</td>
+          <td>${r.cliente}</td>
+          <td style="font-weight:700; color:${r.stato === 'Completata' ? '#16A34A' : '#EA580C'};">${r.stato}</td>
+        </tr>
+      `).join('');
+    }
 
-        requests.reverse().forEach(req => {
-          const tr = document.createElement('tr');
-          const statoClass = req.stato.replace(' ', '-');
-          tr.innerHTML = `
-            <td>${req.timestamp}</td>
-            <td><strong>${req.reparto}</strong></td>
-            <td>${req.nome}</td>
-            <td>${req.telefono}</td>
-            <td>${req.tipo}</td>
-            <td>${req.dettagli}</td>
-            <td><span class="badge badge-${statoClass}">${req.stato}</span></td>
-            <td>${req.noteRepartista || '-'}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-      } catch (err) {
-        console.error(err);
+    function svuotaStorico() {
+      if (confirm('Vuoi davvero cancellare tutte le richieste dallo storico? (La tessera Unieuro NON verrà toccata)')) {
+        localStorage.removeItem(REQUESTS_STORAGE_KEY);
+        aggiornaAdmin();
       }
     }
 
-    caricaDashboard();
-    setInterval(caricaDashboard, 30000);
+    window.addEventListener('storage', aggiornaAdmin);
+    window.addEventListener('DOMContentLoaded', aggiornaAdmin);
   </script>
 </body>
 </html>
