@@ -62,7 +62,7 @@
       font-size: 0.88rem;
     }
     table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
-    th, td { padding: 12px 10px; border-bottom: 1px solid #E2E8F0; text-align: left; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid #E2E8F0; text-align: left; vertical-align: top; }
     th { background: #F8FAFC; color: var(--unieuro-blue); }
   </style>
 </head>
@@ -103,9 +103,9 @@
             <th>ID</th>
             <th>Data/Ora</th>
             <th>Reparto</th>
-            <th>Cliente & Contatto (7Collab)</th>
+            <th>Cliente & Tel</th>
             <th>Note Richiesta</th>
-            <th>Operatore</th>
+            <th>Gestione Operatore</th>
             <th>Stato</th>
           </tr>
         </thead>
@@ -146,7 +146,7 @@
             const ev = JSON.parse(line);
             if (ev.event === 'message' && ev.message) {
               const item = JSON.parse(ev.message);
-              if (item && item.id && !lista.some(x => (x.id || x['ID Pratica']) === item.id)) {
+              if (item && item.id && !lista.some(x => String(x.id || x['ID Pratica']) === String(item.id))) {
                 lista.push(item);
               }
             }
@@ -166,6 +166,9 @@
       tbody.innerHTML = lista.map(p => {
         const tel = preparaNumero7Collaboration(p.telefono || p['Telefono'] || '');
         const mail = p.emailCliente || p['Email Cliente'] || '';
+        const operatore = p.operatore || p['Operatore'] || '-';
+        const noteRep = p.noteRepartista || p['Note Repartista'] || '-';
+
         return `
           <tr>
             <td><strong>${p.id || p['ID Pratica'] || ''}</strong></td>
@@ -177,8 +180,11 @@
               ${mail ? `<br><a href="mailto:${mail}">${mail}</a>` : ''}
             </td>
             <td>${p.noteCliente || p['Dettagli / Note Cliente'] || ''}</td>
-            <td>${p.operatore || p['Operatore'] || '-'}</td>
-            <td style="font-weight:700;">${p.stato || p['Stato'] || 'Aperta'}</td>
+            <td>
+              <strong>Op:</strong> ${operatore}<br>
+              <small style="color:#475569;">${noteRep}</small>
+            </td>
+            <td style="font-weight:700; color:${(p.stato || p['Stato']) === 'Aperta' ? '#EA580C' : '#16A34A'};">${p.stato || p['Stato'] || 'Aperta'}</td>
           </tr>
         `;
       }).join('');
