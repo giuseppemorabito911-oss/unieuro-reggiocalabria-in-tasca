@@ -47,7 +47,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-left: 6px solid var(--unieuro-orange);
     }
-    .req-card.chiusa { border-left-color: #16A34A; opacity: 0.8; }
+    .req-card.chiusa { border-left-color: #16A34A; opacity: 0.85; }
     .btn {
       background: var(--unieuro-blue);
       color: white;
@@ -78,6 +78,14 @@
       border: 2px solid var(--unieuro-orange);
       margin-top: 10px;
       display: block;
+    }
+    .operator-note-box {
+      background: #F8FAFC;
+      border-left: 4px solid #16A34A;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-size: 0.88rem;
     }
   </style>
 </head>
@@ -153,7 +161,7 @@
             const ev = JSON.parse(line);
             if (ev.event === 'message' && ev.message) {
               const item = JSON.parse(ev.message);
-              if (item && item.id && !listaCombinata.some(x => (x.id || x['ID Pratica']) === item.id)) {
+              if (item && item.id && !listaCombinata.some(x => String(x.id || x['ID Pratica']) === String(item.id))) {
                 listaCombinata.push(item);
               }
             }
@@ -164,7 +172,7 @@
       try {
         const locali = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
         locali.forEach(item => {
-          if (item && item.id && !listaCombinata.some(x => (x.id || x['ID Pratica']) === item.id)) {
+          if (item && item.id && !listaCombinata.some(x => String(x.id || x['ID Pratica']) === String(item.id))) {
             listaCombinata.push(item);
           }
         });
@@ -199,6 +207,10 @@
         const note = p.noteCliente || p['Dettagli / Note Cliente'] || '';
         const stato = p.stato || p['Stato'] || 'Aperta';
         const img = p.image || p['Immagine / Offerta (Base64)'] || '';
+        
+        // Lettura note operatore salvate
+        const noteRepartista = p.noteRepartista || p['Note Repartista'] || '';
+        const operatore = p.operatore || p['Operatore'] || '';
 
         return `
           <div class="req-card ${stato === 'Gestita' || stato === 'Chiusa' ? 'chiusa' : ''}">
@@ -214,10 +226,18 @@
               ${email ? `<a href="mailto:${email}" style="color:var(--unieuro-blue); font-weight:700;">✉️ ${email}</a>` : ''}
               <span>🕒 ${dataOra}</span>
             </div>
+
             ${img && img.startsWith('data:image') ? `<img src="${img}" class="crop-img" onclick="window.open(this.src)">` : ''}
+
+            ${(noteRepartista || operatore) ? `
+              <div class="operator-note-box">
+                🛠️ <strong>Gestito da:</strong> ${operatore \vert{}\vert{} 'Operatore'} \vert{} <strong>Note:</strong>${noteRepartista || 'Nessuna nota aggiuntiva'}
+              </div>
+            ` : ''}
+
             <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-              <input type="text" id="operatore_${id}" placeholder="Tuo nome operatore..." style="padding:7px 10px; font-size:0.85rem;">
-              <input type="text" id="noteRep_${id}" placeholder="Note reparto..." style="flex:1; padding:7px 10px; font-size:0.85rem;">
+              <input type="text" id="operatore_${id}" value="${operatore}" placeholder="Tuo nome operatore..." style="padding:7px 10px; font-size:0.85rem;">
+              <input type="text" id="noteRep_${id}" value="${noteRepartista}" placeholder="Note reparto..." style="flex:1; padding:7px 10px; font-size:0.85rem;">
               <button class="btn btn-green" onclick="aggiornaPratica('${id}', 'Gestita')">✔ Segna Gestita</button>
             </div>
           </div>
@@ -230,11 +250,13 @@
       const noteRepartista = document.getElementById(`noteRep_${id}`).value.trim();
 
       tutteLePratiche = tutteLePratiche.map(p => {
-        if ((p.id || p['ID Pratica']) === id) {
+        if (String(p.id || p['ID Pratica']) === String(id)) {
           p.stato = nuovoStato;
           p['Stato'] = nuovoStato;
           p.operatore = operatore;
           p['Operatore'] = operatore;
+          p.noteRepartista = noteRepartista;
+          p['Note Repartista'] = noteRepartista;
         }
         return p;
       });
