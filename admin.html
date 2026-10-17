@@ -30,9 +30,9 @@
     }
     .kpi-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 15px;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
     .kpi-card {
       background: white;
@@ -40,10 +40,13 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-top: 4px solid var(--unieuro-blue);
+      cursor: pointer;
     }
     .kpi-card.orange { border-top-color: var(--unieuro-orange); }
-    .kpi-label { font-size: 0.85rem; color: #64748B; font-weight: 600; }
-    .kpi-num { font-size: 1.9rem; font-weight: 800; color: var(--unieuro-blue); margin-top: 6px; }
+    .kpi-card.green { border-top-color: #16A34A; }
+    .kpi-card.gray { border-top-color: #64748B; }
+    .kpi-label { font-size: 0.82rem; color: #64748B; font-weight: 700; }
+    .kpi-num { font-size: 1.8rem; font-weight: 800; color: var(--unieuro-blue); margin-top: 6px; }
     .panel {
       background: white;
       padding: 18px;
@@ -64,6 +67,11 @@
     table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
     th, td { padding: 12px 10px; border-bottom: 1px solid #E2E8F0; text-align: left; vertical-align: top; }
     th { background: #F8FAFC; color: var(--unieuro-blue); }
+    
+    /* Colori righe tabella */
+    tr.row-aperta { background-color: #FFFBEB; }
+    tr.row-gestita { background-color: #F0FDF4; }
+    tr.row-archiviata { background-color: #F8FAFC; opacity: 0.75; }
   </style>
 </head>
 <body>
@@ -71,7 +79,7 @@
   <header>
     <div>
       <h2 style="margin:0;">📊 Dashboard Admin - Unieuro RC</h2>
-      <small style="color:#CBD5E1;">Riepilogo generale pratiche</small>
+      <small style="color:#CBD5E1;">Riepilogo generale e filtri pratiche</small>
     </div>
     <div style="display:flex; gap:8px;">
       <a href="reparto.html" class="btn" style="background:rgba(255,255,255,0.2);">🏢 Vai a Reparti</a>
@@ -80,22 +88,37 @@
   </header>
 
   <div class="kpi-container">
-    <div class="kpi-card">
+    <div class="kpi-card" onclick="impostaFiltroStato('TUTTI')">
       <div class="kpi-label">PRATICHE TOTALI</div>
       <div class="kpi-num" id="totPratiche">0</div>
     </div>
-    <div class="kpi-card orange">
+    <div class="kpi-card orange" onclick="impostaFiltroStato('Aperta')">
       <div class="kpi-label">APERTE / IN ATTESA</div>
       <div class="kpi-num" id="apertePratiche">0</div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">GESTITE / CHIUSE</div>
+    <div class="kpi-card green" onclick="impostaFiltroStato('Gestita')">
+      <div class="kpi-label">GESTITE</div>
       <div class="kpi-num" id="gestitePratiche">0</div>
+    </div>
+    <div class="kpi-card gray" onclick="impostaFiltroStato('Archiviata')">
+      <div class="kpi-label">ARCHIVIATE</div>
+      <div class="kpi-num" id="archiviatePratiche">0</div>
     </div>
   </div>
 
   <div class="panel">
-    <h3 style="margin-top:0; color:var(--unieuro-blue);">Tutte le Richieste Registrate</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+      <h3 style="margin:0; color:var(--unieuro-blue);" id="titoloTabella">📋 Tutte le Richieste Registrate</h3>
+      <div>
+        <select id="filtroStatoSelect" onchange="caricaDatiAdmin()" style="padding:8px 12px; border-radius:8px; border:1px solid #CBD5E1; font-weight:700;">
+          <option value="TUTTI">Mostra: Tutti gli stati</option>
+          <option value="Aperta">🔴 Solo Aperte</option>
+          <option value="Gestita">🟢 Solo Gestite</option>
+          <option value="Archiviata">📂 Solo Archiviate</option>
+        </select>
+      </div>
+    </div>
+
     <div style="overflow-x:auto;">
       <table>
         <thead>
@@ -118,6 +141,8 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
 
+    let listaGlobale = [];
+
     function preparaNumero7Collaboration(num) {
       if (!num) return "";
       let clean = String(num).replace(/[\s\-\.\(\)']+/g, '').replace(/^(\+39|0039)/, '');
@@ -126,8 +151,12 @@
       return clean;
     }
 
+    function impostaFiltroStato(stato) {
+      document.getElementById('filtroStatoSelect').value = stato;
+      renderizzaTabella();
+    }
+
     async function caricaDatiAdmin() {
-      const tbody = document.getElementById('adminBody');
       let lista = [];
 
       try {
@@ -154,23 +183,43 @@
         });
       } catch (e) {}
 
-      document.getElementById('totPratiche').textContent = lista.length;
-      document.getElementById('apertePratiche').textContent = lista.filter(x => (x.stato || x['Stato']) === 'Aperta').length;
-      document.getElementById('gestitePratiche').textContent = lista.filter(x => (x.stato || x['Stato']) !== 'Aperta').length;
+      listaGlobale = lista;
+      
+      // Aggiorna KPI
+      document.getElementById('totPratiche').textContent = listaGlobale.length;
+      document.getElementById('apertePratiche').textContent = listaGlobale.filter(x => (x.stato || x['Stato']) === 'Aperta').length;
+      document.getElementById('gestitePratiche').textContent = listaGlobale.filter(x => (x.stato || x['Stato']) === 'Gestita').length;
+      document.getElementById('archiviatePratiche').textContent = listaGlobale.filter(x => (x.stato || x['Stato']) === 'Archiviata').length;
 
-      if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748B;">Nessuna richiesta presente</td></tr>';
+      renderizzaTabella();
+    }
+
+    function renderizzaTabella() {
+      const tbody = document.getElementById('adminBody');
+      const filtroStato = document.getElementById('filtroStatoSelect').value;
+
+      const listaFiltrata = filtroStato === 'TUTTI'
+        ? listaGlobale
+        : listaGlobale.filter(x => (x.stato || x['Stato'] || 'Aperta') === filtroStato);
+
+      if (listaFiltrata.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748B; padding:20px;">Nessuna richiesta trovata per questo filtro.</td></tr>';
         return;
       }
 
-      tbody.innerHTML = lista.map(p => {
+      tbody.innerHTML = listaFiltrata.map(p => {
         const tel = preparaNumero7Collaboration(p.telefono || p['Telefono'] || '');
         const mail = p.emailCliente || p['Email Cliente'] || '';
         const operatore = p.operatore || p['Operatore'] || '-';
         const noteRep = p.noteRepartista || p['Note Repartista'] || '-';
+        const stato = p.stato || p['Stato'] || 'Aperta';
+
+        let rowClass = 'row-aperta';
+        if (stato === 'Gestita') rowClass = 'row-gestita';
+        if (stato === 'Archiviata') rowClass = 'row-archiviata';
 
         return `
-          <tr>
+          <tr class="${rowClass}">
             <td><strong>${p.id || p['ID Pratica'] || ''}</strong></td>
             <td>${p.timestamp || p['Data e Ora'] || ''}</td>
             <td><strong>${p.reparto || p['Reparto'] || ''}</strong></td>
@@ -184,7 +233,7 @@
               <strong>Op:</strong> ${operatore}<br>
               <small style="color:#475569;">${noteRep}</small>
             </td>
-            <td style="font-weight:700; color:${(p.stato || p['Stato']) === 'Aperta' ? '#EA580C' : '#16A34A'};">${p.stato || p['Stato'] || 'Aperta'}</td>
+            <td style="font-weight:800; color:${stato === 'Aperta' ? '#EA580C' : (stato === 'Gestita' ? '#16A34A' : '#64748B')};">${stato}</td>
           </tr>
         `;
       }).join('');
