@@ -8,7 +8,6 @@
   <link rel="icon" type="image/png" href="icona.png">
   <meta name="theme-color" content="#002D62">
 
-  <!-- Cropper.js CSS per la funzione ritaglio -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 
   <style>
@@ -17,9 +16,6 @@
       --unieuro-dark: #001F4D;
       --unieuro-orange: #FF6700;
       --bg-color: #F0F3F9;
-      --card-bg: #FFFFFF;
-      --text-main: #1E293B;
-      --text-muted: #64748B;
     }
 
     * {
@@ -32,8 +28,8 @@
 
     body {
       background-color: var(--bg-color);
-      color: var(--text-main);
-      padding-bottom: 35px;
+      color: #1E293B;
+      padding-bottom: 40px;
     }
 
     header {
@@ -58,16 +54,6 @@
       object-fit: contain;
     }
 
-    .header-title h1 {
-      font-size: 1.15rem;
-      font-weight: 700;
-    }
-
-    .header-title span {
-      font-size: 0.8rem;
-      color: #CBD5E1;
-    }
-
     .container {
       max-width: 600px;
       margin: 16px auto 0;
@@ -75,15 +61,15 @@
     }
 
     .card {
-      background: var(--card-bg);
+      background: white;
       border-radius: 14px;
-      padding: 16px;
+      padding: 18px;
       margin-bottom: 16px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       border-top: 4px solid var(--unieuro-blue);
     }
 
-    .card.orange-border {
+    .card.orange-top {
       border-top-color: var(--unieuro-orange);
     }
 
@@ -91,36 +77,19 @@
       font-size: 1.05rem;
       font-weight: 700;
       color: var(--unieuro-blue);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    /* TESSERA UNIEURO CLUB */
     .club-card {
       background: linear-gradient(135deg, var(--unieuro-blue), var(--unieuro-dark));
       color: white;
       border-radius: 14px;
-      padding: 16px;
+      padding: 18px;
       margin-bottom: 16px;
       box-shadow: 0 6px 16px rgba(0, 45, 98, 0.25);
-    }
-
-    .club-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .badge-orange {
-      background: var(--unieuro-orange);
-      color: white;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
     }
 
     .barcode-box {
@@ -129,7 +98,7 @@
       padding: 12px;
       border-radius: 10px;
       text-align: center;
-      margin: 8px 0;
+      margin: 10px 0;
     }
 
     .barcode-lines {
@@ -145,25 +114,24 @@
       letter-spacing: 3px;
     }
 
-    /* INPUT E BOTTONI */
-    .input-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
+    .form-group { margin-bottom: 12px; }
     .form-group label {
       display: block;
       font-size: 0.85rem;
       font-weight: 600;
-      color: var(--text-muted);
+      color: #475569;
       margin-bottom: 5px;
     }
 
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     input[type="text"],
+    input[type="tel"],
+    input[type="email"],
     input[type="search"],
     select,
     textarea {
@@ -173,7 +141,7 @@
       border-radius: 10px;
       font-size: 0.95rem;
       background: #F8FAFC;
-      color: var(--text-main);
+      color: #1E293B;
       outline: none;
     }
 
@@ -181,6 +149,8 @@
       border-color: var(--unieuro-blue);
       background: #FFFFFF;
     }
+
+    .input-row { display: flex; gap: 8px; }
 
     .btn {
       border: none;
@@ -193,25 +163,15 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: transform 0.1s, opacity 0.15s;
-    }
-
-    .btn:active {
-      transform: scale(0.97);
     }
 
     .btn-blue { background: var(--unieuro-blue); color: white; }
     .btn-orange { background: var(--unieuro-orange); color: white; }
     .btn-green { background: #16A34A; color: white; }
     .btn-red { background: #DC2626; color: white; }
-    .btn-outline {
-      background: white;
-      color: var(--unieuro-blue);
-      border: 1.5px solid var(--unieuro-blue);
-    }
+    .btn-outline { background: white; color: var(--unieuro-blue); border: 1.5px solid var(--unieuro-blue); }
     .btn-block { width: 100%; }
 
-    /* VOLANTINO & CROPPER */
     .pdf-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -249,7 +209,6 @@
       background: #E2E8F0;
       border-radius: 10px;
       overflow: hidden;
-      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -267,7 +226,6 @@
       margin-top: 10px;
     }
 
-    /* ANTEPRIMA RITAGLIO NELLA RICHIESTA */
     .crop-preview-box {
       display: none;
       background: #FFF7ED;
@@ -281,9 +239,8 @@
     }
 
     .crop-preview-box img {
-      max-height: 70px;
+      max-height: 75px;
       border-radius: 6px;
-      border: 1px solid #CBD5E1;
     }
 
     .toast {
@@ -291,7 +248,7 @@
       background: #DCFCE7;
       color: #166534;
       border: 1px solid #86EFAC;
-      padding: 12px;
+      padding: 14px;
       border-radius: 10px;
       font-weight: 600;
       text-align: center;
@@ -303,9 +260,9 @@
 
   <header>
     <img src="icona.png" alt="Unieuro" onerror="this.style.display='none'">
-    <div class="header-title">
-      <h1>Unieuro Reggio Calabria</h1>
-      <span>Il tuo negozio sempre in tasca</span>
+    <div>
+      <h1 style="font-size:1.15rem;">Unieuro Reggio Calabria</h1>
+      <span style="font-size:0.8rem; color:#CBD5E1;">Il tuo negozio sempre in tasca</span>
     </div>
   </header>
 
@@ -313,9 +270,9 @@
 
     <!-- 1. TESSERA UNIEURO (SEMPRE SALVATA) -->
     <div class="club-card">
-      <div class="club-header">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <strong>💳 La Tua Tessera Unieuro</strong>
-        <span class="badge-orange">Unieuro Club</span>
+        <span style="background:var(--unieuro-orange); padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:700;">Unieuro Club</span>
       </div>
 
       <div id="cardForm">
@@ -339,107 +296,131 @@
     <!-- 2. VOLANTINO & PROMO CON RICERCA E RITAGLIO PRODOTTO -->
     <div class="card">
       <div class="card-title">
-        <span>📖 Sfoglia e Ritaglia dal Volantino</span>
+        <span>📖 Volantino & Promo (Ritaglia Offerta)</span>
       </div>
 
       <div class="pdf-tabs">
-        <button type="button" id="btnTabVolantino" class="tab-btn active" onclick="caricaDocumentoPdf('volantino.pdf', 'btnTabVolantino')">📄 Volantino</button>
-        <button type="button" id="btnTabPromo" class="tab-btn" onclick="caricaDocumentoPdf('promo.pdf', 'btnTabPromo')">🔥 Promo</button>
+        <button type="button" id="btnTabVolantino" class="tab-btn active" onclick="caricaPdf('volantino.pdf', 'btnTabVolantino')">📄 Volantino</button>
+        <button type="button" id="btnTabPromo" class="tab-btn" onclick="caricaPdf('promo.pdf', 'btnTabPromo')">🔥 Promo</button>
       </div>
 
-      <!-- Ricerca nel PDF -->
       <div class="input-row" style="margin-bottom:10px;">
-        <input type="search" id="pdfSearchInput" placeholder="Cerca prodotto nel volantino (es. Lavatrice)..." autocomplete="off">
-        <button type="button" class="btn btn-blue" onclick="cercaTestoNelPdf()">🔍 Cerca</button>
+        <input type="search" id="pdfSearchInput" placeholder="Cerca prodotto nel PDF (es. Lavatrice)..." autocomplete="off">
+        <button type="button" class="btn btn-blue" onclick="cercaNelPdf()">🔍 Cerca</button>
       </div>
       <div id="searchStatus" style="font-size:0.83rem; color:var(--unieuro-orange); font-weight:600; margin-bottom:8px; display:none;"></div>
 
-      <!-- Controlli Pagina e Ritaglio -->
       <div class="pdf-controls">
         <div style="display:flex; gap:6px; align-items:center;">
           <button type="button" class="btn btn-outline" onclick="cambiaPagina(-1)">◀</button>
           <span id="pageIndicator" style="font-size:0.88rem; font-weight:700;">Pag. 1 / 1</span>
           <button type="button" class="btn btn-outline" onclick="cambiaPagina(1)">▶</button>
         </div>
-        <button type="button" id="btnStartCrop" class="btn btn-orange" onclick="avviaRitaglio()">✂️ Ritaglia Prodotto</button>
+        <button type="button" id="btnStartCrop" class="btn btn-orange" onclick="avviaRitaglio()">✂️ Ritaglia Offerta</button>
       </div>
 
-      <!-- Barra conferma ritaglio -->
       <div id="cropToolbar" class="crop-toolbar">
-        <button type="button" class="btn btn-green btn-block" onclick="confermaRitaglio()">✅ Allega questo ritaglio alla richiesta</button>
+        <button type="button" class="btn btn-green btn-block" onclick="confermaRitaglio()">✅ Allega Ritaglio alla Richiesta</button>
         <button type="button" class="btn btn-red" onclick="annullaRitaglio()">✖</button>
       </div>
 
-      <!-- Visualizzatore Canvas PDF -->
       <div class="canvas-wrapper">
         <canvas id="pdfCanvas"></canvas>
       </div>
     </div>
 
     <!-- 3. MODULO INVIO RICHIESTA AL REPARTO -->
-    <div class="card orange-border" id="richiestaSection">
+    <div class="card orange-top" id="moduloRichiestaCard">
       <div class="card-title">
-        <span>📢 Richiedi Prodotto al Reparto</span>
-        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">Auto-reset 30s</span>
+        <span>📢 Invia Richiesta al Reparto</span>
+        <span style="font-size:0.75rem; color:#64748B; font-weight:normal;">Auto-reset 30s</span>
       </div>
 
-      <!-- Anteprima eventuale ritaglio allegato -->
       <div id="cropPreviewContainer" class="crop-preview-box">
         <div style="display:flex; align-items:center; gap:10px;">
           <img id="cropPreviewImg" src="" alt="Ritaglio">
           <div style="font-size:0.85rem; font-weight:600; color:var(--unieuro-blue);">
-            📎 Ritaglio del volantino allegato!
+            📎 Offerta ritagliata allegata alla richiesta!
           </div>
         </div>
         <button type="button" class="btn btn-red" style="padding:6px 10px; font-size:0.8rem;" onclick="rimuoviRitaglio()">Rimuovi</button>
       </div>
 
-      <form id="requestForm" onsubmit="inviaRichiestaCollega(event)" autocomplete="off">
-        <div class="form-group">
-          <label for="repartoSelect">Seleziona il Reparto</label>
-          <select id="repartoSelect" required>
-            <option value="">-- Scegli il reparto --</option>
-            <option value="GED - Grandi Elettrodomestici">🧺 Grandi Elettrodomestici (Lavatrici, Frigo...)</option>
-            <option value="PED - Piccoli Elettrodomestici">☕ Piccoli Elettrodomestici & Casalinghi</option>
-            <option value="TV & Audio">📺 TV, Home Cinema & Audio</option>
-            <option value="Telefonia">📱 Telefonia & Smartwatch</option>
-            <option value="Informatica">💻 Informatica, PC, Tablet & Stampanti</option>
-            <option value="Gaming & Mobilità">🎮 Gaming, Console & Mobilità</option>
-            <option value="Climatizzazione">❄️ Climatizzatori & Trattamento Aria</option>
-          </select>
+      <form id="requestForm" onsubmit="inviaRichiestaAlGoogleScript(event)" autocomplete="off">
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="reparto">Reparto *</label>
+            <select id="reparto" required>
+              <option value="">-- Scegli Reparto --</option>
+              <option value="Grandi Elettrodomestici">Grandi Elettrodomestici</option>
+              <option value="Piccoli Elettrodomestici">Piccoli Elettrodomestici</option>
+              <option value="TV e Audio">TV e Audio</option>
+              <option value="Informatica e Telefonia">Informatica e Telefonia</option>
+              <option value="Ritiro RAEE">Ritiro RAEE</option>
+              <option value="Amministrazione">Amministrazione</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tipoRichiesta">Tipo Richiesta *</label>
+            <select id="tipoRichiesta" required>
+              <option value="Disponibilità Prodotto">Disponibilità Prodotto</option>
+              <option value="Prenotazione / Ordine">Prenotazione / Ordine</option>
+              <option value="Preventivo / Finanziamento">Preventivo / Finanziamento</option>
+              <option value="Consegna / Installazione / RAEE">Consegna / Installazione / RAEE</option>
+              <option value="Assistenza in Corsia">Assistenza in Corsia</option>
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
-          <label for="prodottoInput">Prodotto richiesto o informazioni</label>
-          <input type="search" id="prodottoInput" placeholder="Es. Lavatrice 9kg, disponibilità modello..." autocomplete="off">
+          <label for="nomeCliente">Nome e Cognome Cliente *</label>
+          <input type="text" id="nomeCliente" placeholder="Es. Mario Rossi" required>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="telefono">Telefono *</label>
+            <input type="tel" id="telefono" placeholder="Es. 333 1234567" required>
+          </div>
+
+          <div class="form-group">
+            <label for="preferenzaContatto">Preferenza Contatto</label>
+            <select id="preferenzaContatto">
+              <option value="WhatsApp / Telefono">WhatsApp / Telefono</option>
+              <option value="In Negozio (Subito)">In Negozio (Subito)</option>
+              <option value="Email">Email</option>
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
-          <label for="clienteInput">Tuo Nome o Posizione in corsia (opzionale)</label>
-          <input type="text" id="clienteInput" placeholder="Es. Marco - vicino corsia lavatrici" autocomplete="off">
+          <label for="emailCliente">Email Cliente (opzionale)</label>
+          <input type="email" id="emailCliente" placeholder="esempio@email.it">
         </div>
 
-        <button type="submit" id="btnSubmitReq" class="btn btn-orange btn-block" style="padding:14px; font-size:1rem;">
-          🚀 Invia Richiesta al Collega di Reparto
+        <div class="form-group">
+          <label for="noteCliente">Dettagli Prodotto / Note Cliente *</label>
+          <textarea id="noteCliente" rows="3" placeholder="Scrivi qui il prodotto cercato (es. Lavatrice 9kg) o eventuali dettagli..." required></textarea>
+        </div>
+
+        <button type="submit" id="btnSubmit" class="btn btn-orange btn-block" style="padding:14px; font-size:1rem;">
+          🚀 Invia Richiesta al Reparto
         </button>
       </form>
 
       <div id="confirmToast" class="toast">
-        ✅ Richiesta inviata con successo! Un addetto del reparto ha ricevuto la tua segnalazione.
+        ✅ Richiesta registrata e inviata al reparto!
       </div>
     </div>
 
   </div>
 
-  <!-- Librerie PDF.js e Cropper.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
   <script>
-    // =====================================================
-    // CONFIGURAZIONE DOMINIO GITHUB E CANALE NOTIFICHE
-    // =====================================================
-    const SITE_BASE_URL = 'https://unieuro-reggio.github.io';
+    const SCRIPT_URL = "https://script.google.com/macros/library/d/1luBMD8Z6-OMUL0GRiL8190S0xRfxKSknlY0twezx2Sy1iysjwcuFYAxK/12";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
     const CARD_KEY = 'unieuro_tessera_code';
     const REQ_KEY = 'unieuro_requests_db';
@@ -448,13 +429,9 @@
 
     let pdfDoc = null;
     let currentPage = 1;
-    let currentPdfUrl = 'volantino.pdf';
     let cropperInstance = null;
-    let croppedDataUrl = null;
+    let croppedBase64 = "";
 
-    // -----------------------------------------------------
-    // 1. TESSERA UNIEURO (SEMPRE CONSERVATA)
-    // -----------------------------------------------------
     function caricaTessera() {
       const code = localStorage.getItem(CARD_KEY);
       if (code && code.trim() !== '') {
@@ -480,12 +457,8 @@
       document.getElementById('cardSaved').style.display = 'none';
     }
 
-    // -----------------------------------------------------
-    // 2. VISUALIZZATORE PDF + RICERCA + RITAGLIO CROPPER.JS
-    // -----------------------------------------------------
-    async function caricaDocumentoPdf(url, tabId) {
+    async function caricaPdf(url, tabId) {
       annullaRitaglio();
-      currentPdfUrl = url;
       document.getElementById('btnTabVolantino').classList.remove('active');
       document.getElementById('btnTabPromo').classList.remove('active');
       if (tabId) document.getElementById(tabId).classList.add('active');
@@ -493,56 +466,54 @@
       try {
         pdfDoc = await pdfjsLib.getDocument(url).promise;
         currentPage = 1;
-        await renderizzaPagina(currentPage);
-      } catch (err) {
-        console.warn('PDF non ancora presente o in caricamento:', err);
+        await renderPagina(currentPage);
+      } catch (e) {
+        console.warn("PDF non trovato:", e);
       }
     }
 
-    async function renderizzaPagina(num) {
+    async function renderPagina(num) {
       if (!pdfDoc) return;
       annullaRitaglio();
       const page = await pdfDoc.getPage(num);
       const canvas = document.getElementById('pdfCanvas');
       const ctx = canvas.getContext('2d');
-
       const viewport = page.getViewport({ scale: 1.4 });
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-
       await page.render({ canvasContext: ctx, viewport: viewport }).promise;
       document.getElementById('pageIndicator').textContent = `Pag. ${num} / ${pdfDoc.numPages}`;
     }
 
     function cambiaPagina(delta) {
       if (!pdfDoc) return;
-      const nuova = currentPage + delta;
-      if (nuova >= 1 && nuova <= pdfDoc.numPages) {
-        currentPage = nuova;
-        renderizzaPagina(currentPage);
+      const next = currentPage + delta;
+      if (next >= 1 && next <= pdfDoc.numPages) {
+        currentPage = next;
+        renderPagina(currentPage);
       }
     }
 
-    async function cercaTestoNelPdf() {
-      const query = document.getElementById('pdfSearchInput').value.trim().toLowerCase();
+    async function cercaNelPdf() {
+      const q = document.getElementById('pdfSearchInput').value.trim().toLowerCase();
       const status = document.getElementById('searchStatus');
-      if (!query || !pdfDoc) return;
+      if (!q || !pdfDoc) return;
 
       status.style.display = 'block';
-      status.textContent = '⏳ Ricerca nel volantino in corso...';
+      status.textContent = '⏳ Ricerca nel documento...';
 
       for (let i = 1; i <= pdfDoc.numPages; i++) {
         const page = await pdfDoc.getPage(i);
-        const textContent = await page.getTextContent();
-        const testoPagina = textContent.items.map(item => item.str).join(' ').toLowerCase();
-        if (testoPagina.includes(query)) {
+        const txt = await page.getTextContent();
+        const fullText = txt.items.map(item => item.str).join(' ').toLowerCase();
+        if (fullText.includes(q)) {
           currentPage = i;
-          await renderizzaPagina(i);
-          status.textContent = `✅ "${query}" trovato a pagina ${i}! Usa "✂️ Ritaglia Prodotto" per selezionarlo.`;
+          await renderPagina(i);
+          status.textContent = `✅ "${q}" trovato a pagina ${i}! Clicca su "✂️ Ritaglia Offerta".`;
           return;
         }
       }
-      status.textContent = `⚠️ Nessun risultato trovato per "${query}" in questo documento.`;
+      status.textContent = `⚠️ Nessun risultato per "${q}".`;
     }
 
     function avviaRitaglio() {
@@ -552,26 +523,21 @@
 
       cropperInstance = new Cropper(canvas, {
         viewMode: 1,
-        autoCropArea: 0.6,
-        movable: true,
-        zoomable: true
+        autoCropArea: 0.6
       });
-
       document.getElementById('btnStartCrop').style.display = 'none';
       document.getElementById('cropToolbar').style.display = 'flex';
     }
 
     function confermaRitaglio() {
       if (!cropperInstance) return;
-      // Compressione leggera JPEG (max 450px) per invio istantaneo senza rallentamenti
-      const croppedCanvas = cropperInstance.getCroppedCanvas({ maxWidth: 450, maxHeight: 450 });
-      croppedDataUrl = croppedCanvas.toDataURL('image/jpeg', 0.65);
+      const croppedCanvas = cropperInstance.getCroppedCanvas({ maxWidth: 550, maxHeight: 550 });
+      croppedBase64 = croppedCanvas.toDataURL('image/jpeg', 0.68);
 
-      document.getElementById('cropPreviewImg').src = croppedDataUrl;
+      document.getElementById('cropPreviewImg').src = croppedBase64;
       document.getElementById('cropPreviewContainer').style.display = 'flex';
-
       annullaRitaglio();
-      document.getElementById('richiestaSection').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('moduloRichiestaCard').scrollIntoView({ behavior: 'smooth' });
     }
 
     function annullaRitaglio() {
@@ -584,76 +550,68 @@
     }
 
     function rimuoviRitaglio() {
-      croppedDataUrl = null;
+      croppedBase64 = "";
       document.getElementById('cropPreviewImg').src = '';
       document.getElementById('cropPreviewContainer').style.display = 'none';
     }
 
-    // -----------------------------------------------------
-    // 3. INVIO RICHIESTA AL COLLEGA CON LINK A REPARTO.HTML
-    // -----------------------------------------------------
-    function inviaRichiestaCollega(e) {
+    async function inviaRichiestaAlGoogleScript(e) {
       e.preventDefault();
 
-      const reparto = document.getElementById('repartoSelect').value;
-      const prodottoInput = document.getElementById('prodottoInput').value.trim();
-      const cliente = document.getElementById('clienteInput').value.trim() || 'Cliente in negozio';
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.textContent = '⏳ Invio in corso...';
 
-      if (!reparto) return;
-      if (!prodottoInput && !croppedDataUrl) {
-        alert('Inserisci il nome del prodotto oppure allega un ritaglio dal volantino.');
-        return;
-      }
+      const idPratica = "REQ-" + Date.now();
+      const timestamp = new Date().toLocaleString("it-IT");
+      const repartoVal = document.getElementById('reparto').value;
 
-      const prodotto = prodottoInput || 'Prodotto ritagliato dal volantino';
-      const reqId = Date.now();
-      const orario = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-
-      // Link diretto al Pannello Reparti che arriva SOLO al collega
-      const linkCollega = `${SITE_BASE_URL}/reparto.html?reparto=${encodeURIComponent(reparto)}&id=${reqId}&prodotto=${encodeURIComponent(prodotto)}&cliente=${encodeURIComponent(cliente)}&orario=${encodeURIComponent(orario)}`;
-
-      const nuovaRichiesta = {
-        id: reqId,
-        reparto: reparto,
-        prodotto: prodotto,
-        cliente: cliente,
-        orario: orario,
-        stato: 'In attesa',
-        ritaglio: croppedDataUrl || null,
-        linkReparto: linkCollega
+      const payload = {
+        action: "create",
+        id: idPratica,
+        timestamp: timestamp,
+        reparto: repartoVal,
+        tipoRichiesta: document.getElementById('tipoRichiesta').value,
+        nomeCliente: document.getElementById('nomeCliente').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
+        emailCliente: document.getElementById('emailCliente').value.trim(),
+        preferenzaContatto: document.getElementById('preferenzaContatto').value,
+        noteCliente: document.getElementById('noteCliente').value.trim(),
+        stato: "Aperta",
+        image: croppedBase64
       };
 
-      // 1. Salva subito localmente (0ms)
-      let archivio = [];
+      // Salvataggio immediato locale + sincronizzazione cloud istantanea di backup
       try {
-        archivio = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
-      } catch (err) { archivio = []; }
-      archivio.unshift(nuovaRichiesta);
-      if (archivio.length > 60) archivio = archivio.slice(0, 60);
-      localStorage.setItem(REQ_KEY, JSON.stringify(archivio));
+        const lista = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
+        lista.unshift(payload);
+        localStorage.setItem(REQ_KEY, JSON.stringify(lista.slice(0, 60)));
+      } catch (err) {}
 
-      // 2. Invia in background la notifica cloud con il link di GitHub Pages per il collega
       fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
         method: 'POST',
-        body: JSON.stringify(nuovaRichiesta),
-        headers: {
-          'Title': `Nuova Richiesta: ${reparto}`,
-          'Priority': 'high',
-          'Tags': 'bell,shopping_cart',
-          'Click': linkCollega
-        }
+        body: JSON.stringify(payload)
       }).catch(() => {});
 
-      // 3. Azzera subito il modulo e mostra conferma istantanea
+      // Invio a Google Apps Script
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {}
+
+      btn.disabled = false;
+      btn.textContent = '🚀 Invia Richiesta al Reparto';
       resetCampiTemporanei();
+
       const toast = document.getElementById('confirmToast');
       toast.style.display = 'block';
       setTimeout(() => { toast.style.display = 'none'; }, 4000);
     }
 
-    // -----------------------------------------------------
-    // 4. RESET AUTOMATICO ALL'APERTURA E DOPO 30s INATTIVITÀ
-    // -----------------------------------------------------
     function resetCampiTemporanei() {
       const form = document.getElementById('requestForm');
       if (form) form.reset();
@@ -671,9 +629,7 @@
     let timerInattivita;
     function riavviaTimer30s() {
       clearTimeout(timerInattivita);
-      timerInattivita = setTimeout(() => {
-        resetCampiTemporanei();
-      }, 30000); // 30 secondi
+      timerInattivita = setTimeout(resetCampiTemporanei, 30000);
     }
 
     ['click', 'touchstart', 'keydown', 'scroll', 'input'].forEach(ev => {
@@ -684,7 +640,7 @@
       caricaTessera();
       resetCampiTemporanei();
       riavviaTimer30s();
-      if (!pdfDoc) caricaDocumentoPdf('volantino.pdf', 'btnTabVolantino');
+      if (!pdfDoc) caricaPdf('volantino.pdf', 'btnTabVolantino');
     });
   </script>
 </body>
