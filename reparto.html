@@ -47,7 +47,8 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-left: 6px solid var(--unieuro-orange);
     }
-    .req-card.chiusa { border-left-color: #16A34A; opacity: 0.85; }
+    .req-card.gestita { border-left-color: #16A34A; background-color: #F0FDF4; }
+    .req-card.archiviata { border-left-color: #64748B; background-color: #F8FAFC; opacity: 0.8; }
     .btn {
       background: var(--unieuro-blue);
       color: white;
@@ -63,6 +64,7 @@
       gap: 5px;
     }
     .btn-green { background: #16A34A; }
+    .btn-gray { background: #475569; }
     .btn-call {
       background: #0284C7;
       color: white;
@@ -80,12 +82,13 @@
       display: block;
     }
     .operator-note-box {
-      background: #F8FAFC;
+      background: white;
       border-left: 4px solid #16A34A;
       padding: 8px 12px;
       border-radius: 6px;
       margin-top: 10px;
       font-size: 0.88rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
   </style>
 </head>
@@ -207,16 +210,18 @@
         const note = p.noteCliente || p['Dettagli / Note Cliente'] || '';
         const stato = p.stato || p['Stato'] || 'Aperta';
         const img = p.image || p['Immagine / Offerta (Base64)'] || '';
-        
-        // Lettura note operatore salvate
         const noteRepartista = p.noteRepartista || p['Note Repartista'] || '';
         const operatore = p.operatore || p['Operatore'] || '';
 
+        let cssClass = '';
+        if (stato === 'Gestita') cssClass = 'gestita';
+        if (stato === 'Archiviata') cssClass = 'archiviata';
+
         return `
-          <div class="req-card ${stato === 'Gestita' || stato === 'Chiusa' ? 'chiusa' : ''}">
+          <div class="req-card ${cssClass}">
             <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
               <strong style="color:var(--unieuro-blue); font-size:1.05rem;">[${id}] ${reparto}</strong>
-              <span style="font-weight:800; color:${stato === 'Aperta' ? '#EA580C' : '#16A34A'};">${stato}</span>
+              <span style="font-weight:800; color:${stato === 'Aperta' ? '#EA580C' : (stato === 'Gestita' ? '#16A34A' : '#64748B')};">${stato}</span>
             </div>
             <p style="margin:8px 0; font-size:0.95rem;"><strong>Note Richiesta:</strong> ${note}</p>
             <div style="font-size:0.88rem; color:#475569; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
@@ -231,7 +236,7 @@
 
             ${(noteRepartista || operatore) ? `
               <div class="operator-note-box">
-                🛠️ <strong>Gestito da:</strong> ${operatore \vert{}\vert{} 'Operatore'} \vert{} <strong>Note:</strong>${noteRepartista || 'Nessuna nota aggiuntiva'}
+                🛠️ <strong>Gestito da:</strong> ${operatore \vert{}\vert{} 'Operatore'} \vert{} <strong>Note:</strong>${noteRepartista || 'Nessuna nota'}
               </div>
             ` : ''}
 
@@ -239,6 +244,7 @@
               <input type="text" id="operatore_${id}" value="${operatore}" placeholder="Tuo nome operatore..." style="padding:7px 10px; font-size:0.85rem;">
               <input type="text" id="noteRep_${id}" value="${noteRepartista}" placeholder="Note reparto..." style="flex:1; padding:7px 10px; font-size:0.85rem;">
               <button class="btn btn-green" onclick="aggiornaPratica('${id}', 'Gestita')">✔ Segna Gestita</button>
+              <button class="btn btn-gray" onclick="aggiornaPratica('${id}', 'Archiviata')">📂 Archivia</button>
             </div>
           </div>
         `;
