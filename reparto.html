@@ -10,9 +10,9 @@
       --unieuro-orange: #FF6700;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #F0F3F9; padding: 16px; color: #1E293B; }
+    body { background: #EEF2F7; padding: 16px; color: #1E293B; }
     header {
-      background: linear-gradient(135deg, #001F4D, var(--unieuro-blue));
+      background: linear-gradient(135deg, #001838, var(--unieuro-blue));
       color: white;
       padding: 16px 20px;
       border-radius: 12px;
@@ -57,8 +57,21 @@
       font-weight: 700;
       cursor: pointer;
       font-size: 0.85rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
     .btn-green { background: #16A34A; }
+    .btn-call {
+      background: #0284C7;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 800;
+      display: inline-block;
+    }
     .crop-img {
       max-width: 220px;
       border-radius: 8px;
@@ -80,24 +93,34 @@
 
   <div class="toolbar">
     <select id="filtroReparto" onchange="filtraPratiche()" style="flex:1; min-width:220px;">
-      <option value="TUTTI">Tutti i Reparti</option>
-      <option value="Grandi Elettrodomestici">Grandi Elettrodomestici</option>
-      <option value="Piccoli Elettrodomestici">Piccoli Elettrodomestici</option>
-      <option value="TV e Audio">TV e Audio</option>
-      <option value="Informatica e Telefonia">Informatica e Telefonia</option>
-      <option value="Ritiro RAEE">Ritiro RAEE</option>
-      <option value="Amministrazione">Amministrazione</option>
+      <option value="TUTTI">📋 Tutti i Reparti</option>
+      <option value="GRANDI ELETTRODOMESTICI">🧺 GRANDI ELETTRODOMESTICI</option>
+      <option value="PICCOLI ELETTRODOMESTICI">☕ PICCOLI ELETTRODOMESTICI</option>
+      <option value="TELEFONIA">📱 TELEFONIA</option>
+      <option value="TV">📺 TV</option>
+      <option value="INFORMATICA">💻 INFORMATICA</option>
+      <option value="ASSISTENZA">🛠️ ASSISTENZA</option>
+      <option value="RITIRO RAEE">♻️ RITIRO RAEE</option>
     </select>
   </div>
 
   <div id="listaContainer">Caricamento richieste in corso...</div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/library/d/1luBMD8Z6-OMUL0GRiL8190S0xRfxKSknlY0twezx2Sy1iysjwcuFYAxK/12";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
     const REQ_KEY = 'unieuro_requests_db';
 
     let tutteLePratiche = [];
+
+    // Garantisce sempre lo 0 davanti per 7Collaboration
+    function preparaNumero7Collaboration(num) {
+      if (!num) return "";
+      let clean = String(num).replace(/[\s\-\.\(\)]/g, '').replace(/^(\+39|0039)/, '');
+      if (!clean) return "";
+      if (!clean.startsWith('0')) clean = '0' + clean;
+      return clean;
+    }
 
     function leggiParametroUrl() {
       const params = new URLSearchParams(window.location.search);
@@ -105,7 +128,7 @@
       if (rep) {
         const sel = document.getElementById('filtroReparto');
         for (let opt of sel.options) {
-          if (opt.value.toLowerCase() === rep.toLowerCase()) {
+          if (opt.value.toUpperCase() === rep.toUpperCase()) {
             sel.value = opt.value;
           }
         }
@@ -115,7 +138,6 @@
     async function caricaPratiche() {
       let listaCombinata = [];
 
-      // 1. Carica da Google Apps Script (se pubblicato come Web App /exec)
       try {
         const res = await fetch(`${SCRIPT_URL}?action=get`);
         const json = await res.json();
@@ -123,7 +145,6 @@
         listaCombinata = [...daSheet];
       } catch (err) {}
 
-      // 2. Carica anche dal canale real-time istantaneo (ntfy + localStorage)
       try {
         const resNtfy = await fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=24h`);
         const txt = await resNtfy.text();
@@ -160,7 +181,7 @@
 
       const lista = rep === 'TUTTI'
         ? tutteLePratiche
-        : tutteLePratiche.filter(x => (x.reparto || x['Reparto'] || '') === rep);
+        : tutteLePratiche.filter(x => String(x.reparto || x['Reparto'] || '').toUpperCase() === rep.toUpperCase());
 
       if (lista.length === 0) {
         container.innerHTML = '<div style="background:white; padding:25px; border-radius:12px; text-align:center;">Nessuna richiesta trovata per questo reparto.</div>';
@@ -171,9 +192,11 @@
         const id = p.id || p['ID Pratica'] || '';
         const dataOra = p.timestamp || p['Data e Ora'] || '';
         const reparto = p.reparto || p['Reparto'] || '';
-        const tipo = p.tipoRichiesta || p['Tipo Richiesta'] || '';
         const cliente = p.nomeCliente || p['Nome Cliente'] || '';
-        const tel = p.telefono || p['Telefono'] || '';
+        const metodo = p.preferenzaContatto || p['Preferenza Contatto'] || '';
+        const telRaw = p.telefono || p['Telefono'] || '';
+        const tel7Collab = preparaNumero7Collaboration(telRaw);
+        const email = p.emailCliente || p['Email Cliente'] || '';
         const note = p.noteCliente || p['Dettagli / Note Cliente'] || '';
         const stato = p.stato || p['Stato'] || 'Aperta';
         const img = p.image || p['Immagine / Offerta (Base64)'] || '';
@@ -181,12 +204,16 @@
         return `
           <div class="req-card ${stato === 'Gestita' || stato === 'Chiusa' ? 'chiusa' : ''}">
             <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-              <strong style="color:var(--unieuro-blue); font-size:1.05rem;">[${id}] ${tipo} - ${reparto}</strong>
-              <span style="font-weight:700; color:${stato === 'Aperta' ? '#EA580C' : '#16A34A'};">${stato}</span>
+              <strong style="color:var(--unieuro-blue); font-size:1.05rem;">[${id}] ${reparto}</strong>
+              <span style="font-weight:800; color:${stato === 'Aperta' ? '#EA580C' : '#16A34A'};">${stato}</span>
             </div>
-            <p style="margin:8px 0; font-size:0.95rem;"><strong>Note / Prodotto:</strong> ${note}</p>
-            <div style="font-size:0.85rem; color:#64748B;">
-              👤 <strong>Cliente:</strong> ${cliente} | 📞 <a href="tel:${tel}">${tel}</a> | 🕒 ${dataOra}
+            <p style="margin:8px 0; font-size:0.95rem;"><strong>Note Richiesta:</strong> ${note}</p>
+            <div style="font-size:0.88rem; color:#475569; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+              <span>👤 <strong>Cliente:</strong> ${cliente}</span>
+              <span>📌 <strong>Ricontatto:</strong> ${metodo}</span>
+              ${tel7Collab ? `<a href="tel:${tel7Collab}" class="btn-call">📞 Chiama ${tel7Collab} (7Collaboration)</a>` : ''}
+              ${email ? `<a href="mailto:${email}" style="color:var(--unieuro-blue); font-weight:700;">✉️ ${email}</a>` : ''}
+              <span>🕒 ${dataOra}</span>
             </div>
             ${img && img.startsWith('data:image') ? `<img src="${img}" class="crop-img" onclick="window.open(this.src)">` : ''}
             <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
