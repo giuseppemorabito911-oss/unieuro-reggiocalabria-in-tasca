@@ -129,11 +129,6 @@
       font-size: 0.82rem;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-orari:active {
-      background: rgba(255, 255, 255, 0.35);
     }
 
     .orari-popup {
@@ -174,12 +169,7 @@
       text-decoration: none;
       color: white;
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      transition: transform 0.1s;
       text-align: center;
-    }
-
-    .quick-btn:active {
-      transform: scale(0.97);
     }
 
     .btn-maps {
@@ -410,12 +400,6 @@
       margin-top: 16px;
       padding-top: 16px;
       border-top: 2px dashed #CBD5E1;
-      animation: fadeIn 0.25s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .selected-reparto-banner {
@@ -744,7 +728,7 @@
 
   <script>
     // =========================================================================
-    // INDIRIZZO GOOGLE APPS SCRIPT E CANALE LIVE
+    // URL UFFICIALE APPLICAZIONE WEB GOOGLE APPS SCRIPT (/exec)
     // =========================================================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
@@ -758,15 +742,11 @@
     let cropperInstance = null;
     let croppedBase64 = "";
 
-    // -------------------------------------------------------------------------
-    // 1. CONTROLLO AUTOMATICO APERTO / CHIUSO (LUN-SAB 09-13, 15-20 | DOM CHIUSO)
-    // -------------------------------------------------------------------------
     function aggiornaStatoNegozio() {
       const now = new Date();
-      const day = now.getDay(); // 0 = Domenica, 1 = Lunedì ... 6 = Sabato
+      const day = now.getDay();
       const minutiAttuali = now.getHours() * 60 + now.getMinutes();
 
-      // Mattina: 09:00 (540) - 13:00 (780) | Pomeriggio: 15:00 (900) - 20:00 (1200)
       const apertoMattina = minutiAttuali >= 540 && minutiAttuali < 780;
       const apertoPomeriggio = minutiAttuali >= 900 && minutiAttuali < 1200;
       const isAperto = (day >= 1 && day <= 6) && (apertoMattina || apertoPomeriggio);
@@ -788,9 +768,6 @@
       box.style.display = box.style.display === 'block' ? 'none' : 'block';
     }
 
-    // -------------------------------------------------------------------------
-    // 2. GESTIONE TESSERA UNIEURO (SEMPRE SALVATA)
-    // -------------------------------------------------------------------------
     function caricaTessera() {
       const code = localStorage.getItem(CARD_KEY);
       if (code && code.trim() !== '') {
@@ -816,9 +793,6 @@
       document.getElementById('cardSaved').style.display = 'none';
     }
 
-    // -------------------------------------------------------------------------
-    // 3. VOLANTINO & PROMO APP...ETITOSE + RITAGLIO
-    // -------------------------------------------------------------------------
     async function caricaPdf(url, tabId) {
       annullaRitaglio();
       document.getElementById('btnTabVolantino').classList.remove('active');
@@ -917,9 +891,6 @@
       document.getElementById('cropPreviewContainer').style.display = 'none';
     }
 
-    // -------------------------------------------------------------------------
-    // 4. SELEZIONE PULSANTE REPARTO E APERTURA FORM
-    // -------------------------------------------------------------------------
     function selezionaReparto(nomeReparto, btnElement) {
       document.querySelectorAll('.reparto-btn').forEach(b => b.classList.remove('selected'));
       if (btnElement) btnElement.classList.add('selected');
@@ -957,16 +928,11 @@
       }
     }
 
-    // -------------------------------------------------------------------------
-    // 5. FORMATTAZIONE NUMERO CON "0" INIZIALE PER 7COLLABORATION
-    // -------------------------------------------------------------------------
     function formattaNumero7Collaboration(rawPhone) {
       if (!rawPhone) return "";
-      // Rimuove spazi, trattini e prefisso internazionale +39 o 0039
       let clean = rawPhone.replace(/[\s\-\.\(\)]/g, '');
       clean = clean.replace(/^(\+39|0039)/, '');
       if (!clean) return "";
-      // Aggiunge sempre lo 0 iniziale per impegnare la linea esterna su 7Collaboration
       if (!clean.startsWith('0')) {
         clean = '0' + clean;
       }
@@ -1012,7 +978,6 @@
         image: croppedBase64
       };
 
-      // Salvataggio immediato locale + notifica live
       try {
         const lista = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
         lista.unshift(payload);
@@ -1024,7 +989,6 @@
         body: JSON.stringify(payload)
       }).catch(() => {});
 
-      // Invio a Google Apps Script
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
@@ -1043,9 +1007,6 @@
       setTimeout(() => { toast.style.display = 'none'; }, 4000);
     }
 
-    // -------------------------------------------------------------------------
-    // 6. AUTO-RESET A 30 SECONDI E ALL'APERTURA (SALVA SEMPRE LA TESSERA)
-    // -------------------------------------------------------------------------
     function resetCampiTemporanei() {
       const form = document.getElementById('requestForm');
       if (form) form.reset();
