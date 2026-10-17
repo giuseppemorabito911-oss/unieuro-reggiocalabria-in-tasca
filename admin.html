@@ -11,13 +11,13 @@
     }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #F0F3F9;
+      background-color: #EEF2F7;
       margin: 0;
       padding: 20px;
       color: #1E293B;
     }
     header {
-      background: linear-gradient(135deg, #001F4D, var(--unieuro-blue));
+      background: linear-gradient(135deg, #001838, var(--unieuro-blue));
       color: white;
       padding: 18px;
       border-radius: 12px;
@@ -103,8 +103,8 @@
             <th>ID</th>
             <th>Data/Ora</th>
             <th>Reparto</th>
-            <th>Cliente & Tel</th>
-            <th>Dettagli</th>
+            <th>Cliente & Contatto (7Collab)</th>
+            <th>Note Richiesta</th>
             <th>Operatore</th>
             <th>Stato</th>
           </tr>
@@ -117,7 +117,14 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/library/d/1luBMD8Z6-OMUL0GRiL8190S0xRfxKSknlY0twezx2Sy1iysjwcuFYAxK/12";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
-    const REQ_KEY = 'unieuro_requests_db';
+
+    function preparaNumero7Collaboration(num) {
+      if (!num) return "";
+      let clean = String(num).replace(/[\s\-\.\(\)]/g, '').replace(/^(\+39|0039)/, '');
+      if (!clean) return "";
+      if (!clean.startsWith('0')) clean = '0' + clean;
+      return clean;
+    }
 
     async function caricaDatiAdmin() {
       const tbody = document.getElementById('adminBody');
@@ -156,17 +163,25 @@
         return;
       }
 
-      tbody.innerHTML = lista.map(p => `
-        <tr>
-          <td><strong>${p.id || p['ID Pratica'] || ''}</strong></td>
-          <td>${p.timestamp || p['Data e Ora'] || ''}</td>
-          <td>${p.reparto || p['Reparto'] || ''}</td>
-          <td>${p.nomeCliente || p['Nome Cliente'] || ''}<br><small>${p.telefono || p['Telefono'] || ''}</small></td>
-          <td>${p.noteCliente || p['Dettagli / Note Cliente'] || ''}</td>
-          <td>${p.operatore || p['Operatore'] || '-'}</td>
-          <td style="font-weight:700;">${p.stato || p['Stato'] || 'Aperta'}</td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = lista.map(p => {
+        const tel = preparaNumero7Collaboration(p.telefono || p['Telefono'] || '');
+        const mail = p.emailCliente || p['Email Cliente'] || '';
+        return `
+          <tr>
+            <td><strong>${p.id || p['ID Pratica'] || ''}</strong></td>
+            <td>${p.timestamp || p['Data e Ora'] || ''}</td>
+            <td><strong>${p.reparto || p['Reparto'] || ''}</strong></td>
+            <td>
+              ${p.nomeCliente || p['Nome Cliente'] || ''}<br>
+              ${tel ? `<a href="tel:${tel}" style="color:#0284C7; font-weight:700;">📞 ${tel}</a>` : ''}
+              ${mail ? `<br><a href="mailto:${mail}">${mail}</a>` : ''}
+            </td>
+            <td>${p.noteCliente || p['Dettagli / Note Cliente'] || ''}</td>
+            <td>${p.operatore || p['Operatore'] || '-'}</td>
+            <td style="font-weight:700;">${p.stato || p['Stato'] || 'Aperta'}</td>
+          </tr>
+        `;
+      }).join('');
     }
 
     window.addEventListener('DOMContentLoaded', caricaDatiAdmin);
