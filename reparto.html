@@ -113,10 +113,9 @@
 
     let tutteLePratiche = [];
 
-    // Garantisce sempre lo 0 davanti per 7Collaboration
     function preparaNumero7Collaboration(num) {
       if (!num) return "";
-      let clean = String(num).replace(/[\s\-\.\(\)]/g, '').replace(/^(\+39|0039)/, '');
+      let clean = String(num).replace(/[\s\-\.\(\)']+/g, '').replace(/^(\+39|0039)/, '');
       if (!clean) return "";
       if (!clean.startsWith('0')) clean = '0' + clean;
       return clean;
