@@ -41,17 +41,14 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-top: 4px solid var(--unieuro-blue);
     }
-    .kpi-card.orange {
-      border-top-color: var(--unieuro-orange);
-    }
+    .kpi-card.orange { border-top-color: var(--unieuro-orange); }
     .kpi-label { font-size: 0.85rem; color: #64748B; font-weight: 600; }
     .kpi-num { font-size: 1.9rem; font-weight: 800; color: var(--unieuro-blue); margin-top: 6px; }
-    .card-box {
+    .panel {
       background: white;
       padding: 18px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      margin-bottom: 20px;
     }
     .btn {
       background: var(--unieuro-orange);
@@ -63,19 +60,9 @@
       cursor: pointer;
       text-decoration: none;
       font-size: 0.88rem;
-      display: inline-block;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 12px;
-      font-size: 0.9rem;
-    }
-    th, td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #E2E8F0;
-      text-align: left;
-    }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid #E2E8F0; text-align: left; }
     th { background: #F8FAFC; color: var(--unieuro-blue); }
   </style>
 </head>
@@ -84,134 +71,105 @@
   <header>
     <div>
       <h2 style="margin:0;">📊 Dashboard Admin - Unieuro RC</h2>
-      <small style="color:#CBD5E1;">Controllo richieste reparti e link staff</small>
+      <small style="color:#CBD5E1;">Riepilogo generale pratiche</small>
     </div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <a href="reparto.html" class="btn" style="background:rgba(255,255,255,0.2);">🏢 Apri Pannello Reparti</a>
-      <button class="btn" onclick="svuotaTutto()">🗑️ Svuota Storico</button>
+    <div style="display:flex; gap:8px;">
+      <a href="reparto.html" class="btn" style="background:rgba(255,255,255,0.2);">🏢 Vai a Reparti</a>
+      <button class="btn" onclick="caricaDatiAdmin()">🔄 Aggiorna</button>
     </div>
   </header>
 
   <div class="kpi-container">
     <div class="kpi-card">
-      <div class="kpi-label">RICHIESTE TOTALI</div>
-      <div class="kpi-num" id="totReq">0</div>
+      <div class="kpi-label">PRATICHE TOTALI</div>
+      <div class="kpi-num" id="totPratiche">0</div>
     </div>
     <div class="kpi-card orange">
-      <div class="kpi-label">IN ATTESA</div>
-      <div class="kpi-num" id="waitReq">0</div>
+      <div class="kpi-label">APERTE / IN ATTESA</div>
+      <div class="kpi-num" id="apertePratiche">0</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">COMPLETATE</div>
-      <div class="kpi-num" id="doneReq">0</div>
+      <div class="kpi-label">GESTITE / CHIUSE</div>
+      <div class="kpi-num" id="gestitePratiche">0</div>
     </div>
   </div>
 
-  <!-- LINK RISERVATI AI COLLEGHI -->
-  <div class="card-box">
-    <h3 style="margin-top:0; color:var(--unieuro-blue);">🔗 Link Riservati ai Colleghi (Non visibili ai clienti)</h3>
-    <p style="font-size:0.9rem; color:#64748B; margin:8px 0 12px;">
-      Invia questo link ai colleghi di reparto per aprire il pannello operativo:
-    </p>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <input type="text" id="staffLinkInput" value="https://unieuro-reggio.github.io/reparto.html" readonly style="flex:1; padding:10px; border-radius:8px; border:1px solid #CBD5E1; font-weight:600;">
-      <button class="btn" onclick="copiaLinkColleghi()">📋 Copia Link Reparti</button>
-    </div>
-  </div>
-
-  <div class="card-box">
-    <h3 style="margin-top:0; color:var(--unieuro-blue);">📋 Storico Richieste Clienti</h3>
+  <div class="panel">
+    <h3 style="margin-top:0; color:var(--unieuro-blue);">Tutte le Richieste Registrate</h3>
     <div style="overflow-x:auto;">
       <table>
         <thead>
           <tr>
-            <th>Ora</th>
+            <th>ID</th>
+            <th>Data/Ora</th>
             <th>Reparto</th>
-            <th>Prodotto</th>
-            <th>Cliente</th>
-            <th>Ritaglio</th>
+            <th>Cliente & Tel</th>
+            <th>Dettagli</th>
+            <th>Operatore</th>
             <th>Stato</th>
           </tr>
         </thead>
-        <tbody id="tabellaAdmin"></tbody>
+        <tbody id="adminBody"></tbody>
       </table>
     </div>
   </div>
 
   <script>
+    const SCRIPT_URL = "https://script.google.com/macros/library/d/1luBMD8Z6-OMUL0GRiL8190S0xRfxKSknlY0twezx2Sy1iysjwcuFYAxK/12";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
     const REQ_KEY = 'unieuro_requests_db';
 
-    function leggiRichieste() {
-      try {
-        return JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
-      } catch (e) { return []; }
-    }
+    async function caricaDatiAdmin() {
+      const tbody = document.getElementById('adminBody');
+      let lista = [];
 
-    async function sincronizzaCloudAdmin() {
       try {
-        const res = await fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=12h`);
-        const text = await res.text();
-        const lista = leggiRichieste();
-        text.trim().split('\n').forEach(line => {
+        const res = await fetch(`${SCRIPT_URL}?action=get`);
+        const json = await res.json();
+        const daSheet = Array.isArray(json) ? json : (json.data || []);
+        lista = [...daSheet];
+      } catch (e) {}
+
+      try {
+        const resNtfy = await fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=24h`);
+        const txt = await resNtfy.text();
+        txt.trim().split('\n').forEach(line => {
           if (!line) return;
           try {
             const ev = JSON.parse(line);
             if (ev.event === 'message' && ev.message) {
               const item = JSON.parse(ev.message);
-              if (item && item.id && !lista.some(x => x.id === item.id)) {
-                lista.unshift(item);
+              if (item && item.id && !lista.some(x => (x.id || x['ID Pratica']) === item.id)) {
+                lista.push(item);
               }
             }
           } catch (e) {}
         });
-        localStorage.setItem(REQ_KEY, JSON.stringify(lista.slice(0, 80)));
-        aggiornaTabella();
       } catch (e) {}
-    }
 
-    function aggiornaTabella() {
-      const lista = leggiRichieste();
-      document.getElementById('totReq').textContent = lista.length;
-      document.getElementById('waitReq').textContent = lista.filter(r => r.stato !== 'Completata').length;
-      document.getElementById('doneReq').textContent = lista.filter(r => r.stato === 'Completata').length;
+      document.getElementById('totPratiche').textContent = lista.length;
+      document.getElementById('apertePratiche').textContent = lista.filter(x => (x.stato || x['Stato']) === 'Aperta').length;
+      document.getElementById('gestitePratiche').textContent = lista.filter(x => (x.stato || x['Stato']) !== 'Aperta').length;
 
-      const tbody = document.getElementById('tabellaAdmin');
       if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748B;">Nessuna richiesta presente</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748B;">Nessuna richiesta presente</td></tr>';
         return;
       }
 
-      tbody.innerHTML = lista.map(r => `
+      tbody.innerHTML = lista.map(p => `
         <tr>
-          <td>${r.orario}</td>
-          <td><strong>${r.reparto}</strong></td>
-          <td>${r.prodotto}</td>
-          <td>${r.cliente}</td>
-          <td>${r.ritaglio ? `<a href="${r.ritaglio}" target="_blank" style="color:var(--unieuro-orange); font-weight:700;">📎 Vedi Ritaglio</a>` : '-'}</td>
-          <td style="font-weight:700; color:${r.stato === 'Completata' ? '#16A34A' : '#EA580C'};">${r.stato}</td>
+          <td><strong>${p.id || p['ID Pratica'] || ''}</strong></td>
+          <td>${p.timestamp || p['Data e Ora'] || ''}</td>
+          <td>${p.reparto || p['Reparto'] || ''}</td>
+          <td>${p.nomeCliente || p['Nome Cliente'] || ''}<br><small>${p.telefono || p['Telefono'] || ''}</small></td>
+          <td>${p.noteCliente || p['Dettagli / Note Cliente'] || ''}</td>
+          <td>${p.operatore || p['Operatore'] || '-'}</td>
+          <td style="font-weight:700;">${p.stato || p['Stato'] || 'Aperta'}</td>
         </tr>
       `).join('');
     }
 
-    function copiaLinkColleghi() {
-      const input = document.getElementById('staffLinkInput');
-      input.select();
-      navigator.clipboard.writeText(input.value);
-      alert('Link Pannello Reparti copiato: ' + input.value);
-    }
-
-    function svuotaTutto() {
-      if (confirm('Cancellare lo storico delle richieste?')) {
-        localStorage.removeItem(REQ_KEY);
-        aggiornaTabella();
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      aggiornaTabella();
-      sincronizzaCloudAdmin();
-    });
+    window.addEventListener('DOMContentLoaded', caricaDatiAdmin);
   </script>
 </body>
 </html>
