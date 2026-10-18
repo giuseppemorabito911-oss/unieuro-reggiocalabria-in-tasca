@@ -30,7 +30,7 @@
     }
     .kpi-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 15px;
       margin-bottom: 20px;
     }
@@ -45,8 +45,9 @@
     .kpi-card.purple { border-top-color: #7C3AED; }
     .kpi-card.orange { border-top-color: var(--unieuro-orange); }
     .kpi-card.green { border-top-color: #16A34A; }
-    .kpi-label { font-size: 0.82rem; color: #64748B; font-weight: 700; }
-    .kpi-num { font-size: 1.8rem; font-weight: 800; color: var(--unieuro-blue); margin-top: 6px; }
+    .kpi-card.gray { border-top-color: #64748B; }
+    .kpi-label { font-size: 0.8rem; color: #64748B; font-weight: 700; }
+    .kpi-num { font-size: 1.7rem; font-weight: 800; color: var(--unieuro-blue); margin-top: 6px; }
     .panel {
       background: white;
       padding: 18px;
@@ -92,6 +93,7 @@
       text-decoration: none;
       font-size: 0.88rem;
     }
+    .btn-danger { background: #DC2626; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem; }
     th, td { padding: 12px 10px; border-bottom: 1px solid #CBD5E1; text-align: left; vertical-align: top; }
     th { background: #F8FAFC; color: var(--unieuro-blue); }
@@ -117,36 +119,50 @@
   <header>
     <div>
       <h2 style="margin:0;">📊 Dashboard Admin - Unieuro RC</h2>
-      <small id="syncStatusAdmin" style="color:#CBD5E1;">⚡ Gestione centralizzata richieste</small>
+      <small id="syncStatusAdmin" style="color:#CBD5E1;">⚡ Vista attiva: Oggi e Ieri</small>
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
       <a href="interno.html" class="btn" style="background:#7C3AED;">📞 + Richiesta Interna</a>
+      <button class="btn btn-danger" onclick="pulisciStoricoManuale()">🗑️ Pulisci Vecchie Pratiche</button>
       <button class="btn" onclick="sincronizzaAdmin()">🔄 Aggiorna</button>
     </div>
   </header>
 
   <div class="kpi-container">
-    <div class="kpi-card" onclick="impostaFiltri('TUTTI', 'TUTTI')">
-      <div class="kpi-label">PRATICHE TOTALI</div>
-      <div class="kpi-num" id="totPratiche">0</div>
+    <div class="kpi-card" onclick="impostaFiltri('OGGI_IERI', 'TUTTI')">
+      <div class="kpi-label">OGGI & IERI</div>
+      <div class="kpi-num" id="totOggiIeri">0</div>
     </div>
-    <div class="kpi-card purple" onclick="impostaFiltri('TUTTI', 'INTERNE')">
+    <div class="kpi-card purple" onclick="impostaFiltri('TUTTI', 'INTERNA')">
       <div class="kpi-label">📞 INTERNE</div>
       <div class="kpi-num" id="totInterne">0</div>
     </div>
     <div class="kpi-card orange" onclick="impostaFiltri('Aperta', 'TUTTI')">
-      <div class="kpi-label">SOLO APERTE</div>
+      <div class="kpi-label">APERTE</div>
       <div class="kpi-num" id="apertePratiche">0</div>
     </div>
     <div class="kpi-card green" onclick="impostaFiltri('Gestita', 'TUTTI')">
-      <div class="kpi-label">SOLO GESTITE</div>
+      <div class="kpi-label">GESTITE</div>
       <div class="kpi-num" id="gestitePratiche">0</div>
+    </div>
+    <div class="kpi-card gray" onclick="impostaFiltri('Archivio', 'TUTTI')">
+      <div class="kpi-label">📁 ARCHIVIO STORICO</div>
+      <div class="kpi-num" id="totArchivio">0</div>
     </div>
   </div>
 
   <div class="panel">
     <div class="toolbar-filters">
       <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+        <div class="filter-group">
+          <span>📅 Periodo / Vista:</span>
+          <select id="filtroPeriodoSelect" onchange="renderizzaTabella()">
+            <option value="OGGI_IERI">🕒 Oggi e Ieri (Principale)</option>
+            <option value="TUTTI">📋 Tutte (Oggi, Ieri e Storico)</option>
+            <option value="Archivio">📁 Solo Archivio (Precedenti a ieri)</option>
+          </select>
+        </div>
+
         <div class="filter-group">
           <span>📂 Origine:</span>
           <select id="filtroOrigineSelect" onchange="renderizzaTabella()">
@@ -202,6 +218,29 @@
       return clean;
     }
 
+    function analizzaData(timestampStr) {
+      if (!timestampStr) return new Date(0);
+      try {
+        const parti = timestampStr.split(/[\s,\/:]+/);
+        if (parti.length >= 3) {
+          return new Date(parti[2], parti[1] - 1, parti[0]);
+        }
+      } catch (e) {}
+      return new Date(timestampStr);
+    }
+
+    function eOggiOieri(timestampStr) {
+      const dataPratica = analizzaData(timestampStr);
+      const oggi = new Date();
+      oggi.setHours(0, 0, 0, 0);
+
+      const ieri = new Date(oggi);
+      ieri.setDate(ieri.getDate() - 1);
+
+      dataPratica.setHours(0, 0, 0, 0);
+      return dataPratica.getTime() >= ieri.getTime();
+    }
+
     function normalizza(p) {
       if (!p) return null;
       const id = String(p.id || p['ID Pratica'] || '').trim();
@@ -238,18 +277,24 @@
       mappaAdmin.set(norm.id, norm);
     }
 
-    function impostaFiltri(stato, origine) {
-      document.getElementById('filtroStatoSelect').value = stato;
-      document.getElementById('filtroOrigineSelect').value = origine === 'INTERNE' ? 'INTERNA' : 'TUTTI';
+    function impostaFiltri(periodo, origine) {
+      document.getElementById('filtroPeriodoSelect').value = periodo;
+      document.getElementById('filtroOrigineSelect').value = origine;
+      document.getElementById('filtroStatoSelect').value = 'TUTTI';
       renderizzaTabella();
     }
 
     function aggiornaKPI() {
       const lista = Array.from(mappaAdmin.values());
-      document.getElementById('totPratiche').textContent = lista.length;
+      const oggiIeriList = lista.filter(x => eOggiOieri(x.timestamp));
+      const archivioList = lista.filter(x => !eOggiOieri(x.timestamp));
+
+      document.getElementById('totOggiIeri').textContent = oggiIeriList.length;
       document.getElementById('totInterne').textContent = lista.filter(x => x.id.startsWith('INT-') || x.tipoRichiesta.includes('INTERNO')).length;
-      document.getElementById('apertePratiche').textContent = lista.filter(x => x.stato === 'Aperta').length;
-      document.getElementById('gestitePratiche').textContent = lista.filter(x => x.stato === 'Gestita').length;
+      document.getElementById('apertePratiche').textContent = oggiIeriList.filter(x => x.stato === 'Aperta').length;
+      document.getElementById('gestitePratiche').textContent = oggiIeriList.filter(x => x.stato === 'Gestita').length;
+      document.getElementById('totArchivio').textContent = archivioList.length;
+
       renderizzaTabella();
     }
 
@@ -278,7 +323,7 @@
           const daSheet = Array.isArray(json) ? json : (json.data || []);
           daSheet.forEach(item => unisciRecord(item));
           try {
-            localStorage.setItem(REQ_KEY, JSON.stringify(Array.from(mappaAdmin.values()).slice(0, 100)));
+            localStorage.setItem(REQ_KEY, JSON.stringify(Array.from(mappaAdmin.values()).slice(0, 150)));
           } catch (e) {}
           aggiornaKPI();
         }).catch(() => {});
@@ -288,29 +333,54 @@
       });
     }
 
+    function pulisciStoricoManuale() {
+      if (confirm("Vuoi rimuovere dalla vista e svuotare le richieste più vecchie di 2 giorni per mantenere il file leggero?")) {
+        const t = prompt("Digita 'CANCELLA' per confermare l'eliminazione definitiva delle vecchie pratiche dallo storico:");
+        if (t === 'CANCELLA') {
+          // Invia comando di pulizia manuale o rimuove localmente
+          const aggiornate = Array.from(mappaAdmin.values()).filter(x => eOggiOieri(x.timestamp));
+          mappaAdmin.clear();
+          aggiornate.forEach(x => mappaAdmin.set(x.id, x));
+          try {
+            localStorage.setItem(REQ_KEY, JSON.stringify(aggiornate));
+          } catch (e) {}
+          aggiornaKPI();
+          alert("✅ Storico ripulito con successo!");
+        }
+      }
+    }
+
     function renderizzaTabella() {
       const tbody = document.getElementById('adminBody');
-      const filtroStato = document.getElementById('filtroStatoSelect').value;
+      const filtroPeriodo = document.getElementById('filtroPeriodoSelect').value;
       const filtroOrigine = document.getElementById('filtroOrigineSelect').value;
+      const filtroStato = document.getElementById('filtroStatoSelect').value;
 
       let lista = Array.from(mappaAdmin.values()).reverse();
 
-      // Filtro Stato
-      if (filtroStato !== 'TUTTI') {
-        lista = lista.filter(x => x.stato === filtroStato);
+      // 1. Filtro Periodo (Oggi e Ieri vs Archivio)
+      if (filtroPeriodo === 'OGGI_IERI') {
+        lista = lista.filter(x => eOggiOieri(x.timestamp));
+      } else if (filtroPeriodo === 'Archivio') {
+        lista = lista.filter(x => !eOggiOieri(x.timestamp));
       }
 
-      // Filtro Origine (Interne ed Esterne)
+      // 2. Filtro Origine (Interne ed Esterne)
       if (filtroOrigine === 'INTERNA') {
         lista = lista.filter(x => x.id.startsWith('INT-') || x.tipoRichiesta.includes('INTERNO'));
       } else if (filtroOrigine === 'ESTERNA') {
         lista = lista.filter(x => !x.id.startsWith('INT-') && !x.tipoRichiesta.includes('INTERNO'));
       }
 
+      // 3. Filtro Stato
+      if (filtroStato !== 'TUTTI') {
+        lista = lista.filter(x => x.stato === filtroStato);
+      }
+
       document.getElementById('conteggioRisultati').textContent = `Mostrate ${lista.length} pratiche`;
 
       if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748B; padding:20px;">Nessuna richiesta trovata.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748B; padding:20px;">Nessuna richiesta trovata per i filtri selezionati.</td></tr>';
         return;
       }
 
