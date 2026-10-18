@@ -120,7 +120,7 @@
   <header>
     <div>
       <h2 style="margin:0;">📊 Dashboard Admin - Unieuro RC</h2>
-      <small id="syncStatusAdmin" style="color:#CBD5E1;">⚡ Gestione avanzata e pulizia pratiche</small>
+      <small id="syncStatusAdmin" style="color:#CBD5E1;">⚡ Ordinamento: Data Decrescente</small>
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
       <a href="interno.html" class="btn" style="background:#7C3AED;">📞 + Richiesta Interna</a>
@@ -217,6 +217,16 @@
       if (!clean) return "";
       if (!clean.startsWith('0')) clean = '0' + clean;
       return clean;
+    }
+
+    function estraiTimestampNumerico(p) {
+      const match = String(p.id || '').match(/(\d{10,})/);
+      if (match) return Number(match[1]);
+      try {
+        return new Date(p.timestamp).getTime() || 0;
+      } catch (e) {
+        return 0;
+      }
     }
 
     function analizzaData(timestampStr) {
@@ -386,7 +396,10 @@
       const filtroOrigine = document.getElementById('filtroOrigineSelect').value;
       const filtroStato = document.getElementById('filtroStatoSelect').value;
 
-      let lista = Array.from(mappaAdmin.values()).reverse();
+      let lista = Array.from(mappaAdmin.values());
+
+      // Ordinamento per data decrescente (più recenti in alto)
+      lista.sort((a, b) => estraiTimestampNumerico(b) - estraiTimestampNumerico(a));
 
       if (filtroPeriodo === 'OGGI_IERI') {
         lista = lista.filter(x => eOggiOieri(x.timestamp));
