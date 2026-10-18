@@ -13,7 +13,9 @@
     body { background: #EEF2F7; padding: 20px; color: #1E293B; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
     .card { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 480px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); border-top: 6px solid #7C3AED; }
     h2 { color: var(--unieuro-blue); font-size: 1.2rem; margin-bottom: 6px; }
-    .sub { font-size: 0.85rem; color: #64748B; margin-bottom: 16px; }
+    .sub { font-size: 0.88rem; color: #475569; margin-bottom: 16px; line-height: 1.4; }
+    .btn-call-box { margin-bottom: 18px; }
+    .btn-call { background: #0284C7; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; font-size: 0.95rem; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 3px 10px rgba(2, 132, 199, 0.25); }
     .form-group { margin-bottom: 14px; }
     label { display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 6px; }
     select, input, textarea { width: 100%; padding: 11px 13px; border: 1.5px solid #CBD5E1; border-radius: 10px; font-size: 0.95rem; background: #F8FAFC; outline: none; }
@@ -27,6 +29,11 @@
   <div class="card" id="formCard">
     <h2>📞 Chiusura Rapida Intervento</h2>
     <div class="sub" id="infoPratica">Caricamento dati pratica...</div>
+
+    <!-- Tasto Chiama 7Collaboration con 0 iniziale -->
+    <div class="btn-call-box" id="callButtonContainer" style="display:none;">
+      <a href="#" id="linkChiama" class="btn-call">📞 Chiama Cliente con 7Collaboration</a>
+    </div>
 
     <form id="closeForm" onsubmit="inviaChiusura(event)">
       <div class="form-group">
@@ -67,13 +74,43 @@
     const praticaId = params.get('id');
     const repartoPratica = params.get('reparto') || '';
 
-    window.addEventListener('DOMContentLoaded', () => {
+    function preparaNumero7Collaboration(num) {
+      if (!num) return "";
+      let clean = String(num).replace(/[\s\-\.\(\)']+/g, '').replace(/^(\+39|0039)/, '');
+      if (!clean) return "";
+      if (!clean.startsWith('0')) clean = '0' + clean;
+      return clean;
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
       if (!praticaId) {
         document.getElementById('infoPratica').textContent = "⚠️ Errore: ID pratica mancante nel link.";
         document.getElementById('closeForm').style.display = 'none';
-      } else {
-        document.getElementById('infoPratica').innerHTML = `Pratica: <strong>${praticaId}</strong> • Reparto: <strong>${repartoPratica}</strong>`;
+        return;
       }
+
+      document.getElementById('infoPratica').innerHTML = `Pratica: <strong>${praticaId}</strong> • Reparto: <strong>${repartoPratica}</strong>`;
+
+      // Recupera il numero di telefono associato alla pratica direttamente da Google Sheets / Cache
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=get`, { redirect: 'follow' });
+        const json = await res.json();
+        const lista = Array.isArray(json) ? json : (json.data || []);
+        const praticaTrovata = lista.find(p => String(p.id || p['ID Pratica']) === String(praticaId));
+
+        if (praticaTrovata) {
+          const telRaw = praticaTrovata.telefono || praticaTrovata['Telefono'] || '';
+          const tel7Collab = preparaNumero7Collaboration(telRaw);
+          const cliente = praticaTrovata.nomeCliente || praticaTrovata['Nome Cliente'] || 'Cliente';
+
+          if (tel7Collab) {
+            const btnCall = document.getElementById('linkChiama');
+            btnCall.href = `tel:${tel7Collab}`;
+            btnCall.textContent = `📞 Chiama ${cliente} (${tel7Collab})`;
+            document.getElementById('callButtonContainer').style.display = 'block';
+          }
+        }
+      } catch (e) {}
     });
 
     async function inviaChiusura(e) {
@@ -95,13 +132,11 @@
         noteRepartista: note
       };
 
-      // Notifica in tempo reale su admin
       fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
         method: 'POST',
         body: JSON.stringify(updatePayload)
       }).catch(() => {});
 
-      // Aggiornamento su Google Apps Script
       try {
         await fetch(SCRIPT_URL, {
           method: 'POST',
