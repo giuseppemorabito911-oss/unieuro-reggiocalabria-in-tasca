@@ -41,12 +41,10 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-top: 4px solid var(--unieuro-blue);
       cursor: pointer;
-      transition: transform 0.1s;
     }
-    .kpi-card:hover { transform: translateY(-2px); }
+    .kpi-card.purple { border-top-color: #7C3AED; }
     .kpi-card.orange { border-top-color: var(--unieuro-orange); }
     .kpi-card.green { border-top-color: #16A34A; }
-    .kpi-card.gray { border-top-color: #64748B; }
     .kpi-label { font-size: 0.82rem; color: #64748B; font-weight: 700; }
     .kpi-num { font-size: 1.8rem; font-weight: 800; color: var(--unieuro-blue); margin-top: 6px; }
     .panel {
@@ -70,7 +68,7 @@
     .filter-group {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       font-size: 0.85rem;
       font-weight: 700;
       color: #475569;
@@ -102,7 +100,7 @@
     tr.row-gestita { background-color: #DCFCE7; }
     tr.row-archiviata { background-color: #F1F5F9; opacity: 0.78; }
 
-    .badge-interno-admin {
+    .badge-interno {
       background: #7C3AED;
       color: white;
       padding: 3px 8px;
@@ -119,55 +117,52 @@
   <header>
     <div>
       <h2 style="margin:0;">📊 Dashboard Admin - Unieuro RC</h2>
-      <small id="syncStatusAdmin" style="color:#CBD5E1;">⚡ Gestione avanzata pratiche e flussi interni</small>
+      <small id="syncStatusAdmin" style="color:#CBD5E1;">⚡ Gestione centralizzata richieste</small>
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <a href="interno.html" class="btn" style="background:#7C3AED;">📞 + Richiesta da Interno</a>
-      <a href="reparto.html" class="btn" style="background:rgba(255,255,255,0.2);">🏢 Pannello Reparti</a>
+      <a href="interno.html" class="btn" style="background:#7C3AED;">📞 + Richiesta Interna</a>
       <button class="btn" onclick="sincronizzaAdmin()">🔄 Aggiorna</button>
     </div>
   </header>
 
   <div class="kpi-container">
-    <div class="kpi-card" onclick="impostaFiltroStato('TUTTI')">
+    <div class="kpi-card" onclick="impostaFiltri('TUTTI', 'TUTTI')">
       <div class="kpi-label">PRATICHE TOTALI</div>
       <div class="kpi-num" id="totPratiche">0</div>
     </div>
-    <div class="kpi-card orange" onclick="impostaFiltroStato('Aperta')">
+    <div class="kpi-card purple" onclick="impostaFiltri('TUTTI', 'INTERNE')">
+      <div class="kpi-label">📞 INTERNE</div>
+      <div class="kpi-num" id="totInterne">0</div>
+    </div>
+    <div class="kpi-card orange" onclick="impostaFiltri('Aperta', 'TUTTI')">
       <div class="kpi-label">SOLO APERTE</div>
       <div class="kpi-num" id="apertePratiche">0</div>
     </div>
-    <div class="kpi-card green" onclick="impostaFiltroStato('Gestita')">
+    <div class="kpi-card green" onclick="impostaFiltri('Gestita', 'TUTTI')">
       <div class="kpi-label">SOLO GESTITE</div>
       <div class="kpi-num" id="gestitePratiche">0</div>
-    </div>
-    <div class="kpi-card gray" onclick="impostaFiltroStato('Archiviata')">
-      <div class="kpi-label">SOLO ARCHIVIATE</div>
-      <div class="kpi-num" id="archiviatePratiche">0</div>
     </div>
   </div>
 
   <div class="panel">
-    <!-- BARRA FILTRI E ORDINAMENTO AVANZATO -->
     <div class="toolbar-filters">
-      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
         <div class="filter-group">
-          <span>📂 Stato:</span>
+          <span>📂 Origine:</span>
+          <select id="filtroOrigineSelect" onchange="renderizzaTabella()">
+            <option value="TUTTI">Tutte (Interne ed Esterne)</option>
+            <option value="ESTERNA">🌐 Solo Esterne (Clienti)</option>
+            <option value="INTERNA">📞 Solo Interne (Staff)</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <span>📌 Stato:</span>
           <select id="filtroStatoSelect" onchange="renderizzaTabella()">
             <option value="TUTTI">Tutti gli stati</option>
             <option value="Aperta">🔴 Aperte</option>
             <option value="Gestita">🟢 Gestite</option>
             <option value="Archiviata">📂 Archiviate</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <span>🔄 Ordina per:</span>
-          <select id="ordinamentoSelect" onchange="renderizzaTabella()">
-            <option value="data-disc">Data (Più recenti prima)</option>
-            <option value="data-asc">Data (Meno recenti prima)</option>
-            <option value="reparto">Reparto (A-Z)</option>
-            <option value="stato">Stato Pratica</option>
           </select>
         </div>
       </div>
@@ -178,10 +173,10 @@
       <table>
         <thead>
           <tr>
-            <th>ID / Tipo Origine</th>
+            <th>ID / Tipo</th>
             <th>Data / Ora</th>
             <th>Reparto</th>
-            <th>Cliente & Contatto</th>
+            <th>Cliente & Tel</th>
             <th>Note Richiesta</th>
             <th>Gestione Operatore</th>
             <th>Stato</th>
@@ -243,17 +238,18 @@
       mappaAdmin.set(norm.id, norm);
     }
 
-    function impostaFiltroStato(stato) {
+    function impostaFiltri(stato, origine) {
       document.getElementById('filtroStatoSelect').value = stato;
+      document.getElementById('filtroOrigineSelect').value = origine === 'INTERNE' ? 'INTERNA' : 'TUTTI';
       renderizzaTabella();
     }
 
     function aggiornaKPI() {
       const lista = Array.from(mappaAdmin.values());
       document.getElementById('totPratiche').textContent = lista.length;
+      document.getElementById('totInterne').textContent = lista.filter(x => x.id.startsWith('INT-') || x.tipoRichiesta.includes('INTERNO')).length;
       document.getElementById('apertePratiche').textContent = lista.filter(x => x.stato === 'Aperta').length;
       document.getElementById('gestitePratiche').textContent = lista.filter(x => x.stato === 'Gestita').length;
-      document.getElementById('archiviatePratiche').textContent = lista.filter(x => x.stato === 'Archiviata').length;
       renderizzaTabella();
     }
 
@@ -295,34 +291,21 @@
     function renderizzaTabella() {
       const tbody = document.getElementById('adminBody');
       const filtroStato = document.getElementById('filtroStatoSelect').value;
-      const tipoOrdinamento = document.getElementById('ordinamentoSelect').value;
+      const filtroOrigine = document.getElementById('filtroOrigineSelect').value;
 
-      let lista = Array.from(mappaAdmin.values());
+      let lista = Array.from(mappaAdmin.values()).reverse();
 
-      // 1. Filtro per Stato
+      // Filtro Stato
       if (filtroStato !== 'TUTTI') {
         lista = lista.filter(x => x.stato === filtroStato);
       }
 
-      // 2. Ordinamento Avanzato (Data, Reparto, Stato)
-      lista.sort((a, b) => {
-        if (tipoOrdinamento === 'data-disc' || tipoOrdinamento === 'data-asc') {
-          // Estrae il timestamp numerico dall'ID (es. REQ-1718...) se possibile, altrimenti confronta le stringhe data
-          let tA = 0, tB = 0;
-          const matchA = a.id.match(/(\d{10,})/);
-          const matchB = b.id.match(/(\d{10,})/);
-          if (matchA) tA = Number(matchA[1]);
-          if (matchB) tB = Number(matchB[1]);
-          return tipoOrdinamento === 'data-disc' ? tB - tA : tA - tB;
-        }
-        if (tipoOrdinamento === 'reparto') {
-          return a.reparto.localeCompare(b.reparto);
-        }
-        if (tipoOrdinamento === 'stato') {
-          return a.stato.localeCompare(b.stato);
-        }
-        return 0;
-      });
+      // Filtro Origine (Interne ed Esterne)
+      if (filtroOrigine === 'INTERNA') {
+        lista = lista.filter(x => x.id.startsWith('INT-') || x.tipoRichiesta.includes('INTERNO'));
+      } else if (filtroOrigine === 'ESTERNA') {
+        lista = lista.filter(x => !x.id.startsWith('INT-') && !x.tipoRichiesta.includes('INTERNO'));
+      }
 
       document.getElementById('conteggioRisultati').textContent = `Mostrate ${lista.length} pratiche`;
 
@@ -333,7 +316,7 @@
 
       tbody.innerHTML = lista.map(p => {
         const tel = preparaNumero7Collaboration(p.telefono);
-        const isInterno = p.id.startsWith('INT-') || p.tipoRichiesta.includes('INTERNO') || p.noteCliente.includes('DA INTERNO');
+        const isInterno = p.id.startsWith('INT-') || p.tipoRichiesta.includes('INTERNO');
 
         let rowClass = 'row-aperta';
         if (p.stato === 'Gestita') rowClass = 'row-gestita';
@@ -343,15 +326,14 @@
           <tr class="${rowClass}">
             <td>
               <strong>${p.id}</strong><br>
-              <span style="font-size:0.78rem; color:#475569;">${p.tipoRichiesta || 'Richiesta Cliente'}</span>
-              ${isInterno ? `<br><span class="badge-interno-admin">📞 DA INTERNO</span>` : ''}
+              <span style="font-size:0.78rem; color:#475569;">${p.tipoRichiesta || 'Richiesta'}</span>
+              ${isInterno ? `<br><span class="badge-interno">📞 INTERNO</span>` : ''}
             </td>
             <td>${p.timestamp}</td>
             <td><strong>${p.reparto}</strong></td>
             <td>
               ${p.nomeCliente}<br>
               ${tel ? `<a href="tel:${tel}" style="color:#0284C7; font-weight:700;">📞 ${tel}</a>` : ''}
-              ${p.emailCliente ? `<br><a href="mailto:${p.emailCliente}" style="color:var(--unieuro-blue);">${p.emailCliente}</a>` : ''}
             </td>
             <td>${p.noteCliente}</td>
             <td>
