@@ -55,6 +55,34 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
+    .toolbar-filters {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      background: #F8FAFC;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #E2E8F0;
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #475569;
+    }
+    select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1.5px solid #CBD5E1;
+      font-weight: 700;
+      background: white;
+      font-size: 0.88rem;
+    }
     .btn {
       background: var(--unieuro-orange);
       color: white;
@@ -66,13 +94,24 @@
       text-decoration: none;
       font-size: 0.88rem;
     }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem; }
     th, td { padding: 12px 10px; border-bottom: 1px solid #CBD5E1; text-align: left; vertical-align: top; }
     th { background: #F8FAFC; color: var(--unieuro-blue); }
 
     tr.row-aperta { background-color: #FEF3C7; }
     tr.row-gestita { background-color: #DCFCE7; }
     tr.row-archiviata { background-color: #F1F5F9; opacity: 0.78; }
+
+    .badge-interno-admin {
+      background: #7C3AED;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      display: inline-block;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -80,22 +119,22 @@
   <header>
     <div>
       <h2 style="margin:0;">📊 Dashboard Admin - Unieuro RC</h2>
-      <small id="syncStatusAdmin" style="color:#CBD5E1;">⚡ Caricamento istantaneo attivo</small>
+      <small id="syncStatusAdmin" style="color:#CBD5E1;">⚡ Gestione avanzata pratiche e flussi interni</small>
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
       <a href="interno.html" class="btn" style="background:#7C3AED;">📞 + Richiesta da Interno</a>
-      <a href="reparto.html" class="btn" style="background:rgba(255,255,255,0.2);">🏢 Vai a Reparti</a>
+      <a href="reparto.html" class="btn" style="background:rgba(255,255,255,0.2);">🏢 Pannello Reparti</a>
       <button class="btn" onclick="sincronizzaAdmin()">🔄 Aggiorna</button>
     </div>
   </header>
 
   <div class="kpi-container">
     <div class="kpi-card" onclick="impostaFiltroStato('TUTTI')">
-      <div class="kpi-label">PRATICHE TOTALI (CLICCA)</div>
+      <div class="kpi-label">PRATICHE TOTALI</div>
       <div class="kpi-num" id="totPratiche">0</div>
     </div>
     <div class="kpi-card orange" onclick="impostaFiltroStato('Aperta')">
-      <div class="kpi-label">SOLO APERTE / IN ATTESA</div>
+      <div class="kpi-label">SOLO APERTE</div>
       <div class="kpi-num" id="apertePratiche">0</div>
     </div>
     <div class="kpi-card green" onclick="impostaFiltroStato('Gestita')">
@@ -109,24 +148,40 @@
   </div>
 
   <div class="panel">
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
-      <h3 style="margin:0; color:var(--unieuro-blue);">📋 Storico Richieste Registrate</h3>
-      <select id="filtroStatoSelect" onchange="renderizzaTabella()" style="padding:8px 12px; border-radius:8px; border:1px solid #CBD5E1; font-weight:700;">
-        <option value="TUTTI">Mostra: Tutti gli stati</option>
-        <option value="Aperta">🟠 Solo Aperte</option>
-        <option value="Gestita">🟢 Solo Gestite</option>
-        <option value="Archiviata">📂 Solo Archiviate</option>
-      </select>
+    <!-- BARRA FILTRI E ORDINAMENTO AVANZATO -->
+    <div class="toolbar-filters">
+      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+        <div class="filter-group">
+          <span>📂 Stato:</span>
+          <select id="filtroStatoSelect" onchange="renderizzaTabella()">
+            <option value="TUTTI">Tutti gli stati</option>
+            <option value="Aperta">🔴 Aperte</option>
+            <option value="Gestita">🟢 Gestite</option>
+            <option value="Archiviata">📂 Archiviate</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <span>🔄 Ordina per:</span>
+          <select id="ordinamentoSelect" onchange="renderizzaTabella()">
+            <option value="data-disc">Data (Più recenti prima)</option>
+            <option value="data-asc">Data (Meno recenti prima)</option>
+            <option value="reparto">Reparto (A-Z)</option>
+            <option value="stato">Stato Pratica</option>
+          </select>
+        </div>
+      </div>
+      <div id="conteggioRisultati" style="font-size:0.85rem; font-weight:700; color:#64748B;"></div>
     </div>
 
     <div style="overflow-x:auto;">
       <table>
         <thead>
           <tr>
-            <th>ID / Origine</th>
-            <th>Data/Ora</th>
+            <th>ID / Tipo Origine</th>
+            <th>Data / Ora</th>
             <th>Reparto</th>
-            <th>Cliente & Tel</th>
+            <th>Cliente & Contatto</th>
             <th>Note Richiesta</th>
             <th>Gestione Operatore</th>
             <th>Stato</th>
@@ -185,17 +240,7 @@
       }
       const norm = normalizza(raw);
       if (!norm) return;
-      const esistente = mappaAdmin.get(norm.id);
-      if (esistente) {
-        mappaAdmin.set(norm.id, {
-          ...esistente,
-          ...norm,
-          noteRepartista: norm.noteRepartista || esistente.noteRepartista,
-          operatore: norm.operatore || esistente.operatore
-        });
-      } else {
-        mappaAdmin.set(norm.id, norm);
-      }
+      mappaAdmin.set(norm.id, norm);
     }
 
     function impostaFiltroStato(stato) {
@@ -203,8 +248,8 @@
       renderizzaTabella();
     }
 
-    function aggiornaVista() {
-      const lista = Array.from(mappaAdmin.values()).reverse();
+    function aggiornaKPI() {
+      const lista = Array.from(mappaAdmin.values());
       document.getElementById('totPratiche').textContent = lista.length;
       document.getElementById('apertePratiche').textContent = lista.filter(x => x.stato === 'Aperta').length;
       document.getElementById('gestitePratiche').textContent = lista.filter(x => x.stato === 'Gestita').length;
@@ -228,7 +273,7 @@
               }
             } catch (e) {}
           });
-          aggiornaVista();
+          aggiornaKPI();
         }).catch(() => {});
 
       const pSheet = fetch(`${SCRIPT_URL}?action=get`, { redirect: 'follow' })
@@ -237,33 +282,58 @@
           const daSheet = Array.isArray(json) ? json : (json.data || []);
           daSheet.forEach(item => unisciRecord(item));
           try {
-            localStorage.setItem(REQ_KEY, JSON.stringify(Array.from(mappaAdmin.values()).slice(0, 80)));
+            localStorage.setItem(REQ_KEY, JSON.stringify(Array.from(mappaAdmin.values()).slice(0, 100)));
           } catch (e) {}
-          aggiornaVista();
+          aggiornaKPI();
         }).catch(() => {});
 
       Promise.allSettled([pNtfy, pSheet]).then(() => {
-        statusEl.textContent = '✅ Sincronizzato alle ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+        statusEl.textContent = '✅ Aggiornato alle ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
       });
     }
 
     function renderizzaTabella() {
       const tbody = document.getElementById('adminBody');
       const filtroStato = document.getElementById('filtroStatoSelect').value;
-      const lista = Array.from(mappaAdmin.values()).reverse();
+      const tipoOrdinamento = document.getElementById('ordinamentoSelect').value;
 
-      const listaFiltrata = filtroStato === 'TUTTI'
-        ? lista
-        : lista.filter(x => x.stato === filtroStato);
+      let lista = Array.from(mappaAdmin.values());
 
-      if (listaFiltrata.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748B; padding:20px;">Nessuna richiesta trovata per questo filtro.</td></tr>';
+      // 1. Filtro per Stato
+      if (filtroStato !== 'TUTTI') {
+        lista = lista.filter(x => x.stato === filtroStato);
+      }
+
+      // 2. Ordinamento Avanzato (Data, Reparto, Stato)
+      lista.sort((a, b) => {
+        if (tipoOrdinamento === 'data-disc' || tipoOrdinamento === 'data-asc') {
+          // Estrae il timestamp numerico dall'ID (es. REQ-1718...) se possibile, altrimenti confronta le stringhe data
+          let tA = 0, tB = 0;
+          const matchA = a.id.match(/(\d{10,})/);
+          const matchB = b.id.match(/(\d{10,})/);
+          if (matchA) tA = Number(matchA[1]);
+          if (matchB) tB = Number(matchB[1]);
+          return tipoOrdinamento === 'data-disc' ? tB - tA : tA - tB;
+        }
+        if (tipoOrdinamento === 'reparto') {
+          return a.reparto.localeCompare(b.reparto);
+        }
+        if (tipoOrdinamento === 'stato') {
+          return a.stato.localeCompare(b.stato);
+        }
+        return 0;
+      });
+
+      document.getElementById('conteggioRisultati').textContent = `Mostrate ${lista.length} pratiche`;
+
+      if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748B; padding:20px;">Nessuna richiesta trovata.</td></tr>';
         return;
       }
 
-      tbody.innerHTML = listaFiltrata.map(p => {
+      tbody.innerHTML = lista.map(p => {
         const tel = preparaNumero7Collaboration(p.telefono);
-        const isInterno = p.id.startsWith('INT-') || p.tipoRichiesta.includes('INTERNO');
+        const isInterno = p.id.startsWith('INT-') || p.tipoRichiesta.includes('INTERNO') || p.noteCliente.includes('DA INTERNO');
 
         let rowClass = 'row-aperta';
         if (p.stato === 'Gestita') rowClass = 'row-gestita';
@@ -272,15 +342,16 @@
         return `
           <tr class="${rowClass}">
             <td>
-              <strong>${p.id}</strong>
-              ${isInterno ? `<br><span style="background:#7C3AED; color:white; padding:2px 6px; border-radius:4px; font-size:0.72rem; font-weight:700;">📞 DA INTERNO</span>` : ''}
+              <strong>${p.id}</strong><br>
+              <span style="font-size:0.78rem; color:#475569;">${p.tipoRichiesta || 'Richiesta Cliente'}</span>
+              ${isInterno ? `<br><span class="badge-interno-admin">📞 DA INTERNO</span>` : ''}
             </td>
             <td>${p.timestamp}</td>
             <td><strong>${p.reparto}</strong></td>
             <td>
               ${p.nomeCliente}<br>
               ${tel ? `<a href="tel:${tel}" style="color:#0284C7; font-weight:700;">📞 ${tel}</a>` : ''}
-              ${p.emailCliente ? `<br><a href="mailto:${p.emailCliente}">${p.emailCliente}</a>` : ''}
+              ${p.emailCliente ? `<br><a href="mailto:${p.emailCliente}" style="color:var(--unieuro-blue);">${p.emailCliente}</a>` : ''}
             </td>
             <td>${p.noteCliente}</td>
             <td>
@@ -298,7 +369,7 @@
         const cache = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
         cache.forEach(p => unisciRecord(p));
       } catch (e) {}
-      aggiornaVista();
+      aggiornaKPI();
       sincronizzaAdmin();
     });
   </script>
