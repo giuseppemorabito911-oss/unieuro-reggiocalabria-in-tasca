@@ -30,6 +30,7 @@
       margin-bottom: 16px;
       display: flex;
       gap: 10px;
+      align-items: center;
       flex-wrap: wrap;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
@@ -39,16 +40,31 @@
       border: 1.5px solid #CBD5E1;
       font-size: 0.95rem;
     }
+    .sync-status {
+      font-size: 0.8rem;
+      color: #64748B;
+      font-weight: 700;
+    }
     .req-card {
-      background: white;
+      background: #FEF3C7;
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-left: 6px solid var(--unieuro-orange);
     }
-    .req-card.gestita { border-left-color: #16A34A; background-color: #F0FDF4; }
-    .req-card.archiviata { border-left-color: #64748B; background-color: #F8FAFC; opacity: 0.8; }
+    .req-card.gestita { border-left-color: #16A34A; background-color: #DCFCE7; }
+    .req-card.archiviata { border-left-color: #64748B; background-color: #F1F5F9; opacity: 0.8; }
+    .badge-interno {
+      background: #7C3AED;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
     .btn {
       background: var(--unieuro-blue);
       color: white;
@@ -80,6 +96,7 @@
       border: 2px solid var(--unieuro-orange);
       margin-top: 10px;
       display: block;
+      cursor: pointer;
     }
     .operator-note-box {
       background: white;
@@ -99,7 +116,10 @@
       <h2>🏢 Gestione Richieste di Reparto</h2>
       <small style="color:#CBD5E1;">Pannello Operativo Staff Unieuro RC</small>
     </div>
-    <button class="btn" style="background:var(--unieuro-orange);" onclick="caricaPratiche()">🔄 Aggiorna</button>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <a href="interno.html" class="btn" style="background:#7C3AED;">📞 + Richiesta da Interno</a>
+      <button class="btn" style="background:var(--unieuro-orange);" onclick="sincronizzaTutto()">🔄 Aggiorna</button>
+    </div>
   </header>
 
   <div class="toolbar">
@@ -113,16 +133,18 @@
       <option value="ASSISTENZA">🛠️ ASSISTENZA</option>
       <option value="RITIRO RAEE">♻️ RITIRO RAEE</option>
     </select>
+    <span id="syncIndicator" class="sync-status">⚡ Pronto</span>
   </div>
 
-  <div id="listaContainer">Caricamento richieste in corso...</div>
+  <div id="listaContainer"></div>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
     const REQ_KEY = 'unieuro_requests_db';
+    const OPERATORI_STAFF = ["PEPPE M.", "DAGO", "DANIELE", "GIORGIO", "PAOLO", "MIMMO", "OUSMANE"];
 
-    let tutteLePratiche = [];
+    let mappaPratiche = new Map();
 
     function preparaNumero7Collaboration(num) {
       if (!num) return "";
@@ -130,6 +152,71 @@
       if (!clean) return "";
       if (!clean.startsWith('0')) clean = '0' + clean;
       return clean;
+    }
+
+    function normalizzaPratica(p) {
+      if (!p) return null;
+      const id = String(p.id || p['ID Pratica'] || '').trim();
+      if (!id) return null;
+      return {
+        id: id,
+        timestamp: p.timestamp || p['Data e Ora'] || '',
+        reparto: String(p.reparto || p['Reparto'] || '').toUpperCase().trim(),
+        tipoRichiesta: p.tipoRichiesta || p['Tipo Richiesta'] || '',
+        nomeCliente: p.nomeCliente || p['Nome Cliente'] || '',
+        telefono: p.telefono || p['Telefono'] || '',
+        emailCliente: p.emailCliente || p['Email Cliente'] || '',
+        preferenzaContatto: p.preferenzaContatto || p['Preferenza Contatto'] || '',
+        noteCliente: p.noteCliente || p['Dettagli / Note Cliente'] || '',
+        stato: p.stato || p['Stato'] || 'Aperta',
+        noteRepartista: p.noteRepartista || p['Note Repartista'] || '',
+        operatore: p.operatore || p['Operatore'] || '',
+        image: p.image || p['Immagine / Offerta (Base64)'] || ''
+      };
+    }
+
+    function unisciPratica(raw) {
+      if (!raw) return;
+      if (raw.action === 'update' && raw.id) {
+        const esistente = mappaPratiche.get(String(raw.id));
+        if (esistente) {
+          if (raw.stato) esistente.stato = raw.stato;
+          if (raw.operatore !== undefined) esistente.operatore = raw.operatore;
+          if (raw.noteRepartista !== undefined) esistente.noteRepartista = raw.noteRepartista;
+          mappaPratiche.set(String(raw.id), esistente);
+        }
+        return;
+      }
+
+      const norm = normalizzaPratica(raw);
+      if (!norm) return;
+      const vecchia = mappaPratiche.get(norm.id);
+      if (vecchia) {
+        mappaPratiche.set(norm.id, {
+          ...vecchia,
+          ...norm,
+          image: norm.image || vecchia.image,
+          noteRepartista: norm.noteRepartista || vecchia.noteRepartista,
+          operatore: norm.operatore || vecchia.operatore
+        });
+      } else {
+        mappaPratiche.set(norm.id, norm);
+      }
+    }
+
+    function salvaCacheLocale() {
+      try {
+        const arr = Array.from(mappaPratiche.values()).slice(0, 80);
+        localStorage.setItem(REQ_KEY, JSON.stringify(arr));
+      } catch (e) {}
+    }
+
+    function caricaCacheLocaleSubito() {
+      try {
+        const salvate = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
+        salvate.forEach(p => unisciPratica(p));
+      } catch (e) {}
+      filtraPratiche();
     }
 
     function leggiParametroUrl() {
@@ -145,149 +232,157 @@
       }
     }
 
-    async function caricaPratiche() {
-      let listaCombinata = [];
+    function sincronizzaTutto() {
+      const ind = document.getElementById('syncIndicator');
+      ind.textContent = '🔄 Sincronizzazione...';
 
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=get`);
-        const json = await res.json();
-        const daSheet = Array.isArray(json) ? json : (json.data || []);
-        listaCombinata = [...daSheet];
-      } catch (err) {}
-
-      try {
-        const resNtfy = await fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=24h`);
-        const txt = await resNtfy.text();
-        txt.trim().split('\n').forEach(line => {
-          if (!line) return;
-          try {
-            const ev = JSON.parse(line);
-            if (ev.event === 'message' && ev.message) {
-              const item = JSON.parse(ev.message);
-              if (item && item.id && !listaCombinata.some(x => String(x.id || x['ID Pratica']) === String(item.id))) {
-                listaCombinata.push(item);
+      // 1. Canale Rapido Cloud (ntfy.sh - risponde in 0.2s)
+      const pNtfy = fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=48h`)
+        .then(r => r.text())
+        .then(txt => {
+          txt.trim().split('\n').forEach(line => {
+            if (!line) return;
+            try {
+              const ev = JSON.parse(line);
+              if (ev.event === 'message' && ev.message) {
+                unisciPratica(JSON.parse(ev.message));
               }
-            }
-          } catch (e) {}
-        });
-      } catch (e) {}
+            } catch (e) {}
+          });
+          salvaCacheLocale();
+          filtraPratiche();
+        }).catch(() => {});
 
-      try {
-        const locali = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
-        locali.forEach(item => {
-          if (item && item.id && !listaCombinata.some(x => String(x.id || x['ID Pratica']) === String(item.id))) {
-            listaCombinata.push(item);
-          }
-        });
-      } catch (e) {}
+      // 2. Google Apps Script in parallelo (non blocca mai la pagina)
+      const pSheet = fetch(`${SCRIPT_URL}?action=get`, { redirect: 'follow' })
+        .then(r => r.json())
+        .then(json => {
+          const daSheet = Array.isArray(json) ? json : (json.data || []);
+          daSheet.forEach(item => unisciPratica(item));
+          salvaCacheLocale();
+          filtraPratiche();
+        }).catch(() => {});
 
-      tutteLePratiche = listaCombinata;
-      filtraPratiche();
+      Promise.allSettled([pNtfy, pSheet]).then(() => {
+        ind.textContent = '✅ Aggiornato ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      });
     }
 
     function filtraPratiche() {
       const rep = document.getElementById('filtroReparto').value;
       const container = document.getElementById('listaContainer');
+      const tutte = Array.from(mappaPratiche.values()).reverse();
 
       const lista = rep === 'TUTTI'
-        ? tutteLePratiche
-        : tutteLePratiche.filter(x => String(x.reparto || x['Reparto'] || '').toUpperCase() === rep.toUpperCase());
+        ? tutte
+        : tutte.filter(x => x.reparto === rep.toUpperCase());
 
       if (lista.length === 0) {
-        container.innerHTML = '<div style="background:white; padding:25px; border-radius:12px; text-align:center;">Nessuna richiesta trovata per questo reparto.</div>';
+        container.innerHTML = '<div style="background:white; padding:25px; border-radius:12px; text-align:center;">Nessuna richiesta presente per questo reparto.</div>';
         return;
       }
 
       container.innerHTML = lista.map(p => {
-        const id = p.id || p['ID Pratica'] || '';
-        const dataOra = p.timestamp || p['Data e Ora'] || '';
-        const reparto = p.reparto || p['Reparto'] || '';
-        const cliente = p.nomeCliente || p['Nome Cliente'] || '';
-        const metodo = p.preferenzaContatto || p['Preferenza Contatto'] || '';
-        const telRaw = p.telefono || p['Telefono'] || '';
-        const tel7Collab = preparaNumero7Collaboration(telRaw);
-        const email = p.emailCliente || p['Email Cliente'] || '';
-        const note = p.noteCliente || p['Dettagli / Note Cliente'] || '';
-        const stato = p.stato || p['Stato'] || 'Aperta';
-        const img = p.image || p['Immagine / Offerta (Base64)'] || '';
-        const noteRepartista = p.noteRepartista || p['Note Repartista'] || '';
-        const operatore = p.operatore || p['Operatore'] || '';
+        const tel7Collab = preparaNumero7Collaboration(p.telefono);
+        const isDaInterno = p.id.startsWith('INT-') || p.tipoRichiesta.includes('INTERNO') || p.noteCliente.includes('DA INTERNO');
 
         let cssClass = '';
-        if (stato === 'Gestita') cssClass = 'gestita';
-        if (stato === 'Archiviata') cssClass = 'archiviata';
+        if (p.stato === 'Gestita') cssClass = 'gestita';
+        if (p.stato === 'Archiviata') cssClass = 'archiviata';
+
+        const opzioniOperatore = [
+          `<option value="">-- Seleziona Operatore --</option>`,
+          ...OPERATORI_STAFF.map(op => `<option value="${op}" ${p.operatore === op ? 'selected' : ''}>${op}</option>`)
+        ].join('');
 
         return `
           <div class="req-card ${cssClass}">
+            ${isDaInterno ? `<div class="badge-interno">📞 RICHIESTA INSERITA DALL'INTERNO ${p.operatore ? '• PER: ' + p.operatore : ''}</div>` : ''}
             <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-              <strong style="color:var(--unieuro-blue); font-size:1.05rem;">[${id}] ${reparto}</strong>
-              <span style="font-weight:800; color:${stato === 'Aperta' ? '#EA580C' : (stato === 'Gestita' ? '#16A34A' : '#64748B')};">${stato}</span>
+              <strong style="color:var(--unieuro-blue); font-size:1.05rem;">[${p.id}] ${p.reparto}</strong>
+              <span style="font-weight:800; color:${p.stato === 'Aperta' ? '#EA580C' : (p.stato === 'Gestita' ? '#16A34A' : '#64748B')};">${p.stato}</span>
             </div>
-            <p style="margin:8px 0; font-size:0.95rem;"><strong>Note Richiesta:</strong> ${note}</p>
+            <p style="margin:8px 0; font-size:0.95rem;"><strong>Note Richiesta:</strong> ${p.noteCliente}</p>
             <div style="font-size:0.88rem; color:#475569; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-              <span>👤 <strong>Cliente:</strong> ${cliente}</span>
-              <span>📌 <strong>Ricontatto:</strong> ${metodo}</span>
+              <span>👤 <strong>Cliente:</strong> ${p.nomeCliente}</span>
+              <span>📌 <strong>Ricontatto:</strong> ${p.preferenzaContatto}</span>
               ${tel7Collab ? `<a href="tel:${tel7Collab}" class="btn-call">📞 Chiama ${tel7Collab} (7Collaboration)</a>` : ''}
-              ${email ? `<a href="mailto:${email}" style="color:var(--unieuro-blue); font-weight:700;">✉️ ${email}</a>` : ''}
-              <span>🕒 ${dataOra}</span>
+              ${p.emailCliente ? `<a href="mailto:${p.emailCliente}" style="color:var(--unieuro-blue); font-weight:700;">✉️ ${p.emailCliente}</a>` : ''}
+              <span>🕒 ${p.timestamp}</span>
             </div>
 
-            ${img && img.startsWith('data:image') ? `<img src="${img}" class="crop-img" onclick="window.open(this.src)">` : ''}
+            ${p.image && p.image.startsWith('data:image') ? `<img src="${p.image}" class="crop-img" onclick="window.open(this.src)">` : ''}
 
-            ${(noteRepartista || operatore) ? `
+            ${(p.noteRepartista || p.operatore) ? `
               <div class="operator-note-box">
-                🛠️ <strong>Gestito da:</strong> ${operatore \vert{}\vert{} 'Operatore'} \vert{} <strong>Note:</strong>${noteRepartista || 'Nessuna nota'}
+                🛠️ <strong>Operatore:</strong> ${p.operatore \vert{}\vert{} '-'} \vert{} <strong>Note Reparto:</strong>${p.noteRepartista || 'Nessuna nota'}
               </div>
             ` : ''}
 
             <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-              <input type="text" id="operatore_${id}" value="${operatore}" placeholder="Tuo nome operatore..." style="padding:7px 10px; font-size:0.85rem;">
-              <input type="text" id="noteRep_${id}" value="${noteRepartista}" placeholder="Note reparto..." style="flex:1; padding:7px 10px; font-size:0.85rem;">
-              <button class="btn btn-green" onclick="aggiornaPratica('${id}', 'Gestita')">✔ Segna Gestita</button>
-              <button class="btn btn-gray" onclick="aggiornaPratica('${id}', 'Archiviata')">📂 Archivia</button>
+              <select id="operatore_${p.id}" style="padding:7px 10px; font-size:0.85rem; font-weight:700;">
+                ${opzioniOperatore}
+              </select>
+              <input type="text" id="noteRep_${p.id}" value="${p.noteRepartista}" placeholder="Scrivi note reparto..." style="flex:1; padding:7px 10px; font-size:0.85rem;">
+              <button class="btn btn-green" onclick="aggiornaPratica('${p.id}', 'Gestita')">✔ Segna Gestita</button>
+              <button class="btn btn-gray" onclick="aggiornaPratica('${p.id}', 'Archiviata')">📂 Archivia</button>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    async function aggiornaPratica(id, nuovoStato) {
+    function aggiornaPratica(id, nuovoStato) {
       const operatore = document.getElementById(`operatore_${id}`).value.trim();
       const noteRepartista = document.getElementById(`noteRep_${id}`).value.trim();
 
-      tutteLePratiche = tutteLePratiche.map(p => {
-        if (String(p.id || p['ID Pratica']) === String(id)) {
-          p.stato = nuovoStato;
-          p['Stato'] = nuovoStato;
-          p.operatore = operatore;
-          p['Operatore'] = operatore;
-          p.noteRepartista = noteRepartista;
-          p['Note Repartista'] = noteRepartista;
-        }
-        return p;
-      });
-      localStorage.setItem(REQ_KEY, JSON.stringify(tutteLePratiche));
+      const updatePayload = {
+        action: "update",
+        id: id,
+        stato: nuovoStato,
+        operatore: operatore,
+        noteRepartista: noteRepartista
+      };
+
+      // 1. Aggiorna a schermo in 0 millisecondi
+      unisciPratica(updatePayload);
+      salvaCacheLocale();
       filtraPratiche();
 
-      try {
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({
-            action: "update",
-            id: id,
-            stato: nuovoStato,
-            operatore: operatore,
-            noteRepartista: noteRepartista
-          })
-        });
-      } catch (e) {}
+      // 2. Propaga subito su ntfy.sh così Admin vede la modifica in tempo reale
+      fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+        method: 'POST',
+        body: JSON.stringify(updatePayload)
+      }).catch(() => {});
+
+      // 3. Salva su Google Sheet in background
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(updatePayload)
+      }).catch(() => {});
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       leggiParametroUrl();
-      caricaPratiche();
+      caricaCacheLocaleSubito();
+      sincronizzaTutto();
+
+      // Ascolto in tempo reale di nuove richieste
+      try {
+        const sse = new EventSource(`https://ntfy.sh/${NTFY_TOPIC}/sse`);
+        sse.onmessage = (e) => {
+          try {
+            const msg = JSON.parse(e.data);
+            if (msg.message) {
+              unisciPratica(JSON.parse(msg.message));
+              salvaCacheLocale();
+              filtraPratiche();
+            }
+          } catch (err) {}
+        };
+      } catch (e) {}
     });
   </script>
 </body>
