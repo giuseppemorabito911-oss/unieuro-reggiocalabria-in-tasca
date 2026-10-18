@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="icona.png">
   <meta name="theme-color" content="#002D62">
 
-  <!-- Cropper.js CSS per la funzione ritaglio -->
+  <!-- Cropper.js CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 
   <style>
@@ -36,7 +36,6 @@
       padding-bottom: 45px;
     }
 
-    /* HEADER PRINCIPALE */
     header {
       background: linear-gradient(135deg, var(--unieuro-dark), var(--unieuro-blue));
       color: white;
@@ -72,10 +71,8 @@
       letter-spacing: 0.5px;
       text-transform: uppercase;
       color: #FFFFFF;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    /* BANNER STATO APERTO/CHIUSO + TASTO ORARI */
     .status-bar {
       display: flex;
       align-items: center;
@@ -92,19 +89,10 @@
       border-radius: 30px;
       font-size: 0.85rem;
       font-weight: 800;
-      letter-spacing: 0.4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
-    .status-badge.open {
-      background-color: #16A34A;
-      color: white;
-    }
-
-    .status-badge.closed {
-      background-color: #DC2626;
-      color: white;
-    }
+    .status-badge.open { background-color: #16A34A; color: white; }
+    .status-badge.closed { background-color: #DC2626; color: white; }
 
     .status-dot {
       width: 10px;
@@ -149,7 +137,6 @@
       padding: 0 14px;
     }
 
-    /* BARRA MAPS E SOCIAL */
     .quick-links {
       display: grid;
       grid-template-columns: 1.3fr 1fr 1fr;
@@ -172,19 +159,10 @@
       text-align: center;
     }
 
-    .btn-maps {
-      background: linear-gradient(135deg, #10B981, #059669);
-    }
+    .btn-maps { background: linear-gradient(135deg, #10B981, #059669); }
+    .btn-instagram { background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF); }
+    .btn-facebook { background: linear-gradient(135deg, #1877F2, #0C5DC7); }
 
-    .btn-instagram {
-      background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF);
-    }
-
-    .btn-facebook {
-      background: linear-gradient(135deg, #1877F2, #0C5DC7);
-    }
-
-    /* CARDS GENERALI */
     .card {
       background: var(--card-bg);
       border-radius: 16px;
@@ -194,9 +172,7 @@
       border-top: 4px solid var(--unieuro-blue);
     }
 
-    .card.orange-border {
-      border-top-color: var(--unieuro-orange);
-    }
+    .card.orange-border { border-top-color: var(--unieuro-orange); }
 
     .card-title {
       font-size: 1.05rem;
@@ -208,7 +184,7 @@
       align-items: center;
     }
 
-    /* TESSERA UNIEURO CLUB */
+    /* TESSERA UNIEURO CLUB + BARCODE REALE + FOTOCAMERA */
     .club-card {
       background: linear-gradient(135deg, var(--unieuro-blue), var(--unieuro-dark));
       color: white;
@@ -237,26 +213,51 @@
     .barcode-box {
       background: white;
       color: #000;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 12px 8px;
+      border-radius: 12px;
       text-align: center;
-      margin: 8px 0;
+      margin: 10px 0;
+      overflow-x: auto;
     }
 
-    .barcode-lines {
-      height: 36px;
-      background: repeating-linear-gradient(90deg, #000 0, #000 3px, #fff 3px, #fff 6px, #000 6px, #000 8px, #fff 8px, #fff 13px);
-      margin-bottom: 6px;
+    #barcodeSvg {
+      max-width: 100%;
+      height: auto;
     }
 
-    .barcode-text {
-      font-family: monospace;
-      font-size: 1.2rem;
-      font-weight: 800;
-      letter-spacing: 3px;
+    #cameraScannerBox {
+      display: none;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 10px;
+      border: 2px solid var(--unieuro-orange);
     }
 
-    /* VOLANTINO & PROMO APP...ETITOSE */
+    .btn-request-digital-card {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      background: linear-gradient(135deg, #FF6700, #E65100);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.82rem;
+      font-weight: 900;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      line-height: 1.35;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      text-transform: uppercase;
+    }
+
+    .btn-request-digital-card:active {
+      transform: scale(0.98);
+    }
+
+    /* VOLANTINO & RICERCA MULTIPLA */
     .pdf-tabs {
       display: grid;
       grid-template-columns: 1fr 1.25fr;
@@ -288,19 +289,21 @@
       opacity: 0.9;
     }
 
-    .tab-btn.active {
-      background: var(--unieuro-blue);
-      color: white;
-    }
+    .tab-btn.active { background: var(--unieuro-blue); color: white; }
+    .tab-btn.promo-btn { border-color: var(--unieuro-orange); color: #C2410C; }
+    .tab-btn.promo-btn.active { background: var(--unieuro-orange); color: white; }
 
-    .tab-btn.promo-btn {
-      border-color: var(--unieuro-orange);
-      color: #C2410C;
-    }
-
-    .tab-btn.promo-btn.active {
-      background: var(--unieuro-orange);
-      color: white;
+    .search-nav-bar {
+      display: none;
+      background: #FFF7ED;
+      border: 1.5px solid var(--unieuro-orange);
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
     .pdf-controls {
@@ -360,28 +363,17 @@
       font-size: 0.84rem;
     }
 
-    .reparto-btn span.icon {
-      font-size: 1.45rem;
-    }
-
-    .reparto-btn small {
-      font-size: 0.68rem;
-      color: var(--unieuro-orange);
-      font-weight: 700;
-    }
+    .reparto-btn span.icon { font-size: 1.45rem; }
+    .reparto-btn small { font-size: 0.68rem; color: var(--unieuro-orange); font-weight: 700; }
 
     .reparto-btn:hover,
     .reparto-btn.selected {
       background: var(--unieuro-blue);
       border-color: var(--unieuro-blue);
       color: white;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(0, 45, 98, 0.2);
     }
 
-    .reparto-btn.selected small {
-      color: #FFD1B3;
-    }
+    .reparto-btn.selected small { color: #FFD1B3; }
 
     .reparto-btn.full-width {
       grid-column: span 2;
@@ -394,7 +386,6 @@
       color: white;
     }
 
-    /* FORM RICHIESTA A COMPARSA */
     #formContainerBox {
       display: none;
       margin-top: 16px;
@@ -446,11 +437,6 @@
       outline: none;
     }
 
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--unieuro-blue);
-      background: #FFFFFF;
-    }
-
     .input-row { display: flex; gap: 8px; }
 
     .btn {
@@ -485,10 +471,7 @@
       gap: 10px;
     }
 
-    .crop-preview-box img {
-      max-height: 70px;
-      border-radius: 6px;
-    }
+    .crop-preview-box img { max-height: 70px; border-radius: 6px; }
 
     .toast {
       display: none;
@@ -542,7 +525,7 @@
       </a>
     </div>
 
-    <!-- 1. TESSERA UNIEURO CLUB (SEMPRE SALVATA) -->
+    <!-- 1. TESSERA UNIEURO CLUB (FOTOCAMERA + INSERIMENTO MANUALE + BARCODE CASSA) -->
     <div class="club-card">
       <div class="club-header">
         <strong>💳 La Tua Tessera Unieuro</strong>
@@ -550,24 +533,42 @@
       </div>
 
       <div id="cardForm">
-        <div class="input-row">
-          <input type="text" id="cardInput" placeholder="Inserisci codice tessera..." style="background:white;">
+        <div class="input-row" style="margin-bottom:8px;">
+          <input type="text" id="cardInput" placeholder="Inserisci codice tessera manualmente..." style="background:white;">
           <button type="button" class="btn btn-orange" onclick="salvaTessera()">Salva</button>
         </div>
+        <button type="button" class="btn btn-block" style="background:rgba(255,255,255,0.18); color:white; border:1px solid rgba(255,255,255,0.45);" onclick="avviaScannerFotocamera()">
+          📷 Scansiona Tessera con Fotocamera
+        </button>
       </div>
 
+      <!-- Box Scanner Fotocamera -->
+      <div id="cameraScannerBox">
+        <div id="readerCamera" style="width:100%;"></div>
+        <button type="button" class="btn btn-red btn-block" style="border-radius:0;" onclick="fermaScannerFotocamera()">✖ Chiudi Fotocamera</button>
+      </div>
+
+      <!-- Box Tessera Salvata con Barcode Reale -->
       <div id="cardSaved" style="display:none;">
         <div class="barcode-box">
-          <div class="barcode-lines"></div>
-          <div class="barcode-text" id="cardText"></div>
+          <svg id="barcodeSvg"></svg>
         </div>
-        <div style="text-align:right;">
-          <button type="button" class="btn" style="background:rgba(255,255,255,0.2); color:white; padding:6px 12px; font-size:0.8rem;" onclick="modificaTessera()">✏️ Modifica</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+          <small style="color:#CBD5E1; font-size:0.75rem;">Mostra il codice in cassa</small>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn" style="background:rgba(255,255,255,0.2); color:white; padding:6px 10px; font-size:0.78rem;" onclick="avviaScannerFotocamera()">📷 Scansiona</button>
+            <button type="button" class="btn" style="background:rgba(255,255,255,0.2); color:white; padding:6px 10px; font-size:0.78rem;" onclick="modificaTessera()">✏️ Manuale</button>
+          </div>
         </div>
       </div>
+
+      <!-- Pulsante Link Diretto Richiesta Card Digital (Codice Negozio 702) -->
+      <a href="https://loyaltyapp.unieuro.it/home?code=702" target="_blank" rel="noopener" class="btn-request-digital-card">
+        ✨ NON HAI LA TESSERA? CLICCA QUI PER RICHIEDERE LA TUA CARD UNIEURO IN FORMATO DIGITAL
+      </a>
     </div>
 
-    <!-- 2. VOLANTINO & PROMO APP...ETITOSE CON RITAGLIO -->
+    <!-- 2. VOLANTINO & PROMO APP...ETITOSE CON RICERCA MULTIPLA E RITAGLIO -->
     <div class="card">
       <div class="card-title">
         <span>📖 Sfoglia Offerte e Ritaglia</span>
@@ -588,7 +589,13 @@
         <input type="search" id="pdfSearchInput" placeholder="Cerca prodotto (es. Lavatrice, TV)..." autocomplete="off">
         <button type="button" class="btn btn-blue" onclick="cercaNelPdf()">🔍 Cerca</button>
       </div>
-      <div id="searchStatus" style="font-size:0.83rem; color:var(--unieuro-orange); font-weight:700; margin-bottom:8px; display:none;"></div>
+
+      <!-- Barra Navigazione Tutti i Risultati Trovati -->
+      <div id="searchNavBar" class="search-nav-bar">
+        <button type="button" class="btn btn-outline" style="padding:6px 10px; font-size:0.8rem;" onclick="navigaRisultato(-1)">◀ Prec</button>
+        <span id="searchStatus" style="font-size:0.82rem; color:var(--unieuro-blue); font-weight:800; text-align:center;"></span>
+        <button type="button" class="btn btn-outline" style="padding:6px 10px; font-size:0.8rem;" onclick="navigaRisultato(1)">Succ ▶</button>
+      </div>
 
       <div class="pdf-controls">
         <div style="display:flex; gap:6px; align-items:center;">
@@ -616,7 +623,6 @@
         <span style="font-size:0.72rem; color:var(--text-muted); font-weight:normal;">Auto-reset 30s</span>
       </div>
 
-      <!-- Anteprima ritaglio se presente -->
       <div id="cropPreviewContainer" class="crop-preview-box">
         <div style="display:flex; align-items:center; gap:10px;">
           <img id="cropPreviewImg" src="" alt="Ritaglio">
@@ -627,7 +633,6 @@
         <button type="button" class="btn btn-red" style="padding:6px 10px; font-size:0.78rem;" onclick="rimuoviRitaglio()">Rimuovi</button>
       </div>
 
-      <!-- Griglia Pulsanti Reparto -->
       <div class="reparti-grid">
         <button type="button" class="reparto-btn" onclick="selezionaReparto('GRANDI ELETTRODOMESTICI', this)">
           <span class="icon">🧺</span>
@@ -666,7 +671,6 @@
         </button>
       </div>
 
-      <!-- Modulo che si apre al clic sul reparto -->
       <div id="formContainerBox">
         <div class="selected-reparto-banner">
           <span id="repartoSceltoLabel">Reparto selezionato</span>
@@ -723,13 +727,13 @@
 
   </div>
 
+  <!-- Librerie esterne: PDF.js, Cropper.js, JsBarcode (codice a barre reale), Html5-QRCode (scanner fotocamera) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
   <script>
-    // =========================================================================
-    // URL UFFICIALE APPLICAZIONE WEB GOOGLE APPS SCRIPT (/exec)
-    // =========================================================================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
     const CARD_KEY = 'unieuro_tessera_code';
@@ -741,6 +745,10 @@
     let currentPage = 1;
     let cropperInstance = null;
     let croppedBase64 = "";
+    let html5QrCodeScanner = null;
+
+    let searchMatches = [];
+    let currentMatchIdx = 0;
 
     function aggiornaStatoNegozio() {
       const now = new Date();
@@ -768,33 +776,100 @@
       box.style.display = box.style.display === 'block' ? 'none' : 'block';
     }
 
+    // -------------------------------------------------------------------------
+    // 1. TESSERA UNIEURO CON BARCODE REALE LEGGIBILE IN CASSA + SCANNER FOTOCAMERA
+    // -------------------------------------------------------------------------
+    function disegnaBarcodeCassa(code) {
+      try {
+        JsBarcode("#barcodeSvg", code, {
+          format: "CODE128",
+          lineColor: "#000000",
+          background: "#FFFFFF",
+          width: 2.2,
+          height: 65,
+          displayValue: true,
+          fontSize: 18,
+          fontOptions: "bold",
+          margin: 6
+        });
+      } catch (e) {
+        console.warn("Errore generazione barcode:", e);
+      }
+    }
+
     function caricaTessera() {
       const code = localStorage.getItem(CARD_KEY);
       if (code && code.trim() !== '') {
-        document.getElementById('cardText').textContent = code.trim();
         document.getElementById('cardForm').style.display = 'none';
         document.getElementById('cardSaved').style.display = 'block';
+        disegnaBarcodeCassa(code.trim());
       } else {
         document.getElementById('cardForm').style.display = 'block';
         document.getElementById('cardSaved').style.display = 'none';
       }
     }
 
-    function salvaTessera() {
-      const val = document.getElementById('cardInput').value.trim();
+    function salvaTessera(codicePassato) {
+      const val = (codicePassato || document.getElementById('cardInput').value).trim();
       if (!val) return;
       localStorage.setItem(CARD_KEY, val);
+      fermaScannerFotocamera();
       caricaTessera();
     }
 
     function modificaTessera() {
+      fermaScannerFotocamera();
       document.getElementById('cardInput').value = localStorage.getItem(CARD_KEY) || '';
       document.getElementById('cardForm').style.display = 'block';
       document.getElementById('cardSaved').style.display = 'none';
     }
 
+    async function avviaScannerFotocamera() {
+      const box = document.getElementById('cameraScannerBox');
+      box.style.display = 'block';
+
+      if (html5QrCodeScanner) {
+        await fermaScannerFotocamera();
+        box.style.display = 'block';
+      }
+
+      html5QrCodeScanner = new Html5Qrcode("readerCamera");
+      try {
+        await html5QrCodeScanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 120 } },
+          (decodedText) => {
+            if (decodedText) {
+              salvaTessera(decodedText);
+            }
+          },
+          () => {}
+        );
+      } catch (err) {
+        alert("Impossibile accedere alla fotocamera. Puoi inserire il codice manualmente.");
+        fermaScannerFotocamera();
+      }
+    }
+
+    async function fermaScannerFotocamera() {
+      const box = document.getElementById('cameraScannerBox');
+      if (html5QrCodeScanner) {
+        try {
+          await html5QrCodeScanner.stop();
+          await html5QrCodeScanner.clear();
+        } catch (e) {}
+        html5QrCodeScanner = null;
+      }
+      if (box) box.style.display = 'none';
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. VOLANTINO & RICERCA DI TUTTI I RISULTATI NEL PDF
+    // -------------------------------------------------------------------------
     async function caricaPdf(url, tabId) {
       annullaRitaglio();
+      searchMatches = [];
+      document.getElementById('searchNavBar').style.display = 'none';
       document.getElementById('btnTabVolantino').classList.remove('active');
       document.getElementById('btnTabPromo').classList.remove('active');
       if (tabId) document.getElementById(tabId).classList.add('active');
@@ -832,24 +907,44 @@
 
     async function cercaNelPdf() {
       const q = document.getElementById('pdfSearchInput').value.trim().toLowerCase();
+      const navBar = document.getElementById('searchNavBar');
       const status = document.getElementById('searchStatus');
       if (!q || !pdfDoc) return;
 
-      status.style.display = 'block';
-      status.textContent = '⏳ Ricerca in corso...';
+      navBar.style.display = 'flex';
+      status.textContent = '⏳ Ricerca in tutte le pagine...';
+      searchMatches = [];
+      currentMatchIdx = 0;
 
       for (let i = 1; i <= pdfDoc.numPages; i++) {
         const page = await pdfDoc.getPage(i);
         const txt = await page.getTextContent();
         const fullText = txt.items.map(item => item.str).join(' ').toLowerCase();
         if (fullText.includes(q)) {
-          currentPage = i;
-          await renderPagina(i);
-          status.textContent = `✅ "${q}" trovato a pagina ${i}! Clicca su "✂️ Ritaglia Offerta".`;
-          return;
+          searchMatches.push(i);
         }
       }
-      status.textContent = `⚠️ Nessun risultato per "${q}".`;
+
+      if (searchMatches.length > 0) {
+        await mostraRisultatoRicerca(0);
+      } else {
+        status.textContent = `⚠️ Nessun risultato per "${q}"`;
+      }
+    }
+
+    async function mostraRisultatoRicerca(idx) {
+      if (searchMatches.length === 0) return;
+      currentMatchIdx = (idx + searchMatches.length) % searchMatches.length;
+      const targetPage = searchMatches[currentMatchIdx];
+      currentPage = targetPage;
+      await renderPagina(targetPage);
+      document.getElementById('searchStatus').textContent =
+        `Risultato ${currentMatchIdx + 1} di ${searchMatches.length} (Pag. ${targetPage})`;
+    }
+
+    function navigaRisultato(delta) {
+      if (searchMatches.length <= 1) return;
+      mostraRisultatoRicerca(currentMatchIdx + delta);
     }
 
     function avviaRitaglio() {
@@ -891,6 +986,9 @@
       document.getElementById('cropPreviewContainer').style.display = 'none';
     }
 
+    // -------------------------------------------------------------------------
+    // 3. SELEZIONE REPARTO E INVIO RICHIESTA CLIENTE
+    // -------------------------------------------------------------------------
     function selezionaReparto(nomeReparto, btnElement) {
       document.querySelectorAll('.reparto-btn').forEach(b => b.classList.remove('selected'));
       if (btnElement) btnElement.classList.add('selected');
@@ -1013,12 +1111,14 @@
 
       aggiornaCampiContatto();
       chiudiFormReparto();
+      fermaScannerFotocamera();
 
       const searchInput = document.getElementById('pdfSearchInput');
       if (searchInput) searchInput.value = '';
 
-      const searchStatus = document.getElementById('searchStatus');
-      if (searchStatus) searchStatus.style.display = 'none';
+      searchMatches = [];
+      const searchNavBar = document.getElementById('searchNavBar');
+      if (searchNavBar) searchNavBar.style.display = 'none';
 
       annullaRitaglio();
       rimuoviRitaglio();
