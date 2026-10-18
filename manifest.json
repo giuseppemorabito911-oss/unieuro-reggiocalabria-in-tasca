@@ -1,15 +1,15 @@
 {
-  "name": "Unieuro Reggio Calabria in Tasca",
-  "short_name": "Unieuro Boccetta",
-  "start_url": "./index.html",
+  "name": "Unieuro Reggio Calabria Staff",
+  "short_name": "Unieuro RC",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#F0F3F9",
+  "background_color": "#EEF2F7",
   "theme_color": "#002D62",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23002D62'/><path d='M25 30 v28 c0 13 9 22 25 22 s25 -9 25 -22 v-28 h-14 v28 c0 6 -4 10 -11 10 s-11 -4 -11 -10 v-28 z' fill='%23FF6700'/><circle cx='75' cy='28' r='7' fill='%23FF6700'/></svg>",
+      "src": "icona.png",
       "sizes": "192x192 512x512",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ]
 }
