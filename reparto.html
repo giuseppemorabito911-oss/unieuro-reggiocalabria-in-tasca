@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pannello Reparto - Unieuro RC</title>
+  <title>Pannello Interventi Reparto - Unieuro RC</title>
   <style>
     :root {
       --unieuro-blue: #002D62;
@@ -34,27 +34,32 @@
       flex-wrap: wrap;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-    select, input {
+    select, input, textarea {
       padding: 10px;
       border-radius: 8px;
       border: 1.5px solid #CBD5E1;
       font-size: 0.95rem;
+      width: 100%;
     }
-    .sync-status {
-      font-size: 0.8rem;
-      color: #64748B;
-      font-weight: 700;
+    /* Singolo pannellino intervento */
+    .intervento-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      border-top: 5px solid var(--unieuro-orange);
+      border-left: 5px solid var(--unieuro-blue);
     }
-    .req-card {
-      background: #FEF3C7;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      border-left: 6px solid var(--unieuro-orange);
+    .badge-reparto {
+      background: var(--unieuro-blue);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
     }
-    .req-card.gestita { border-left-color: #16A34A; background-color: #DCFCE7; }
-    .req-card.archiviata { border-left-color: #64748B; background-color: #F1F5F9; opacity: 0.8; }
     .badge-interno {
       background: #7C3AED;
       color: white;
@@ -63,24 +68,24 @@
       font-size: 0.78rem;
       font-weight: 800;
       display: inline-block;
-      margin-bottom: 6px;
+      margin-left: 6px;
     }
     .btn {
       background: var(--unieuro-blue);
       color: white;
       border: none;
-      padding: 9px 14px;
-      border-radius: 8px;
-      font-weight: 700;
+      padding: 11px 16px;
+      border-radius: 10px;
+      font-weight: 800;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.92rem;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      justify-content: center;
+      gap: 6px;
     }
-    .btn-green { background: #16A34A; }
-    .btn-gray { background: #475569; }
+    .btn-green { background: #16A34A; width: 100%; margin-top: 10px; }
     .btn-call {
       background: #0284C7;
       color: white;
@@ -98,33 +103,24 @@
       display: block;
       cursor: pointer;
     }
-    .operator-note-box {
-      background: white;
-      border-left: 4px solid #16A34A;
-      padding: 8px 12px;
-      border-radius: 6px;
-      margin-top: 10px;
-      font-size: 0.88rem;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
   </style>
 </head>
 <body>
 
   <header>
     <div>
-      <h2>🏢 Gestione Richieste di Reparto</h2>
-      <small style="color:#CBD5E1;">Pannello Operativo Staff Unieuro RC</small>
+      <h2>🛠️ Pannellini Intervento Reparto</h2>
+      <small style="color:#CBD5E1;">Gestione rapida singole richieste aperte</small>
     </div>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <a href="interno.html" class="btn" style="background:#7C3AED;">📞 + Richiesta da Interno</a>
-      <button class="btn" style="background:var(--unieuro-orange);" onclick="sincronizzaTutto()">🔄 Aggiorna</button>
+      <a href="interno.html" class="btn" style="background:#7C3AED; padding:9px 14px; font-size:0.85rem;">📞 + Richiesta Interna</a>
+      <button class="btn" style="background:var(--unieuro-orange); padding:9px 14px; font-size:0.85rem;" onclick="caricaDatiReparto()">🔄 Aggiorna</button>
     </div>
   </header>
 
   <div class="toolbar">
-    <select id="filtroReparto" onchange="filtraPratiche()" style="flex:1; min-width:220px;">
-      <option value="TUTTI">📋 Tutti i Reparti</option>
+    <select id="filtroReparto" onchange="renderizzaPannellini()" style="flex:1; min-width:220px;">
+      <option value="TUTTI">📋 Tutti i Reparti (Richieste Aperte)</option>
       <option value="GRANDI ELETTRODOMESTICI">🧺 GRANDI ELETTRODOMESTICI</option>
       <option value="PICCOLI ELETTRODOMESTICI">☕ PICCOLI ELETTRODOMESTICI</option>
       <option value="TELEFONIA">📱 TELEFONIA</option>
@@ -133,10 +129,9 @@
       <option value="ASSISTENZA">🛠️ ASSISTENZA</option>
       <option value="RITIRO RAEE">♻️ RITIRO RAEE</option>
     </select>
-    <span id="syncIndicator" class="sync-status">⚡ Pronto</span>
   </div>
 
-  <div id="listaContainer"></div>
+  <div id="containerPannellini">Caricamento richieste in corso...</div>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
@@ -144,7 +139,7 @@
     const REQ_KEY = 'unieuro_requests_db';
     const OPERATORI_STAFF = ["PEPPE M.", "DAGO", "DANIELE", "GIORGIO", "PAOLO", "MIMMO", "OUSMANE"];
 
-    let mappaPratiche = new Map();
+    let mappaRichieste = new Map();
 
     function preparaNumero7Collaboration(num) {
       if (!num) return "";
@@ -154,7 +149,7 @@
       return clean;
     }
 
-    function normalizzaPratica(p) {
+    function normalizza(p) {
       if (!p) return null;
       const id = String(p.id || p['ID Pratica'] || '').trim();
       if (!id) return null;
@@ -175,48 +170,21 @@
       };
     }
 
-    function unisciPratica(raw) {
+    function unisciRecord(raw) {
       if (!raw) return;
       if (raw.action === 'update' && raw.id) {
-        const esistente = mappaPratiche.get(String(raw.id));
-        if (esistente) {
-          if (raw.stato) esistente.stato = raw.stato;
-          if (raw.operatore !== undefined) esistente.operatore = raw.operatore;
-          if (raw.noteRepartista !== undefined) esistente.noteRepartista = raw.noteRepartista;
-          mappaPratiche.set(String(raw.id), esistente);
+        const rec = mappaRichieste.get(String(raw.id));
+        if (rec) {
+          if (raw.stato) rec.stato = raw.stato;
+          if (raw.operatore !== undefined) rec.operatore = raw.operatore;
+          if (raw.noteRepartista !== undefined) rec.noteRepartista = raw.noteRepartista;
+          mappaRichieste.set(String(raw.id), rec);
         }
         return;
       }
-
-      const norm = normalizzaPratica(raw);
+      const norm = normalizza(raw);
       if (!norm) return;
-      const vecchia = mappaPratiche.get(norm.id);
-      if (vecchia) {
-        mappaPratiche.set(norm.id, {
-          ...vecchia,
-          ...norm,
-          image: norm.image || vecchia.image,
-          noteRepartista: norm.noteRepartista || vecchia.noteRepartista,
-          operatore: norm.operatore || vecchia.operatore
-        });
-      } else {
-        mappaPratiche.set(norm.id, norm);
-      }
-    }
-
-    function salvaCacheLocale() {
-      try {
-        const arr = Array.from(mappaPratiche.values()).slice(0, 80);
-        localStorage.setItem(REQ_KEY, JSON.stringify(arr));
-      } catch (e) {}
-    }
-
-    function caricaCacheLocaleSubito() {
-      try {
-        const salvate = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
-        salvate.forEach(p => unisciPratica(p));
-      } catch (e) {}
-      filtraPratiche();
+      mappaRichieste.set(norm.id, norm);
     }
 
     function leggiParametroUrl() {
@@ -234,120 +202,143 @@
       }
     }
 
-    function sincronizzaTutto() {
-      const ind = document.getElementById('syncIndicator');
-      ind.textContent = '🔄 Sincronizzazione...';
+    async function caricaDatiReparto() {
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=get`, { redirect: 'follow' });
+        const json = await res.json();
+        const daSheet = Array.isArray(json) ? json : (json.data || []);
+        daSheet.forEach(item => unisciRecord(item));
+      } catch (e) {}
 
-      const pNtfy = fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=48h`)
-        .then(r => r.text())
-        .then(txt => {
-          txt.trim().split('\n').forEach(line => {
-            if (!line) return;
-            try {
-              const ev = JSON.parse(line);
-              if (ev.event === 'message' && ev.message) {
-                unisciPratica(JSON.parse(ev.message));
-              }
-            } catch (e) {}
-          });
-          salvaCacheLocale();
-          filtraPratiche();
-        }).catch(() => {});
+      try {
+        const resNtfy = await fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=48h`);
+        const txt = await resNtfy.text();
+        txt.trim().split('\n').forEach(line => {
+          if (!line) return;
+          try {
+            const ev = JSON.parse(line);
+            if (ev.event === 'message' && ev.message) {
+              unisciRecord(JSON.parse(ev.message));
+            }
+          } catch (e) {}
+        });
+      } catch (e) {}
 
-      const pSheet = fetch(`${SCRIPT_URL}?action=get`, { redirect: 'follow' })
-        .then(r => r.json())
-        .then(json => {
-          const daSheet = Array.isArray(json) ? json : (json.data || []);
-          daSheet.forEach(item => unisciPratica(item));
-          salvaCacheLocale();
-          filtraPratiche();
-        }).catch(() => {});
+      try {
+        const cache = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
+        cache.forEach(p => unisciRecord(p));
+      } catch (e) {}
 
-      Promise.allSettled([pNtfy, pSheet]).then(() => {
-        ind.textContent = '✅ Aggiornato ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-      });
+      renderizzaPannellini();
     }
 
-    function filtraPratiche() {
-      const filtro = document.getElementById('filtroReparto').value.toUpperCase().trim();
-      const container = document.getElementById('listaContainer');
-      const tutte = Array.from(mappaPratiche.values()).reverse();
+    function renderizzaPannellini() {
+      const filtroRep = document.getElementById('filtroReparto').value.toUpperCase().trim();
+      const container = document.getElementById('containerPannellini');
+      
+      // Mostra solo le richieste ancora APERTE per i reparti
+      const aperte = Array.from(mappaRichieste.values())
+        .filter(x => x.stato === 'Aperta')
+        .reverse();
 
-      const lista = filtro === 'TUTTI'
-        ? tutte
-        : tutte.filter(x => x.reparto.includes(filtro) || filtro.includes(x.reparto));
+      const lista = filtroRep === 'TUTTI'
+        ? aperte
+        : aperte.filter(x => x.reparto.includes(filtroRep) || filtroRep.includes(x.reparto));
 
       if (lista.length === 0) {
-        container.innerHTML = '<div style="background:white; padding:25px; border-radius:12px; text-align:center;">Nessuna richiesta presente per questo reparto.</div>';
+        container.innerHTML = '<div style="background:white; padding:30px; border-radius:12px; text-align:center; font-weight:700; color:#64748B;">🎉 Ottimo lavoro! Nessuna richiesta aperta al momento.</div>';
         return;
       }
 
       container.innerHTML = lista.map(p => {
         const tel7Collab = preparaNumero7Collaboration(p.telefono);
-        const isDaInterno = p.id.startsWith('INT-') || p.tipoRichiesta.includes('INTERNO') || p.noteCliente.includes('DA INTERNO');
-
-        let cssClass = '';
-        if (p.stato === 'Gestita') cssClass = 'gestita';
-        if (p.stato === 'Archiviata') cssClass = 'archiviata';
+        const isInterno = p.id.startsWith('INT-') || p.tipoRichiesta.includes('INTERNO');
 
         const opzioniOperatore = [
-          `<option value="">-- Seleziona Operatore --</option>`,
+          `<option value="">-- Seleziona il tuo nome --</option>`,
           ...OPERATORI_STAFF.map(op => `<option value="${op}" ${p.operatore === op ? 'selected' : ''}>${op}</option>`)
         ].join('');
 
         return `
-          <div class="req-card ${cssClass}">
-            ${isDaInterno ? `<div class="badge-interno">📞 RICHIESTA INSERITA DALL'INTERNO ${p.operatore ? '• PER: ' + p.operatore : ''}</div>` : ''}
-            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-              <strong style="color:var(--unieuro-blue); font-size:1.05rem;">[${p.id}] ${p.reparto}</strong>
-              <span style="font-weight:800; color:${p.stato === 'Aperta' ? '#EA580C' : (p.stato === 'Gestita' ? '#16A34A' : '#64748B')};">${p.stato}</span>
+          <div class="intervento-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:6px;">
+              <div>
+                <span class="badge-reparto">${p.reparto}</span>
+                ${isInterno ? `<span class="badge-interno">📞 DA INTERNO</span>` : ''}
+              </div>
+              <small style="color:#64748B; font-weight:700;">ID: ${p.id} • 🕒 ${p.timestamp}</small>
             </div>
-            <p style="margin:8px 0; font-size:0.95rem;"><strong>Note Richiesta:</strong> ${p.noteCliente}</p>
-            <div style="font-size:0.88rem; color:#475569; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-              <span>👤 <strong>Cliente:</strong> ${p.nomeCliente}</span>
-              <span>📌 <strong>Ricontatto:</strong> ${p.preferenzaContatto}</span>
-              ${tel7Collab ? `<a href="tel:${tel7Collab}" class="btn-call">📞 Chiama ${tel7Collab} (7Collaboration)</a>` : ''}
-              ${p.emailCliente ? `<a href="mailto:${p.emailCliente}" style="color:var(--unieuro-blue); font-weight:700;">✉️ ${p.emailCliente}</a>` : ''}
-              <span>🕒 ${p.timestamp}</span>
+
+            <div style="background:#F8FAFC; padding:12px; border-radius:10px; margin-bottom:12px;">
+              <div style="font-size:1rem; font-weight:800; color:var(--unieuro-blue); margin-bottom:4px;">
+                👤 ${p.nomeCliente}
+              </div>
+              <div style="font-size:0.9rem; color:#334155; margin-bottom:8px;">
+                📝 <strong>Richiesta:</strong> ${p.noteCliente}
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                <span>📌 Ricontatto: <strong>${p.preferenzaContatto}</strong></span>
+                ${tel7Collab ? `<a href="tel:${tel7Collab}" class="btn-call">📞 Chiama ${tel7Collab} (7Collab)</a>` : ''}
+                ${p.emailCliente ? `<a href="mailto:${p.emailCliente}" style="color:var(--unieuro-blue); font-weight:700;">✉️ ${p.emailCliente}</a>` : ''}
+              </div>
             </div>
 
             ${p.image && p.image.startsWith('data:image') ? `<img src="${p.image}" class="crop-img" onclick="window.open(this.src)">` : ''}
 
-            ${(p.noteRepartista || p.operatore) ? `
-              <div class="operator-note-box">
-                🛠️ <strong>Operatore:</strong> ${p.operatore \vert{}\vert{} '-'} \vert{} <strong>Note Reparto:</strong>${p.noteRepartista || 'Nessuna nota'}
+            <!-- Pannellino singolo di compilazione intervento -->
+            <div style="margin-top:12px; border-top:2px dashed #E2E8F0; padding-top:12px;">
+              <div class="grid-2" style="display:grid; grid-template-columns: 1fr 2fr; gap:10px; margin-bottom:10px;">
+                <div>
+                  <label style="font-size:0.8rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Operatore *</label>
+                  <select id="operatore_${p.id}" style="font-weight:700;">
+                    ${opzioniOperatore}
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:0.8rem; font-weight:700; color:#475569; display:block; margin-bottom:4px;">Intervento Svolto / Note *</label>
+                  <input type="text" id="noteRep_${p.id}" value="${p.noteRepartista}" placeholder="Es. Contattato cliente, prodotto ordinato...">
+                </div>
               </div>
-            ` : ''}
-
-            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-              <select id="operatore_${p.id}" style="padding:7px 10px; font-size:0.85rem; font-weight:700;">
-                ${opzioniOperatore}
-              </select>
-              <input type="text" id="noteRep_${p.id}" value="${p.noteRepartista}" placeholder="Scrivi note reparto..." style="flex:1; padding:7px 10px; font-size:0.85rem;">
-              <button class="btn btn-green" onclick="aggiornaPratica('${p.id}', 'Gestita')">✔ Segna Gestita</button>
-              <button class="btn btn-gray" onclick="aggiornaPratica('${p.id}', 'Archiviata')">📂 Archivia</button>
+              <button class="btn btn-green" onclick="inviaIntervento('${p.id}')">
+                ✔ Registra Intervento e Chiudi Pratica
+              </button>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    function aggiornaPratica(id, nuovoStato) {
-      const operatore = document.getElementById(`operatore_${id}`).value.trim();
-      const noteRepartista = document.getElementById(`noteRep_${id}`).value.trim();
+    function inviaIntervento(id) {
+      const operatoreEl = document.getElementById(`operatore_${id}`);
+      const noteEl = document.getElementById(`noteRep_${id}`);
+
+      if (!operatoreEl.value) {
+        alert("Seleziona il nome dell'operatore prima di inviare.");
+        operatoreEl.focus();
+        return;
+      }
+      if (!noteEl.value.trim()) {
+        alert("Inserisci i dettagli dell'intervento svolto.");
+        noteEl.focus();
+        return;
+      }
 
       const updatePayload = {
         action: "update",
         id: id,
-        stato: nuovoStato,
-        operatore: operatore,
-        noteRepartista: noteRepartista
+        stato: "Gestita",
+        operatore: operatoreEl.value.trim(),
+        noteRepartista: noteEl.value.trim()
       };
 
-      unisciPratica(updatePayload);
-      salvaCacheLocale();
-      filtraPratiche();
+      // Rimuove subito la scheda dalla vista corrente del reparto
+      mappaRichieste.delete(id);
+      try {
+        localStorage.setItem(REQ_KEY, JSON.stringify(Array.from(mappaRichieste.values()).slice(0, 80)));
+      } catch (e) {}
+      renderizzaPannellini();
 
+      // Propaga la chiusura in tempo reale su admin e cloud
       fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
         method: 'POST',
         body: JSON.stringify(updatePayload)
@@ -363,8 +354,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       leggiParametroUrl();
-      caricaCacheLocaleSubito();
-      sincronizzaTutto();
+      caricaDatiReparto();
 
       try {
         const sse = new EventSource(`https://ntfy.sh/${NTFY_TOPIC}/sse`);
@@ -372,9 +362,8 @@
           try {
             const msg = JSON.parse(e.data);
             if (msg.message) {
-              unisciPratica(JSON.parse(msg.message));
-              salvaCacheLocale();
-              filtraPratiche();
+              unisciRecord(JSON.parse(msg.message));
+              renderizzaPannellini();
             }
           } catch (err) {}
         };
