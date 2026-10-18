@@ -2,18 +2,23 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inserimento Richiesta Interna - Unieuro RC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Richieste Interne - Unieuro RC</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icona.png">
+  <meta name="theme-color" content="#7C3AED">
+
   <style>
     :root {
       --unieuro-blue: #002D62;
       --unieuro-orange: #FF6700;
+      --internal-purple: #7C3AED;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background: #EEF2F7; padding: 16px; color: #1E293B; }
     .container { max-width: 620px; margin: 0 auto; }
     header {
-      background: linear-gradient(135deg, #001838, var(--unieuro-blue));
+      background: linear-gradient(135deg, #3B0764, var(--internal-purple));
       color: white;
       padding: 16px 20px;
       border-radius: 12px;
@@ -82,7 +87,7 @@
     <header>
       <div>
         <h2 style="font-size:1.15rem;">📞 Nuova Richiesta Telefonica / Interna</h2>
-        <small style="color:#CBD5E1;">Smistamento interno verso Reparto e Operatore</small>
+        <small style="color:#E9D5FF;">App Installabile • Staff Unieuro RC</small>
       </div>
       <div style="display:flex; gap:8px;">
         <a href="reparto.html" class="btn" style="background:rgba(255,255,255,0.2); padding:8px 12px; font-size:0.82rem;">🏢 Reparti</a>
@@ -144,8 +149,8 @@
           <textarea id="noteCliente" rows="4" placeholder="Scrivi cosa ha chiesto il cliente al telefono o i dettagli della pratica..." required></textarea>
         </div>
 
-        <button type="submit" id="btnSubmitInt" class="btn" style="width:100%;">
-          📨 Invia Richiesta Interna (Mail + Pannelli)
+        <button type="submit" id="btnSubmitInt" class="btn" style="width:100%; background: var(--internal-purple);">
+          📨 Invia Richiesta Interna (Mail + Admin)
         </button>
       </form>
 
@@ -222,12 +227,17 @@
       } catch (err) {}
 
       btn.disabled = false;
-      btn.textContent = '📨 Invia Richiesta Interna (Mail + Pannelli)';
+      btn.textContent = '📨 Invia Richiesta Interna (Mail + Admin)';
       document.getElementById('internalForm').reset();
 
       const toast = document.getElementById('toastOk');
       toast.style.display = 'block';
       setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+
+    // Registrazione Service Worker per renderla PWA installabile
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
     }
   </script>
 </body>
