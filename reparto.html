@@ -224,9 +224,11 @@
       const rep = params.get('reparto');
       if (rep) {
         const sel = document.getElementById('filtroReparto');
+        const repClean = rep.toUpperCase().trim();
         for (let opt of sel.options) {
-          if (opt.value.toUpperCase() === rep.toUpperCase()) {
+          if (opt.value.toUpperCase().includes(repClean) || repClean.includes(opt.value.toUpperCase())) {
             sel.value = opt.value;
+            break;
           }
         }
       }
@@ -236,7 +238,6 @@
       const ind = document.getElementById('syncIndicator');
       ind.textContent = '🔄 Sincronizzazione...';
 
-      // 1. Canale Rapido Cloud (ntfy.sh - risponde in 0.2s)
       const pNtfy = fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=48h`)
         .then(r => r.text())
         .then(txt => {
@@ -253,7 +254,6 @@
           filtraPratiche();
         }).catch(() => {});
 
-      // 2. Google Apps Script in parallelo (non blocca mai la pagina)
       const pSheet = fetch(`${SCRIPT_URL}?action=get`, { redirect: 'follow' })
         .then(r => r.json())
         .then(json => {
@@ -269,13 +269,13 @@
     }
 
     function filtraPratiche() {
-      const rep = document.getElementById('filtroReparto').value;
+      const filtro = document.getElementById('filtroReparto').value.toUpperCase().trim();
       const container = document.getElementById('listaContainer');
       const tutte = Array.from(mappaPratiche.values()).reverse();
 
-      const lista = rep === 'TUTTI'
+      const lista = filtro === 'TUTTI'
         ? tutte
-        : tutte.filter(x => x.reparto === rep.toUpperCase());
+        : tutte.filter(x => x.reparto.includes(filtro) || filtro.includes(x.reparto));
 
       if (lista.length === 0) {
         container.innerHTML = '<div style="background:white; padding:25px; border-radius:12px; text-align:center;">Nessuna richiesta presente per questo reparto.</div>';
@@ -344,18 +344,15 @@
         noteRepartista: noteRepartista
       };
 
-      // 1. Aggiorna a schermo in 0 millisecondi
       unisciPratica(updatePayload);
       salvaCacheLocale();
       filtraPratiche();
 
-      // 2. Propaga subito su ntfy.sh così Admin vede la modifica in tempo reale
       fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
         method: 'POST',
         body: JSON.stringify(updatePayload)
       }).catch(() => {});
 
-      // 3. Salva su Google Sheet in background
       fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -369,7 +366,6 @@
       caricaCacheLocaleSubito();
       sincronizzaTutto();
 
-      // Ascolto in tempo reale di nuove richieste
       try {
         const sse = new EventSource(`https://ntfy.sh/${NTFY_TOPIC}/sse`);
         sse.onmessage = (e) => {
