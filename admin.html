@@ -41,7 +41,9 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border-top: 4px solid var(--unieuro-blue);
       cursor: pointer;
+      transition: transform 0.1s;
     }
+    .kpi-card:hover { transform: translateY(-2px); }
     .kpi-card.orange { border-top-color: var(--unieuro-orange); }
     .kpi-card.green { border-top-color: #16A34A; }
     .kpi-card.gray { border-top-color: #64748B; }
@@ -65,13 +67,12 @@
       font-size: 0.88rem;
     }
     table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
-    th, td { padding: 12px 10px; border-bottom: 1px solid #E2E8F0; text-align: left; vertical-align: top; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid #CBD5E1; text-align: left; vertical-align: top; }
     th { background: #F8FAFC; color: var(--unieuro-blue); }
-    
-    /* Colori righe tabella */
-    tr.row-aperta { background-color: #FFFBEB; }
-    tr.row-gestita { background-color: #F0FDF4; }
-    tr.row-archiviata { background-color: #F8FAFC; opacity: 0.75; }
+
+    tr.row-aperta { background-color: #FEF3C7; }
+    tr.row-gestita { background-color: #DCFCE7; }
+    tr.row-archiviata { background-color: #F1F5F9; opacity: 0.78; }
   </style>
 </head>
 <body>
@@ -79,51 +80,50 @@
   <header>
     <div>
       <h2 style="margin:0;">📊 Dashboard Admin - Unieuro RC</h2>
-      <small style="color:#CBD5E1;">Riepilogo generale e filtri pratiche</small>
+      <small id="syncStatusAdmin" style="color:#CBD5E1;">⚡ Caricamento istantaneo attivo</small>
     </div>
-    <div style="display:flex; gap:8px;">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <a href="interno.html" class="btn" style="background:#7C3AED;">📞 + Richiesta da Interno</a>
       <a href="reparto.html" class="btn" style="background:rgba(255,255,255,0.2);">🏢 Vai a Reparti</a>
-      <button class="btn" onclick="caricaDatiAdmin()">🔄 Aggiorna</button>
+      <button class="btn" onclick="sincronizzaAdmin()">🔄 Aggiorna</button>
     </div>
   </header>
 
   <div class="kpi-container">
     <div class="kpi-card" onclick="impostaFiltroStato('TUTTI')">
-      <div class="kpi-label">PRATICHE TOTALI</div>
+      <div class="kpi-label">PRATICHE TOTALI (CLICCA)</div>
       <div class="kpi-num" id="totPratiche">0</div>
     </div>
     <div class="kpi-card orange" onclick="impostaFiltroStato('Aperta')">
-      <div class="kpi-label">APERTE / IN ATTESA</div>
+      <div class="kpi-label">SOLO APERTE / IN ATTESA</div>
       <div class="kpi-num" id="apertePratiche">0</div>
     </div>
     <div class="kpi-card green" onclick="impostaFiltroStato('Gestita')">
-      <div class="kpi-label">GESTITE</div>
+      <div class="kpi-label">SOLO GESTITE</div>
       <div class="kpi-num" id="gestitePratiche">0</div>
     </div>
     <div class="kpi-card gray" onclick="impostaFiltroStato('Archiviata')">
-      <div class="kpi-label">ARCHIVIATE</div>
+      <div class="kpi-label">SOLO ARCHIVIATE</div>
       <div class="kpi-num" id="archiviatePratiche">0</div>
     </div>
   </div>
 
   <div class="panel">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
-      <h3 style="margin:0; color:var(--unieuro-blue);" id="titoloTabella">📋 Tutte le Richieste Registrate</h3>
-      <div>
-        <select id="filtroStatoSelect" onchange="caricaDatiAdmin()" style="padding:8px 12px; border-radius:8px; border:1px solid #CBD5E1; font-weight:700;">
-          <option value="TUTTI">Mostra: Tutti gli stati</option>
-          <option value="Aperta">🔴 Solo Aperte</option>
-          <option value="Gestita">🟢 Solo Gestite</option>
-          <option value="Archiviata">📂 Solo Archiviate</option>
-        </select>
-      </div>
+      <h3 style="margin:0; color:var(--unieuro-blue);">📋 Storico Richieste Registrate</h3>
+      <select id="filtroStatoSelect" onchange="renderizzaTabella()" style="padding:8px 12px; border-radius:8px; border:1px solid #CBD5E1; font-weight:700;">
+        <option value="TUTTI">Mostra: Tutti gli stati</option>
+        <option value="Aperta">🟠 Solo Aperte</option>
+        <option value="Gestita">🟢 Solo Gestite</option>
+        <option value="Archiviata">📂 Solo Archiviate</option>
+      </select>
     </div>
 
     <div style="overflow-x:auto;">
       <table>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>ID / Origine</th>
             <th>Data/Ora</th>
             <th>Reparto</th>
             <th>Cliente & Tel</th>
@@ -140,8 +140,9 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
+    const REQ_KEY = 'unieuro_requests_db';
 
-    let listaGlobale = [];
+    let mappaAdmin = new Map();
 
     function preparaNumero7Collaboration(num) {
       if (!num) return "";
@@ -151,56 +152,109 @@
       return clean;
     }
 
+    function normalizza(p) {
+      if (!p) return null;
+      const id = String(p.id || p['ID Pratica'] || '').trim();
+      if (!id) return null;
+      return {
+        id: id,
+        timestamp: p.timestamp || p['Data e Ora'] || '',
+        reparto: String(p.reparto || p['Reparto'] || '').toUpperCase().trim(),
+        tipoRichiesta: p.tipoRichiesta || p['Tipo Richiesta'] || '',
+        nomeCliente: p.nomeCliente || p['Nome Cliente'] || '',
+        telefono: p.telefono || p['Telefono'] || '',
+        emailCliente: p.emailCliente || p['Email Cliente'] || '',
+        noteCliente: p.noteCliente || p['Dettagli / Note Cliente'] || '',
+        stato: p.stato || p['Stato'] || 'Aperta',
+        noteRepartista: p.noteRepartista || p['Note Repartista'] || '',
+        operatore: p.operatore || p['Operatore'] || ''
+      };
+    }
+
+    function unisciRecord(raw) {
+      if (!raw) return;
+      if (raw.action === 'update' && raw.id) {
+        const rec = mappaAdmin.get(String(raw.id));
+        if (rec) {
+          if (raw.stato) rec.stato = raw.stato;
+          if (raw.operatore !== undefined) rec.operatore = raw.operatore;
+          if (raw.noteRepartista !== undefined) rec.noteRepartista = raw.noteRepartista;
+          mappaAdmin.set(String(raw.id), rec);
+        }
+        return;
+      }
+      const norm = normalizza(raw);
+      if (!norm) return;
+      const esistente = mappaAdmin.get(norm.id);
+      if (esistente) {
+        mappaAdmin.set(norm.id, {
+          ...esistente,
+          ...norm,
+          noteRepartista: norm.noteRepartista || esistente.noteRepartista,
+          operatore: norm.operatore || esistente.operatore
+        });
+      } else {
+        mappaAdmin.set(norm.id, norm);
+      }
+    }
+
     function impostaFiltroStato(stato) {
       document.getElementById('filtroStatoSelect').value = stato;
       renderizzaTabella();
     }
 
-    async function caricaDatiAdmin() {
-      let lista = [];
-
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=get`);
-        const json = await res.json();
-        const daSheet = Array.isArray(json) ? json : (json.data || []);
-        lista = [...daSheet];
-      } catch (e) {}
-
-      try {
-        const resNtfy = await fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=24h`);
-        const txt = await resNtfy.text();
-        txt.trim().split('\n').forEach(line => {
-          if (!line) return;
-          try {
-            const ev = JSON.parse(line);
-            if (ev.event === 'message' && ev.message) {
-              const item = JSON.parse(ev.message);
-              if (item && item.id && !lista.some(x => String(x.id || x['ID Pratica']) === String(item.id))) {
-                lista.push(item);
-              }
-            }
-          } catch (e) {}
-        });
-      } catch (e) {}
-
-      listaGlobale = lista;
-      
-      // Aggiorna KPI
-      document.getElementById('totPratiche').textContent = listaGlobale.length;
-      document.getElementById('apertePratiche').textContent = listaGlobale.filter(x => (x.stato || x['Stato']) === 'Aperta').length;
-      document.getElementById('gestitePratiche').textContent = listaGlobale.filter(x => (x.stato || x['Stato']) === 'Gestita').length;
-      document.getElementById('archiviatePratiche').textContent = listaGlobale.filter(x => (x.stato || x['Stato']) === 'Archiviata').length;
-
+    function aggiornaVista() {
+      const lista = Array.from(mappaAdmin.values()).reverse();
+      document.getElementById('totPratiche').textContent = lista.length;
+      document.getElementById('apertePratiche').textContent = lista.filter(x => x.stato === 'Aperta').length;
+      document.getElementById('gestitePratiche').textContent = lista.filter(x => x.stato === 'Gestita').length;
+      document.getElementById('archiviatePratiche').textContent = lista.filter(x => x.stato === 'Archiviata').length;
       renderizzaTabella();
+    }
+
+    function sincronizzaAdmin() {
+      const statusEl = document.getElementById('syncStatusAdmin');
+      statusEl.textContent = '🔄 Sincronizzazione in corso...';
+
+      const pNtfy = fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=48h`)
+        .then(r => r.text())
+        .then(txt => {
+          txt.trim().split('\n').forEach(line => {
+            if (!line) return;
+            try {
+              const ev = JSON.parse(line);
+              if (ev.event === 'message' && ev.message) {
+                unisciRecord(JSON.parse(ev.message));
+              }
+            } catch (e) {}
+          });
+          aggiornaVista();
+        }).catch(() => {});
+
+      const pSheet = fetch(`${SCRIPT_URL}?action=get`, { redirect: 'follow' })
+        .then(r => r.json())
+        .then(json => {
+          const daSheet = Array.isArray(json) ? json : (json.data || []);
+          daSheet.forEach(item => unisciRecord(item));
+          try {
+            localStorage.setItem(REQ_KEY, JSON.stringify(Array.from(mappaAdmin.values()).slice(0, 80)));
+          } catch (e) {}
+          aggiornaVista();
+        }).catch(() => {});
+
+      Promise.allSettled([pNtfy, pSheet]).then(() => {
+        statusEl.textContent = '✅ Sincronizzato alle ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      });
     }
 
     function renderizzaTabella() {
       const tbody = document.getElementById('adminBody');
       const filtroStato = document.getElementById('filtroStatoSelect').value;
+      const lista = Array.from(mappaAdmin.values()).reverse();
 
       const listaFiltrata = filtroStato === 'TUTTI'
-        ? listaGlobale
-        : listaGlobale.filter(x => (x.stato || x['Stato'] || 'Aperta') === filtroStato);
+        ? lista
+        : lista.filter(x => x.stato === filtroStato);
 
       if (listaFiltrata.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#64748B; padding:20px;">Nessuna richiesta trovata per questo filtro.</td></tr>';
@@ -208,38 +262,45 @@
       }
 
       tbody.innerHTML = listaFiltrata.map(p => {
-        const tel = preparaNumero7Collaboration(p.telefono || p['Telefono'] || '');
-        const mail = p.emailCliente || p['Email Cliente'] || '';
-        const operatore = p.operatore || p['Operatore'] || '-';
-        const noteRep = p.noteRepartista || p['Note Repartista'] || '-';
-        const stato = p.stato || p['Stato'] || 'Aperta';
+        const tel = preparaNumero7Collaboration(p.telefono);
+        const isInterno = p.id.startsWith('INT-') || p.tipoRichiesta.includes('INTERNO');
 
         let rowClass = 'row-aperta';
-        if (stato === 'Gestita') rowClass = 'row-gestita';
-        if (stato === 'Archiviata') rowClass = 'row-archiviata';
+        if (p.stato === 'Gestita') rowClass = 'row-gestita';
+        if (p.stato === 'Archiviata') rowClass = 'row-archiviata';
 
         return `
           <tr class="${rowClass}">
-            <td><strong>${p.id || p['ID Pratica'] || ''}</strong></td>
-            <td>${p.timestamp || p['Data e Ora'] || ''}</td>
-            <td><strong>${p.reparto || p['Reparto'] || ''}</strong></td>
             <td>
-              ${p.nomeCliente || p['Nome Cliente'] || ''}<br>
+              <strong>${p.id}</strong>
+              ${isInterno ? `<br><span style="background:#7C3AED; color:white; padding:2px 6px; border-radius:4px; font-size:0.72rem; font-weight:700;">📞 DA INTERNO</span>` : ''}
+            </td>
+            <td>${p.timestamp}</td>
+            <td><strong>${p.reparto}</strong></td>
+            <td>
+              ${p.nomeCliente}<br>
               ${tel ? `<a href="tel:${tel}" style="color:#0284C7; font-weight:700;">📞 ${tel}</a>` : ''}
-              ${mail ? `<br><a href="mailto:${mail}">${mail}</a>` : ''}
+              ${p.emailCliente ? `<br><a href="mailto:${p.emailCliente}">${p.emailCliente}</a>` : ''}
             </td>
-            <td>${p.noteCliente || p['Dettagli / Note Cliente'] || ''}</td>
+            <td>${p.noteCliente}</td>
             <td>
-              <strong>Op:</strong> ${operatore}<br>
-              <small style="color:#475569;">${noteRep}</small>
+              <strong>Op:</strong> ${p.operatore || '-'}<br>
+              <small style="color:#334155; font-weight:600;">${p.noteRepartista || '-'}</small>
             </td>
-            <td style="font-weight:800; color:${stato === 'Aperta' ? '#EA580C' : (stato === 'Gestita' ? '#16A34A' : '#64748B')};">${stato}</td>
+            <td style="font-weight:800; color:${p.stato === 'Aperta' ? '#EA580C' : (p.stato === 'Gestita' ? '#16A34A' : '#64748B')};">${p.stato}</td>
           </tr>
         `;
       }).join('');
     }
 
-    window.addEventListener('DOMContentLoaded', caricaDatiAdmin);
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        const cache = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
+        cache.forEach(p => unisciRecord(p));
+      } catch (e) {}
+      aggiornaVista();
+      sincronizzaAdmin();
+    });
   </script>
 </body>
 </html>
