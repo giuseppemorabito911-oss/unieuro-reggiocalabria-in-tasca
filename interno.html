@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inserimento Richiesta Interna - Unieuro RC</title>
+  <style>
+    :root {
+      --unieuro-blue: #002D62;
+      --unieuro-orange: #FF6700;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #EEF2F7; padding: 16px; color: #1E293B; }
+    .container { max-width: 620px; margin: 0 auto; }
+    header {
+      background: linear-gradient(135deg, #001838, var(--unieuro-blue));
+      color: white;
+      padding: 16px 20px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 4px solid var(--unieuro-orange);
+    }
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+    .form-group { margin-bottom: 14px; }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: #F8FAFC;
+    }
+    .btn {
+      background: var(--unieuro-orange);
+      color: white;
+      border: none;
+      padding: 13px 18px;
+      border-radius: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.95rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .toast {
+      display: none;
+      background: #DCFCE7;
+      color: #166534;
+      border: 1.5px solid #86EFAC;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div>
+        <h2 style="font-size:1.15rem;">📞 Nuova Richiesta Telefonica / Interna</h2>
+        <small style="color:#CBD5E1;">Smistamento interno verso Reparto e Operatore</small>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <a href="reparto.html" class="btn" style="background:rgba(255,255,255,0.2); padding:8px 12px; font-size:0.82rem;">🏢 Reparti</a>
+        <a href="admin.html" class="btn" style="background:rgba(255,255,255,0.2); padding:8px 12px; font-size:0.82rem;">📊 Admin</a>
+      </div>
+    </header>
+
+    <div class="card">
+      <form id="internalForm" onsubmit="inviaRichiestaInterna(event)" autocomplete="off">
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="reparto">Reparto Destinatario *</label>
+            <select id="reparto" required>
+              <option value="">-- Scegli Reparto --</option>
+              <option value="GRANDI ELETTRODOMESTICI">🧺 GRANDI ELETTRODOMESTICI</option>
+              <option value="PICCOLI ELETTRODOMESTICI">☕ PICCOLI ELETTRODOMESTICI</option>
+              <option value="TELEFONIA">📱 TELEFONIA</option>
+              <option value="TV">📺 TV</option>
+              <option value="INFORMATICA">💻 INFORMATICA</option>
+              <option value="ASSISTENZA">🛠️ ASSISTENZA</option>
+              <option value="RITIRO RAEE">♻️ RITIRO RAEE</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="operatoreDest">Assegna all'Operatore *</label>
+            <select id="operatoreDest" required>
+              <option value="TUTTO IL REPARTO">-- Tutto il Reparto --</option>
+              <option value="PEPPE M.">PEPPE M.</option>
+              <option value="DAGO">DAGO</option>
+              <option value="DANIELE">DANIELE</option>
+              <option value="GIORGIO">GIORGIO</option>
+              <option value="PAOLO">PAOLO</option>
+              <option value="MIMMO">MIMMO</option>
+              <option value="OUSMANE">OUSMANE</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="nomeCliente">Nome e Cognome Cliente *</label>
+            <input type="text" id="nomeCliente" placeholder="Es. Mario Rossi" required>
+          </div>
+
+          <div class="form-group">
+            <label for="telefonoCliente">Telefono Cliente (7Collab) *</label>
+            <input type="tel" id="telefonoCliente" placeholder="Es. 3331234567" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="emailCliente">Email Cliente (opzionale)</label>
+          <input type="email" id="emailCliente" placeholder="esempio@email.it">
+        </div>
+
+        <div class="form-group">
+          <label for="noteCliente">Dettagli Richiesta Telefonica / Prodotto *</label>
+          <textarea id="noteCliente" rows="4" placeholder="Scrivi cosa ha chiesto il cliente al telefono o i dettagli della pratica..." required></textarea>
+        </div>
+
+        <button type="submit" id="btnSubmitInt" class="btn" style="width:100%;">
+          📨 Invia Richiesta Interna (Mail + Pannelli)
+        </button>
+      </form>
+
+      <div id="toastOk" class="toast">
+        ✅ Richiesta Interna registrata! Email inviata e pratica smistata con successo.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
+    const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
+    const REQ_KEY = 'unieuro_requests_db';
+
+    function formattaNumero7Collaboration(rawPhone) {
+      if (!rawPhone) return "";
+      let clean = rawPhone.replace(/[\s\-\.\(\)]/g, '').replace(/^(\+39|0039)/, '');
+      if (!clean) return "";
+      if (!clean.startsWith('0')) clean = '0' + clean;
+      return clean;
+    }
+
+    async function inviaRichiestaInterna(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmitInt');
+      btn.disabled = true;
+      btn.textContent = '⏳ Invio in corso...';
+
+      const reparto = document.getElementById('reparto').value;
+      const operatore = document.getElementById('operatoreDest').value;
+      const cliente = document.getElementById('nomeCliente').value.trim();
+      const tel = formattaNumero7Collaboration(document.getElementById('telefonoCliente').value.trim());
+      const email = document.getElementById('emailCliente').value.trim();
+      const note = document.getElementById('noteCliente').value.trim();
+
+      const idPratica = "INT-" + Date.now();
+      const timestamp = new Date().toLocaleString("it-IT");
+      const tipoLabel = `📞 RICHIESTA DA INTERNO (Per: ${operatore})`;
+
+      const payload = {
+        action: "create",
+        id: idPratica,
+        timestamp: timestamp,
+        reparto: reparto,
+        tipoRichiesta: tipoLabel,
+        nomeCliente: cliente,
+        telefono: tel,
+        emailCliente: email,
+        preferenzaContatto: "Telefono (Da Interno)",
+        noteCliente: `[📞 DA INTERNO - Per: ${operatore}] ${note}`,
+        operatore: operatore === 'TUTTO IL REPARTO' ? '' : operatore,
+        stato: "Aperta",
+        origine: "INTERNO"
+      };
+
+      try {
+        const lista = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
+        lista.unshift(payload);
+        localStorage.setItem(REQ_KEY, JSON.stringify(lista.slice(0, 80)));
+      } catch (err) {}
+
+      fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {}
+
+      btn.disabled = false;
+      btn.textContent = '📨 Invia Richiesta Interna (Mail + Pannelli)';
+      document.getElementById('internalForm').reset();
+
+      const toast = document.getElementById('toastOk');
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+  </script>
+</body>
+</html>
