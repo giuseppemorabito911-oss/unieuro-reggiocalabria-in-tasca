@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chiusura Rapida Intervento - Unieuro RC</title>
+  <style>
+    :root {
+      --unieuro-blue: #002D62;
+      --unieuro-orange: #FF6700;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #EEF2F7; padding: 20px; color: #1E293B; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .card { background: white; border-radius: 16px; padding: 24px; width: 100%; max-width: 480px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); border-top: 6px solid #7C3AED; }
+    h2 { color: var(--unieuro-blue); font-size: 1.2rem; margin-bottom: 6px; }
+    .sub { font-size: 0.85rem; color: #64748B; margin-bottom: 16px; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 6px; }
+    select, input, textarea { width: 100%; padding: 11px 13px; border: 1.5px solid #CBD5E1; border-radius: 10px; font-size: 0.95rem; background: #F8FAFC; outline: none; }
+    select:focus, input:focus, textarea:focus { border-color: #7C3AED; background: #FFFFFF; }
+    .btn { background: #16A34A; color: white; border: none; padding: 13px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; font-size: 1rem; margin-top: 6px; }
+    .toast-success { display: none; text-align: center; background: #DCFCE7; color: #166534; padding: 20px; border-radius: 12px; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="card" id="formCard">
+    <h2>📞 Chiusura Rapida Intervento</h2>
+    <div class="sub" id="infoPratica">Caricamento dati pratica...</div>
+
+    <form id="closeForm" onsubmit="inviaChiusura(event)">
+      <div class="form-group">
+        <label for="operatore">Il tuo Nome (Operatore) *</label>
+        <select id="operatore" required>
+          <option value="">-- Seleziona Operatore --</option>
+          <option value="PEPPE M.">PEPPE M.</option>
+          <option value="DAGO">DAGO</option>
+          <option value="DANIELE">DANIELE</option>
+          <option value="GIORGIO">GIORGIO</option>
+          <option value="PAOLO">PAOLO</option>
+          <option value="MIMMO">MIMMO</option>
+          <option value="OUSMANE">OUSMANE</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="noteIntervento">Intervento Svolto / Note *</label>
+        <textarea id="noteIntervento" rows="4" placeholder="Es. Contattato cliente, problema risolto..." required></textarea>
+      </div>
+
+      <button type="submit" id="btnInvia" class="btn">✔ Registra e Chiudi Pratica</button>
+    </form>
+  </div>
+
+  <div class="card" id="successCard" style="display:none;">
+    <div class="toast-success">
+      <h2>🎉 Intervento Registrato con Successo!</h2>
+      <p style="margin-top:10px; font-weight:normal; font-size:0.9rem;">La pratica è stata aggiornata e contrassegnata come completata nella Dashboard Admin.</p>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
+    const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
+
+    const params = new URLSearchParams(window.location.search);
+    const praticaId = params.get('id');
+    const repartoPratica = params.get('reparto') || '';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!praticaId) {
+        document.getElementById('infoPratica').textContent = "⚠️ Errore: ID pratica mancante nel link.";
+        document.getElementById('closeForm').style.display = 'none';
+      } else {
+        document.getElementById('infoPratica').innerHTML = `Pratica: <strong>${praticaId}</strong> • Reparto: <strong>${repartoPratica}</strong>`;
+      }
+    });
+
+    async function inviaChiusura(e) {
+      e.preventDefault();
+      if (!praticaId) return;
+
+      const btn = document.getElementById('btnInvia');
+      btn.disabled = true;
+      btn.textContent = '⏳ Salvataggio in corso...';
+
+      const operatore = document.getElementById('operatore').value;
+      const note = document.getElementById('noteIntervento').value.trim();
+
+      const updatePayload = {
+        action: "update",
+        id: praticaId,
+        stato: "Gestita",
+        operatore: operatore,
+        noteRepartista: note
+      };
+
+      // Notifica in tempo reale su admin
+      fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+        method: 'POST',
+        body: JSON.stringify(updatePayload)
+      }).catch(() => {});
+
+      // Aggiornamento su Google Apps Script
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(updatePayload)
+        });
+      } catch (err) {}
+
+      document.getElementById('formCard').style.display = 'none';
+      document.getElementById('successCard').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
