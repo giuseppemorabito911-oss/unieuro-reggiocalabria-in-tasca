@@ -395,7 +395,7 @@
       text-transform: uppercase;
     }
 
-    /* SEZIONE LE MIE GARANZIE (DUE OPZIONI: LEGALE & ESTESA) */
+    /* SEZIONE LE MIE GARANZIE */
     .garanzie-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -715,7 +715,7 @@
       </a>
     </div>
 
-    <!-- Riquadro WhatsApp Audio con spiegazione PRIMA di premere -->
+    <!-- Riquadro WhatsApp Audio -->
     <div class="wa-helper-box">
       <div class="wa-helper-title">
         <span>👵👴 Richiesta Facile con Messaggio Vocale</span>
@@ -773,13 +773,12 @@
       </a>
     </div>
 
-    <!-- 2. LE MIE GARANZIE (GARANZIA LEGALE & ESTENSIONE DI GARANZIA) -->
+    <!-- 2. LE MIE GARANZIE -->
     <div class="card orange-border">
       <div class="card-title">
         <span>🛡️ Le Mie Garanzie</span>
       </div>
 
-      <!-- Menu a due opzioni -->
       <div class="garanzie-tabs">
         <button type="button" id="btnTabLegale" class="garanzia-tab-btn active" onclick="cambiaTabGaranzia('legale')">
           📄 Garanzia Legale<br><small style="font-size:0.72rem; font-weight:normal;">Scontrini Digitali (2 Anni)</small>
@@ -789,7 +788,7 @@
         </button>
       </div>
 
-      <!-- OPZIONE A: GARANZIA LEGALE (SCONTRINI DIGITALI) -->
+      <!-- OPZIONE A: GARANZIA LEGALE -->
       <div id="panelLegale" class="garanzia-panel active">
         <div class="garanzia-info-box">
           💡 Qui puoi conservare le tue <strong>Copie Digitali</strong> degli scontrini o le foto delle ricevute d'acquisto per avere sempre a portata di mano i <strong>2 anni di garanzia legale</strong>.
@@ -821,7 +820,7 @@
         <div id="listaScontriniBox"></div>
       </div>
 
-      <!-- OPZIONE B: ESTENSIONE DI GARANZIA (3, 5, 6 ANNI) -->
+      <!-- OPZIONE B: ESTENSIONE DI GARANZIA -->
       <div id="panelEstesa" class="garanzia-panel">
         <div class="garanzia-info-box" style="background:#EFF6FF; border-color:#BFDBFE; color:#1E40AF;">
           ✨ Proteggi i tuoi acquisti più a lungo! Puoi acquistare in qualsiasi momento l'<strong>Estensione di Garanzia a 3, 5 o 6 anni</strong> direttamente nel nostro punto vendita.
@@ -864,7 +863,7 @@
       </div>
     </div>
 
-    <!-- 3. VOLANTINO & PROMO APP...ETITOSE CON RICERCA MULTIPLA E RITAGLIO -->
+    <!-- 3. VOLANTINO & PROMO -->
     <div class="card">
       <div class="card-title">
         <span>📖 Sfoglia Offerte e Ritaglia</span>
@@ -911,7 +910,7 @@
       </div>
     </div>
 
-    <!-- 4. PULSANTI REPARTI SEPARATI + MODULO A COMPARSA -->
+    <!-- 4. REPARTI E RICHIESTE -->
     <div class="card orange-border" id="sezioneRepartiCard">
       <div class="card-title">
         <span>📢 Seleziona il Reparto per Richiesta</span>
@@ -1034,7 +1033,7 @@
 
   </div>
 
-  <!-- UNICA SCHERMATA DI CONFERMA E PROMEMORIA WHATSAPP -->
+  <!-- MODALE GUIDA WHATSAPP -->
   <div id="waGuideModal" class="wa-modal-overlay">
     <div class="wa-modal-card">
       <h2 style="color:#15803D; font-size:1.22rem; margin-bottom:10px;">✅ WhatsApp si sta aprendo!</h2>
@@ -1152,9 +1151,7 @@
           fontOptions: "bold",
           margin: 6
         });
-      } catch (e) {
-        console.warn("Errore generazione barcode:", e);
-      }
+      } catch (e) {}
     }
 
     function caricaTessera() {
@@ -1198,15 +1195,11 @@
         await html5QrCodeScanner.start(
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 250, height: 120 } },
-          (decodedText) => {
-            if (decodedText) {
-              salvaTessera(decodedText);
-            }
-          },
+          (decodedText) => { if (decodedText) salvaTessera(decodedText); },
           () => {}
         );
       } catch (err) {
-        alert("Impossibile accedere alla fotocamera. Puoi inserire il codice manualmente.");
+        alert("Impossibile accedere alla fotocamera. Inserisci il codice manualmente.");
         fermaScannerFotocamera();
       }
     }
@@ -1223,9 +1216,7 @@
       if (box) box.style.display = 'none';
     }
 
-    // -------------------------------------------------------------------------
-    // 2. GESTIONE LE MIE GARANZIE (LEGALE VS ESTESA) CON INDEXEDDB
-    // -------------------------------------------------------------------------
+    // 2. GESTIONE LE MIE GARANZIE (FUNZIONI TESTATE E CORRETTE)
     const DB_NAME = 'UnieuroGaranzieDB';
     const STORE_LEGALE = 'scontrini_legali';
     const STORE_ESTESA = 'garanzie_estese';
@@ -1243,34 +1234,49 @@
       });
     }
 
-    function cambiaTabGaranzia(tipo) {
-      document.getElementById('btnTabLegale').classList.remove('active');
-      document.getElementById('btnTabEstesa').classList.remove('active');
-      document.getElementById('panelLegale').classList.remove('active');
-      document.getElementById('panelEstesa').classList.remove('active');
+    window.cambiaTabGaranzia = function(tipo) {
+      const btnLegale = document.getElementById('btnTabLegale');
+      const btnEstesa = document.getElementById('btnTabEstesa');
+      const panelLegale = document.getElementById('panelLegale');
+      const panelEstesa = document.getElementById('panelEstesa');
+
+      if (!btnLegale || !btnEstesa || !panelLegale || !panelEstesa) return;
+
+      btnLegale.classList.remove('active');
+      btnEstesa.classList.remove('active');
+      panelLegale.classList.remove('active');
+      panelEstesa.classList.remove('active');
 
       if (tipo === 'legale') {
-        document.getElementById('btnTabLegale').classList.add('active');
-        document.getElementById('panelLegale').classList.add('active');
+        btnLegale.classList.add('active');
+        panelLegale.classList.add('active');
       } else {
-        document.getElementById('btnTabEstesa').classList.add('active');
-        document.getElementById('panelEstesa').classList.add('active');
+        btnEstesa.classList.add('active');
+        panelEstesa.classList.add('active');
       }
-    }
+    };
 
-    function toggleFormScontrino() {
+    window.toggleFormScontrino = function() {
       const box = document.getElementById('boxNuovoScontrino');
-      const isHidden = box.style.display === 'none';
+      if (!box) return;
+      const isHidden = box.style.display === 'none' || box.style.display === '';
       box.style.display = isHidden ? 'block' : 'none';
-      if (isHidden) document.getElementById('scontrinoData').valueAsDate = new Date();
-    }
+      if (isHidden) {
+        const dt = document.getElementById('scontrinoData');
+        if (dt && !dt.value) dt.valueAsDate = new Date();
+      }
+    };
 
-    function toggleFormEstesa() {
+    window.toggleFormEstesa = function() {
       const box = document.getElementById('boxNuovaEstesa');
-      const isHidden = box.style.display === 'none';
+      if (!box) return;
+      const isHidden = box.style.display === 'none' || box.style.display === '';
       box.style.display = isHidden ? 'block' : 'none';
-      if (isHidden) document.getElementById('estesaData').valueAsDate = new Date();
-    }
+      if (isHidden) {
+        const dt = document.getElementById('estesaData');
+        if (dt && !dt.value) dt.valueAsDate = new Date();
+      }
+    };
 
     function elaboraFile(file) {
       return new Promise((resolve) => {
@@ -1338,3 +1344,405 @@
       const prod = document.getElementById('estesaProdotto').value.trim();
       const anni = document.getElementById('estesaAnni').value;
       const dataInizio = document.getElementById('estesaData').value;
+      const fileInput = document.getElementById('estesaCertificato');
+
+      if (!prod || !dataInizio || !fileInput.files.length) {
+        alert("Compila tutti i campi e allega il certificato di estensione.");
+        return;
+      }
+
+      const btn = document.getElementById('btnSalvaEstesa');
+      btn.disabled = true; btn.textContent = "⏳ Salvataggio...";
+
+      try {
+        const fileData = await elaboraFile(fileInput.files[0]);
+        const db = await apriDB();
+        const tx = db.transaction(STORE_ESTESA, 'readwrite');
+        tx.objectStore(STORE_ESTESA).put({
+          id: 'EXT-' + Date.now(),
+          prodotto: prod,
+          anniDurata: anni,
+          dataInizio: dataInizio,
+          fileUrl: fileData.dataUrl,
+          mime: fileData.mime
+        });
+        await new Promise((res) => { tx.oncomplete = res; });
+
+        document.getElementById('estesaProdotto').value = '';
+        fileInput.value = '';
+        document.getElementById('boxNuovaEstesa').style.display = 'none';
+        caricaListeGaranzie();
+      } catch (e) { alert("Errore nel salvataggio."); }
+
+      btn.disabled = false; btn.textContent = "💾 Salva Estensione";
+    }
+
+    async function caricaListeGaranzie() {
+      try {
+        const db = await apriDB();
+
+        // 1. Carica Garanzia Legale
+        const txLegale = db.transaction(STORE_LEGALE, 'readonly');
+        const reqLegale = txLegale.objectStore(STORE_LEGALE).getAll();
+        reqLegale.onsuccess = () => {
+          const container = document.getElementById('listaScontriniBox');
+          if (!container) return;
+          const lista = (reqLegale.result || []).reverse();
+          if (lista.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color:#64748B; font-size:0.85rem; padding:8px 0;">Nessun scontrino salvato per la garanzia legale.</div>`;
+            return;
+          }
+          container.innerHTML = lista.map(s => {
+            const dAcq = new Date(s.dataAcquisto);
+            const dScad = new Date(dAcq); dScad.setFullYear(dScad.getFullYear() + 2);
+            const inGaranzia = new Date() <= dScad;
+            return `
+              <div class="item-card">
+                <div class="item-details">
+                  <div class="item-title">📄 ${s.prodotto}</div>
+                  <div class="item-meta">Acquisto: <strong>${dAcq.toLocaleDateString('it-IT')}</strong></div>
+                  <span class="badge-status ${inGaranzia ? 'attiva' : 'scaduta'}">
+                    ${inGaranzia ? `🟢 LEGALE fino al ${dScad.toLocaleDateString('it-IT')}` : `🔴 Scaduta il ${dScad.toLocaleDateString('it-IT')}`}
+                  </span>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button type="button" class="btn btn-blue" style="padding:8px 12px; font-size:0.8rem;" onclick="apriFileItem('${STORE_LEGALE}', '${s.id}')">👁️ Apri</button>
+                  <button type="button" class="btn btn-red" style="padding:8px 10px; font-size:0.8rem;" onclick="eliminaItem('${STORE_LEGALE}', '${s.id}')">🗑️</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        };
+
+        // 2. Carica Garanzia Estesa
+        const txEstesa = db.transaction(STORE_ESTESA, 'readonly');
+        const reqEstesa = txEstesa.objectStore(STORE_ESTESA).getAll();
+        reqEstesa.onsuccess = () => {
+          const container = document.getElementById('listaEsteseBox');
+          if (!container) return;
+          const lista = (reqEstesa.result || []).reverse();
+          if (lista.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color:#64748B; font-size:0.85rem; padding:8px 0;">Nessuna estensione di garanzia registrata.</div>`;
+            return;
+          }
+          container.innerHTML = lista.map(s => {
+            const dInizio = new Date(s.dataInizio);
+            const dScad = new Date(dInizio); dScad.setFullYear(dScad.getFullYear() + Number(s.anniDurata));
+            const inGaranzia = new Date() <= dScad;
+            return `
+              <div class="item-card">
+                <div class="item-details">
+                  <div class="item-title">🛡️ ${s.prodotto} (${s.anniDurata} Anni di Protezione)</div>
+                  <div class="item-meta">Decorrenza: <strong>${dInizio.toLocaleDateString('it-IT')}</strong></div>
+                  <span class="badge-status ${inGaranzia ? 'estesa' : 'scaduta'}">
+                    ${inGaranzia ? `⭐ ESTESA fino al ${dScad.toLocaleDateString('it-IT')}` : `🔴 Scaduta il ${dScad.toLocaleDateString('it-IT')}`}
+                  </span>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button type="button" class="btn btn-blue" style="padding:8px 12px; font-size:0.8rem;" onclick="apriFileItem('${STORE_ESTESA}', '${s.id}')">👁️ Apri</button>
+                  <button type="button" class="btn btn-red" style="padding:8px 10px; font-size:0.8rem;" onclick="eliminaItem('${STORE_ESTESA}', '${s.id}')">🗑️</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        };
+      } catch (e) {}
+    }
+
+    window.apriFileItem = async function(storeName, id) {
+      try {
+        const db = await apriDB();
+        const tx = db.transaction(storeName, 'readonly');
+        const req = tx.objectStore(storeName).get(id);
+        req.onsuccess = () => {
+          const item = req.result;
+          if (!item) return;
+          const win = window.open();
+          if (item.mime === 'application/pdf') {
+            win.document.write(`<iframe src="${item.fileUrl}" style="width:100%; height:100vh; border:none;"></iframe>`);
+          } else {
+            win.document.write(`
+              <body style="margin:0; background:#0f172a; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; font-family:sans-serif; color:white;">
+                <h3 style="margin:14px;">🛡️ ${item.prodotto}</h3>
+                <img src="${item.fileUrl}" style="max-width:96%; max-height:85vh; border-radius:8px; background:white;">
+              </body>
+            `);
+          }
+        };
+      } catch (e) {}
+    };
+
+    window.eliminaItem = async function(storeName, id) {
+      if (!confirm("Vuoi eliminare questo documento?")) return;
+      try {
+        const db = await apriDB();
+        const tx = db.transaction(storeName, 'readwrite');
+        tx.objectStore(storeName).delete(id);
+        tx.oncomplete = () => caricaListeGaranzie();
+      } catch (e) {}
+    };
+
+    // 3. VOLANTINO & RICERCA
+    async function caricaPdf(url, tabId) {
+      annullaRitaglio();
+      searchMatches = [];
+      const nav = document.getElementById('searchNavBar');
+      if (nav) nav.style.display = 'none';
+
+      const v = document.getElementById('btnTabVolantino');
+      const p = document.getElementById('btnTabPromo');
+      if (v) v.classList.remove('active');
+      if (p) p.classList.remove('active');
+      const targetTab = document.getElementById(tabId);
+      if (targetTab) targetTab.classList.add('active');
+
+      try {
+        pdfDoc = await pdfjsLib.getDocument(url).promise;
+        currentPage = 1;
+        await renderPagina(currentPage);
+      } catch (e) {}
+    }
+
+    async function renderPagina(num) {
+      if (!pdfDoc) return;
+      annullaRitaglio();
+      const page = await pdfDoc.getPage(num);
+      const canvas = document.getElementById('pdfCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const viewport = page.getViewport({ scale: 1.4 });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      const ind = document.getElementById('pageIndicator');
+      if (ind) ind.textContent = `Pag. ${num} / ${pdfDoc.numPages}`;
+    }
+
+    window.cambiaPagina = function(delta) {
+      if (!pdfDoc) return;
+      const next = currentPage + delta;
+      if (next >= 1 && next <= pdfDoc.numPages) {
+        currentPage = next;
+        renderPagina(currentPage);
+      }
+    };
+
+    window.cercaNelPdf = async function() {
+      const input = document.getElementById('pdfSearchInput');
+      const navBar = document.getElementById('searchNavBar');
+      const status = document.getElementById('searchStatus');
+      if (!input || !pdfDoc) return;
+
+      const q = input.value.trim().toLowerCase();
+      if (!q) return;
+
+      if (navBar) navBar.style.display = 'flex';
+      if (status) status.textContent = '⏳ Ricerca in corso...';
+      searchMatches = []; currentMatchIdx = 0;
+
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const txt = await page.getTextContent();
+        const fullText = txt.items.map(item => item.str).join(' ').toLowerCase();
+        if (fullText.includes(q)) searchMatches.push(i);
+      }
+
+      if (searchMatches.length > 0) {
+        await mostraRisultatoRicerca(0);
+      } else if (status) {
+        status.textContent = `⚠️ Nessun risultato per "${q}"`;
+      }
+    };
+
+    async function mostraRisultatoRicerca(idx) {
+      if (searchMatches.length === 0) return;
+      currentMatchIdx = (idx + searchMatches.length) % searchMatches.length;
+      const targetPage = searchMatches[currentMatchIdx];
+      currentPage = targetPage;
+      await renderPagina(targetPage);
+      const status = document.getElementById('searchStatus');
+      if (status) status.textContent = `Risultato ${currentMatchIdx + 1} di ${searchMatches.length} (Pag. ${targetPage})`;
+    }
+
+    window.navigaRisultato = function(delta) {
+      if (searchMatches.length <= 1) return;
+      mostraRisultatoRicerca(currentMatchIdx + delta);
+    };
+
+    window.avviaRitaglio = function() {
+      const canvas = document.getElementById('pdfCanvas');
+      if (!canvas || !canvas.width) return;
+      if (cropperInstance) cropperInstance.destroy();
+      cropperInstance = new Cropper(canvas, { viewMode: 1, autoCropArea: 0.6 });
+      const btnCrop = document.getElementById('btnStartCrop');
+      const tool = document.getElementById('cropToolbar');
+      if (btnCrop) btnCrop.style.display = 'none';
+      if (tool) tool.style.display = 'flex';
+    };
+
+    window.confermaRitaglio = function() {
+      if (!cropperInstance) return;
+      const croppedCanvas = cropperInstance.getCroppedCanvas({ maxWidth: 550, maxHeight: 550 });
+      croppedBase64 = croppedCanvas.toDataURL('image/jpeg', 0.68);
+      const imgPrev = document.getElementById('cropPreviewImg');
+      const prevContainer = document.getElementById('cropPreviewContainer');
+      const repartiCard = document.getElementById('sezioneRepartiCard');
+
+      if (imgPrev) imgPrev.src = croppedBase64;
+      if (prevContainer) prevContainer.style.display = 'flex';
+      annullaRitaglio();
+      if (repartiCard) repartiCard.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.annullaRitaglio = function() {
+      if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+      const btnCrop = document.getElementById('btnStartCrop');
+      const tool = document.getElementById('cropToolbar');
+      if (btnCrop) btnCrop.style.display = 'inline-flex';
+      if (tool) tool.style.display = 'none';
+    };
+
+    window.rimuoviRitaglio = function() {
+      croppedBase64 = "";
+      const imgPrev = document.getElementById('cropPreviewImg');
+      const prevContainer = document.getElementById('cropPreviewContainer');
+      if (imgPrev) imgPrev.src = '';
+      if (prevContainer) prevContainer.style.display = 'none';
+    };
+
+    // 4. REPARTI E RICHIESTE
+    window.selezionaReparto = function(nomeReparto, btnElement) {
+      document.querySelectorAll('.reparto-btn').forEach(b => b.classList.remove('selected'));
+      if (btnElement) btnElement.classList.add('selected');
+      const repHidden = document.getElementById('repartoHidden');
+      const repLabel = document.getElementById('repartoSceltoLabel');
+      const formBox = document.getElementById('formContainerBox');
+
+      if (repHidden) repHidden.value = nomeReparto;
+      if (repLabel) repLabel.textContent = '📍 Reparto: ' + nomeReparto;
+      if (formBox) {
+        formBox.style.display = 'block';
+        formBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    };
+
+    window.chiudiFormReparto = function() {
+      document.querySelectorAll('.reparto-btn').forEach(b => b.classList.remove('selected'));
+      const formBox = document.getElementById('formContainerBox');
+      if (formBox) formBox.style.display = 'none';
+    };
+
+    window.aggiornaCampiContatto = function() {
+      const metodo = document.getElementById('metodoRicontatto').value;
+      const boxTel = document.getElementById('boxTelefono');
+      const boxMail = document.getElementById('boxEmail');
+      const inputTel = document.getElementById('telefonoCliente');
+      const inputMail = document.getElementById('emailCliente');
+
+      if (!boxTel || !boxMail) return;
+
+      if (metodo === 'Telefono') {
+        boxTel.style.display = 'block'; boxMail.style.display = 'none';
+        if (inputTel) inputTel.required = true;
+        if (inputMail) inputMail.required = false;
+      } else {
+        boxTel.style.display = 'none'; boxMail.style.display = 'block';
+        if (inputTel) inputTel.required = false;
+        if (inputMail) inputMail.required = true;
+      }
+    };
+
+    function formattaNumero7Collaboration(rawPhone) {
+      if (!rawPhone) return "";
+      let clean = rawPhone.replace(/[\s\-\.\(\)]/g, '').replace(/^(\+39|0039)/, '');
+      if (!clean) return "";
+      if (!clean.startsWith('0')) clean = '0' + clean;
+      return clean;
+    }
+
+    window.inviaRichiesta = async function(e) {
+      e.preventDefault();
+      const reparto = document.getElementById('repartoHidden').value;
+      if (!reparto) { alert('Clicca prima sul reparto desiderato.'); return; }
+
+      const btn = document.getElementById('btnSubmit');
+      if (btn) { btn.disabled = true; btn.textContent = '⏳ Invio in corso...'; }
+
+      const nome = document.getElementById('nomeCliente').value.trim();
+      const cognome = document.getElementById('cognomeCliente').value.trim();
+      const metodo = document.getElementById('metodoRicontatto').value;
+      const telInserito = document.getElementById('telefonoCliente').value.trim();
+      const telefono7Collab = formattaNumero7Collaboration(telInserito);
+      const email = document.getElementById('emailCliente').value.trim();
+      const note = document.getElementById('noteCliente').value.trim();
+
+      const idPratica = "REQ-" + Date.now();
+      const timestamp = new Date().toLocaleString("it-IT");
+
+      const payload = {
+        action: "create",
+        id: idPratica, timestamp: timestamp, reparto: reparto,
+        tipoRichiesta: reparto === 'RITIRO RAEE' ? 'Ritiro RAEE (in negozio)' : 'Richiesta Cliente',
+        nomeCliente: `${nome} ${cognome}`.trim(), telefono: telefono7Collab, emailCliente: email,
+        preferenzaContatto: metodo, noteCliente: note, stato: "Aperta", image: croppedBase64
+      };
+
+      try {
+        const lista = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
+        lista.unshift(payload);
+        localStorage.setItem(REQ_KEY, JSON.stringify(lista.slice(0, 60)));
+      } catch (err) {}
+
+      fetch(`https://ntfy.sh/${NTFY_TOPIC}`, { method: 'POST', body: JSON.stringify({ ...payload, image: "" }) }).catch(() => {});
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {}
+
+      if (btn) { btn.disabled = false; btn.textContent = '🚀 Invia Richiesta al Reparto'; }
+      resetCampiTemporanei();
+      const toast = document.getElementById('confirmToast');
+      if (toast) {
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+      }
+    };
+
+    function resetCampiTemporanei() {
+      const form = document.getElementById('requestForm');
+      if (form) form.reset();
+      aggiornaCampiContatto(); chiudiFormReparto(); fermaScannerFotocamera(); chiudiGuidaWhatsApp();
+      const searchInput = document.getElementById('pdfSearchInput');
+      if (searchInput) searchInput.value = '';
+      searchMatches = [];
+      const searchNavBar = document.getElementById('searchNavBar');
+      if (searchNavBar) searchNavBar.style.display = 'none';
+      annullaRitaglio(); rimuoviRitaglio();
+    }
+
+    let timerInattivita;
+    function riavviaTimer() {
+      clearTimeout(timerInattivita);
+      timerInattivita = setTimeout(resetCampiTemporanei, 180000);
+    }
+
+    ['click', 'touchstart', 'keydown', 'scroll', 'input'].forEach(ev => {
+      document.addEventListener(ev, riavviaTimer, { passive: true });
+    });
+
+    window.addEventListener('pageshow', () => {
+      aggiornaStatoNegozio();
+      caricaTessera();
+      caricaListeGaranzie();
+      riavviaTimer();
+      if (!pdfDoc) caricaPdf('volantino.pdf', 'btnTabVolantino');
+    });
+
+    setInterval(aggiornaStatoNegozio, 60000);
+  </script>
+</body>
+</html>
