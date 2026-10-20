@@ -163,7 +163,7 @@
     .btn-instagram { background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF); }
     .btn-facebook { background: linear-gradient(135deg, #1877F2, #0C5DC7); }
 
-    /* BOX FACILITATO WHATSAPP AUDIO (CON SPIEGAZIONE PRIMA DI PREMERE) */
+    /* BOX FACILITATO WHATSAPP AUDIO */
     .wa-helper-box {
       background: #F0FDF4;
       border: 2.5px solid #16A34A;
@@ -194,13 +194,8 @@
       color: #1E293B;
     }
 
-    .wa-pre-steps div {
-      margin-bottom: 6px;
-    }
-
-    .wa-pre-steps div:last-child {
-      margin-bottom: 0;
-    }
+    .wa-pre-steps div { margin-bottom: 6px; }
+    .wa-pre-steps div:last-child { margin-bottom: 0; }
 
     .wa-audio-banner {
       width: 100%;
@@ -219,9 +214,7 @@
       transition: transform 0.15s;
     }
 
-    .wa-audio-banner:active {
-      transform: scale(0.98);
-    }
+    .wa-audio-banner:active { transform: scale(0.98); }
 
     .wa-audio-icon {
       font-size: 2.2rem;
@@ -237,27 +230,11 @@
       box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     }
 
-    .wa-audio-text {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
+    .wa-audio-text { display: flex; flex-direction: column; gap: 3px; }
+    .wa-audio-text strong { font-size: 1rem; font-weight: 900; line-height: 1.25; text-transform: uppercase; }
+    .wa-audio-text span { font-size: 0.86rem; font-weight: 600; color: #ECFDF5; line-height: 1.3; }
 
-    .wa-audio-text strong {
-      font-size: 1rem;
-      font-weight: 900;
-      line-height: 1.25;
-      text-transform: uppercase;
-    }
-
-    .wa-audio-text span {
-      font-size: 0.86rem;
-      font-weight: 600;
-      color: #ECFDF5;
-      line-height: 1.3;
-    }
-
-    /* FINESTRA UNICA DI CONFERMA E PROMEMORIA (DOPO IL CLIC) */
+    /* FINESTRA GUIDA WHATSAPP */
     .wa-modal-overlay {
       display: none;
       position: fixed;
@@ -292,10 +269,7 @@
       color: #1E293B;
     }
 
-    .wa-step-box strong {
-      color: #002D62;
-      font-size: 1rem;
-    }
+    .wa-step-box strong { color: #002D62; font-size: 1rem; }
 
     .btn-voice-guide {
       width: 100%;
@@ -355,7 +329,7 @@
       align-items: center;
     }
 
-    /* TESSERA UNIEURO CLUB + BARCODE REALE + FOTOCAMERA */
+    /* TESSERA UNIEURO CLUB */
     .club-card {
       background: linear-gradient(135deg, var(--unieuro-blue), var(--unieuro-dark));
       color: white;
@@ -391,10 +365,7 @@
       overflow-x: auto;
     }
 
-    #barcodeSvg {
-      max-width: 100%;
-      height: auto;
-    }
+    #barcodeSvg { max-width: 100%; height: auto; }
 
     #cameraScannerBox {
       display: none;
@@ -424,6 +395,75 @@
       text-transform: uppercase;
     }
 
+    /* SEZIONE LE MIE GARANZIE (DUE OPZIONI: LEGALE & ESTESA) */
+    .garanzie-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .garanzia-tab-btn {
+      padding: 12px 8px;
+      border-radius: 12px;
+      border: 2px solid var(--unieuro-blue);
+      background: white;
+      color: var(--unieuro-blue);
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.88rem;
+      line-height: 1.3;
+    }
+
+    .garanzia-tab-btn.active {
+      background: var(--unieuro-blue);
+      color: white;
+    }
+
+    .garanzia-panel { display: none; }
+    .garanzia-panel.active { display: block; }
+
+    .garanzia-info-box {
+      background: #FFF7ED;
+      border: 1.5px solid #FED7AA;
+      color: #9A3412;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.83rem;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .item-card {
+      background: #F8FAFC;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .item-details { flex: 1; min-width: 180px; }
+    .item-title { font-weight: 900; color: var(--unieuro-blue); font-size: 0.95rem; margin-bottom: 3px; }
+    .item-meta { font-size: 0.8rem; color: #475569; margin-bottom: 5px; }
+
+    .badge-status {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 800;
+    }
+    .badge-status.attiva { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
+    .badge-status.scaduta { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+    .badge-status.estesa { background: #FEF3C7; color: #B45309; border: 1px solid #FDE047; }
+
     /* VOLANTINO & RICERCA MULTIPLA */
     .pdf-tabs {
       display: grid;
@@ -449,13 +489,7 @@
       font-size: 0.92rem;
     }
 
-    .tab-btn small {
-      font-size: 0.68rem;
-      font-weight: 600;
-      margin-top: 3px;
-      opacity: 0.9;
-    }
-
+    .tab-btn small { font-size: 0.68rem; font-weight: 600; margin-top: 3px; opacity: 0.9; }
     .tab-btn.active { background: var(--unieuro-blue); color: white; }
     .tab-btn.promo-btn { border-color: var(--unieuro-orange); color: #C2410C; }
     .tab-btn.promo-btn.active { background: var(--unieuro-orange); color: white; }
@@ -493,17 +527,8 @@
       align-items: center;
     }
 
-    #pdfCanvas {
-      max-width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .crop-toolbar {
-      display: none;
-      gap: 8px;
-      margin-top: 10px;
-    }
+    #pdfCanvas { max-width: 100%; height: auto; display: block; }
+    .crop-toolbar { display: none; gap: 8px; margin-top: 10px; }
 
     /* PULSANTI REPARTI SEPARATI */
     .reparti-grid {
@@ -582,16 +607,14 @@
       margin-bottom: 5px;
     }
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
     input[type="text"],
     input[type="tel"],
     input[type="email"],
     input[type="search"],
+    input[type="date"],
+    input[type="file"],
     select,
     textarea {
       width: 100%;
@@ -692,7 +715,7 @@
       </a>
     </div>
 
-    <!-- Riquadro WhatsApp Audio con spiegazione PRIMA di premere + Apertura immediata -->
+    <!-- Riquadro WhatsApp Audio con spiegazione PRIMA di premere -->
     <div class="wa-helper-box">
       <div class="wa-helper-title">
         <span>👵👴 Richiesta Facile con Messaggio Vocale</span>
@@ -710,7 +733,7 @@
       </a>
     </div>
 
-    <!-- 1. TESSERA UNIEURO CLUB (FOTOCAMERA + INSERIMENTO MANUALE + BARCODE CASSA) -->
+    <!-- 1. TESSERA UNIEURO CLUB -->
     <div class="club-card">
       <div class="club-header">
         <strong>💳 La Tua Tessera Unieuro</strong>
@@ -727,13 +750,11 @@
         </button>
       </div>
 
-      <!-- Box Scanner Fotocamera -->
       <div id="cameraScannerBox">
         <div id="readerCamera" style="width:100%;"></div>
         <button type="button" class="btn btn-red btn-block" style="border-radius:0;" onclick="fermaScannerFotocamera()">✖ Chiudi Fotocamera</button>
       </div>
 
-      <!-- Box Tessera Salvata con Barcode Reale -->
       <div id="cardSaved" style="display:none;">
         <div class="barcode-box">
           <svg id="barcodeSvg"></svg>
@@ -747,13 +768,103 @@
         </div>
       </div>
 
-      <!-- Pulsante Link Diretto Richiesta Card Digital (Codice Negozio 702) -->
       <a href="https://loyaltyapp.unieuro.it/home?code=702" target="_blank" rel="noopener" class="btn-request-digital-card">
         ✨ NON HAI LA TESSERA? CLICCA QUI PER RICHIEDERE LA TUA CARD UNIEURO IN FORMATO DIGITAL
       </a>
     </div>
 
-    <!-- 2. VOLANTINO & PROMO APP...ETITOSE CON RICERCA MULTIPLA E RITAGLIO -->
+    <!-- 2. LE MIE GARANZIE (GARANZIA LEGALE & ESTENSIONE DI GARANZIA) -->
+    <div class="card orange-border">
+      <div class="card-title">
+        <span>🛡️ Le Mie Garanzie</span>
+      </div>
+
+      <!-- Menu a due opzioni -->
+      <div class="garanzie-tabs">
+        <button type="button" id="btnTabLegale" class="garanzia-tab-btn active" onclick="cambiaTabGaranzia('legale')">
+          📄 Garanzia Legale<br><small style="font-size:0.72rem; font-weight:normal;">Scontrini Digitali (2 Anni)</small>
+        </button>
+        <button type="button" id="btnTabEstesa" class="garanzia-tab-btn" onclick="cambiaTabGaranzia('estesa')">
+          🛡️ Estensione Garanzia<br><small style="font-size:0.72rem; font-weight:normal;">Protezione Extra (3, 5, 6 Anni)</small>
+        </button>
+      </div>
+
+      <!-- OPZIONE A: GARANZIA LEGALE (SCONTRINI DIGITALI) -->
+      <div id="panelLegale" class="garanzia-panel active">
+        <div class="garanzia-info-box">
+          💡 Qui puoi conservare le tue <strong>Copie Digitali</strong> degli scontrini o le foto delle ricevute d'acquisto per avere sempre a portata di mano i <strong>2 anni di garanzia legale</strong>.
+        </div>
+
+        <button type="button" class="btn btn-orange btn-block" style="margin-bottom:12px;" onclick="toggleFormScontrino()">
+          ➕ Aggiungi Scontrino / Copia Digitale
+        </button>
+
+        <div id="boxNuovoScontrino" style="display:none; background:#F8FAFC; padding:14px; border-radius:12px; border:1.5px solid #CBD5E1; margin-bottom:14px;">
+          <div class="form-group">
+            <label for="scontrinoProdotto">Prodotto Acquistato *</label>
+            <input type="text" id="scontrinoProdotto" placeholder="Es. Lavatrice Samsung, TV LG...">
+          </div>
+          <div class="form-group">
+            <label for="scontrinoData">Data di Acquisto *</label>
+            <input type="date" id="scontrinoData">
+          </div>
+          <div class="form-group">
+            <label for="scontrinoFile">Carica Copia Digitale (PDF/Foto) o Scatta Foto *</label>
+            <input type="file" id="scontrinoFile" accept="image/*,application/pdf">
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" id="btnSalvaScontrino" class="btn btn-green btn-block" onclick="salvaScontrinoNelCassetto()">💾 Salva Scontrino</button>
+            <button type="button" class="btn btn-red" onclick="toggleFormScontrino()">✖</button>
+          </div>
+        </div>
+
+        <div id="listaScontriniBox"></div>
+      </div>
+
+      <!-- OPZIONE B: ESTENSIONE DI GARANZIA (3, 5, 6 ANNI) -->
+      <div id="panelEstesa" class="garanzia-panel">
+        <div class="garanzia-info-box" style="background:#EFF6FF; border-color:#BFDBFE; color:#1E40AF;">
+          ✨ Proteggi i tuoi acquisti più a lungo! Puoi acquistare in qualsiasi momento l'<strong>Estensione di Garanzia a 3, 5 o 6 anni</strong> direttamente nel nostro punto vendita.
+        </div>
+
+        <button type="button" class="btn btn-blue btn-block" style="margin-bottom:12px;" onclick="toggleFormEstesa()">
+          ➕ Registra Estensione Acquistata
+        </button>
+
+        <div id="boxNuovaEstesa" style="display:none; background:#F8FAFC; padding:14px; border-radius:12px; border:1.5px solid #CBD5E1; margin-bottom:14px;">
+          <div class="form-group">
+            <label for="estesaProdotto">Prodotto Protetto *</label>
+            <input type="text" id="estesaProdotto" placeholder="Es. Frigorifero Bosch, OLED TV...">
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="estesaAnni">Durata Protezione *</label>
+              <select id="estesaAnni">
+                <option value="3">3 Anni</option>
+                <option value="5" selected>5 Anni</option>
+                <option value="6">6 Anni</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="estesaData">Data Inizio Copertura *</label>
+              <input type="date" id="estesaData">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="estesaCertificato">Foto Certificato / Ricevuta Estensione *</label>
+            <input type="file" id="estesaCertificato" accept="image/*,application/pdf">
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" id="btnSalvaEstesa" class="btn btn-green btn-block" onclick="salvaEstesaNelCassetto()">💾 Salva Estensione</button>
+            <button type="button" class="btn btn-red" onclick="toggleFormEstesa()">✖</button>
+          </div>
+        </div>
+
+        <div id="listaEsteseBox"></div>
+      </div>
+    </div>
+
+    <!-- 3. VOLANTINO & PROMO APP...ETITOSE CON RICERCA MULTIPLA E RITAGLIO -->
     <div class="card">
       <div class="card-title">
         <span>📖 Sfoglia Offerte e Ritaglia</span>
@@ -775,7 +886,6 @@
         <button type="button" class="btn btn-blue" onclick="cercaNelPdf()">🔍 Cerca</button>
       </div>
 
-      <!-- Barra Navigazione Tutti i Risultati Trovati -->
       <div id="searchNavBar" class="search-nav-bar">
         <button type="button" class="btn btn-outline" style="padding:6px 10px; font-size:0.8rem;" onclick="navigaRisultato(-1)">◀ Prec</button>
         <span id="searchStatus" style="font-size:0.82rem; color:var(--unieuro-blue); font-weight:800; text-align:center;"></span>
@@ -801,7 +911,7 @@
       </div>
     </div>
 
-    <!-- 3. PULSANTI REPARTI SEPARATI + MODULO A COMPARSA -->
+    <!-- 4. PULSANTI REPARTI SEPARATI + MODULO A COMPARSA -->
     <div class="card orange-border" id="sezioneRepartiCard">
       <div class="card-title">
         <span>📢 Seleziona il Reparto per Richiesta</span>
@@ -855,7 +965,6 @@
         </button>
       </div>
 
-      <!-- Richiamo al pulsante WhatsApp Audio anche in fondo ai reparti -->
       <div class="wa-helper-box" style="margin-top:16px; margin-bottom:0;">
         <div class="wa-pre-steps" style="margin-bottom:10px;">
           💡 <strong>Non vuoi compilare le caselle?</strong> Tocca qui sotto: si aprirà subito WhatsApp e ti basterà mandarci un messaggio vocale!
@@ -925,7 +1034,7 @@
 
   </div>
 
-  <!-- UNICA SCHERMATA DI CONFERMA E PROMEMORIA (SI APRE INSIEME A WHATSAPP) -->
+  <!-- UNICA SCHERMATA DI CONFERMA E PROMEMORIA WHATSAPP -->
   <div id="waGuideModal" class="wa-modal-overlay">
     <div class="wa-modal-card">
       <h2 style="color:#15803D; font-size:1.22rem; margin-bottom:10px;">✅ WhatsApp si sta aprendo!</h2>
@@ -1005,9 +1114,6 @@
       box.style.display = box.style.display === 'block' ? 'none' : 'block';
     }
 
-    // -------------------------------------------------------------------------
-    // SCHERMATA UNICA WHATSAPP AUDIO (SI APRE SUBITO INSIEME A WHATSAPP)
-    // -------------------------------------------------------------------------
     function mostraSchermataWhatsAppAperta() {
       document.getElementById('waGuideModal').style.display = 'flex';
     }
@@ -1117,282 +1223,118 @@
       if (box) box.style.display = 'none';
     }
 
-    // 2. VOLANTINO & RICERCA
-    async function caricaPdf(url, tabId) {
-      annullaRitaglio();
-      searchMatches = [];
-      document.getElementById('searchNavBar').style.display = 'none';
-      document.getElementById('btnTabVolantino').classList.remove('active');
-      document.getElementById('btnTabPromo').classList.remove('active');
-      if (tabId) document.getElementById(tabId).classList.add('active');
+    // -------------------------------------------------------------------------
+    // 2. GESTIONE LE MIE GARANZIE (LEGALE VS ESTESA) CON INDEXEDDB
+    // -------------------------------------------------------------------------
+    const DB_NAME = 'UnieuroGaranzieDB';
+    const STORE_LEGALE = 'scontrini_legali';
+    const STORE_ESTESA = 'garanzie_estese';
 
-      try {
-        pdfDoc = await pdfjsLib.getDocument(url).promise;
-        currentPage = 1;
-        await renderPagina(currentPage);
-      } catch (e) {
-        console.warn("PDF in caricamento:", e);
-      }
-    }
-
-    async function renderPagina(num) {
-      if (!pdfDoc) return;
-      annullaRitaglio();
-      const page = await pdfDoc.getPage(num);
-      const canvas = document.getElementById('pdfCanvas');
-      const ctx = canvas.getContext('2d');
-      const viewport = page.getViewport({ scale: 1.4 });
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-      document.getElementById('pageIndicator').textContent = `Pag. ${num} / ${pdfDoc.numPages}`;
-    }
-
-    function cambiaPagina(delta) {
-      if (!pdfDoc) return;
-      const next = currentPage + delta;
-      if (next >= 1 && next <= pdfDoc.numPages) {
-        currentPage = next;
-        renderPagina(currentPage);
-      }
-    }
-
-    async function cercaNelPdf() {
-      const q = document.getElementById('pdfSearchInput').value.trim().toLowerCase();
-      const navBar = document.getElementById('searchNavBar');
-      const status = document.getElementById('searchStatus');
-      if (!q || !pdfDoc) return;
-
-      navBar.style.display = 'flex';
-      status.textContent = '⏳ Ricerca in tutte le pagine...';
-      searchMatches = [];
-      currentMatchIdx = 0;
-
-      for (let i = 1; i <= pdfDoc.numPages; i++) {
-        const page = await pdfDoc.getPage(i);
-        const txt = await page.getTextContent();
-        const fullText = txt.items.map(item => item.str).join(' ').toLowerCase();
-        if (fullText.includes(q)) {
-          searchMatches.push(i);
-        }
-      }
-
-      if (searchMatches.length > 0) {
-        await mostraRisultatoRicerca(0);
-      } else {
-        status.textContent = `⚠️ Nessun risultato per "${q}"`;
-      }
-    }
-
-    async function mostraRisultatoRicerca(idx) {
-      if (searchMatches.length === 0) return;
-      currentMatchIdx = (idx + searchMatches.length) % searchMatches.length;
-      const targetPage = searchMatches[currentMatchIdx];
-      currentPage = targetPage;
-      await renderPagina(targetPage);
-      document.getElementById('searchStatus').textContent =
-        `Risultato ${currentMatchIdx + 1} di ${searchMatches.length} (Pag. ${targetPage})`;
-    }
-
-    function navigaRisultato(delta) {
-      if (searchMatches.length <= 1) return;
-      mostraRisultatoRicerca(currentMatchIdx + delta);
-    }
-
-    function avviaRitaglio() {
-      const canvas = document.getElementById('pdfCanvas');
-      if (!canvas.width) return;
-      if (cropperInstance) cropperInstance.destroy();
-
-      cropperInstance = new Cropper(canvas, {
-        viewMode: 1,
-        autoCropArea: 0.6
+    function apriDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_LEGALE)) db.createObjectStore(STORE_LEGALE, { keyPath: 'id' });
+          if (!db.objectStoreNames.contains(STORE_ESTESA)) db.createObjectStore(STORE_ESTESA, { keyPath: 'id' });
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
       });
-      document.getElementById('btnStartCrop').style.display = 'none';
-      document.getElementById('cropToolbar').style.display = 'flex';
     }
 
-    function confermaRitaglio() {
-      if (!cropperInstance) return;
-      const croppedCanvas = cropperInstance.getCroppedCanvas({ maxWidth: 550, maxHeight: 550 });
-      croppedBase64 = croppedCanvas.toDataURL('image/jpeg', 0.68);
+    function cambiaTabGaranzia(tipo) {
+      document.getElementById('btnTabLegale').classList.remove('active');
+      document.getElementById('btnTabEstesa').classList.remove('active');
+      document.getElementById('panelLegale').classList.remove('active');
+      document.getElementById('panelEstesa').classList.remove('active');
 
-      document.getElementById('cropPreviewImg').src = croppedBase64;
-      document.getElementById('cropPreviewContainer').style.display = 'flex';
-      annullaRitaglio();
-      document.getElementById('sezioneRepartiCard').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function annullaRitaglio() {
-      if (cropperInstance) {
-        cropperInstance.destroy();
-        cropperInstance = null;
-      }
-      document.getElementById('btnStartCrop').style.display = 'inline-flex';
-      document.getElementById('cropToolbar').style.display = 'none';
-    }
-
-    function rimuoviRitaglio() {
-      croppedBase64 = "";
-      document.getElementById('cropPreviewImg').src = '';
-      document.getElementById('cropPreviewContainer').style.display = 'none';
-    }
-
-    // 3. SELEZIONE REPARTO E INVIO RICHIESTA CLIENTE
-    function selezionaReparto(nomeReparto, btnElement) {
-      document.querySelectorAll('.reparto-btn').forEach(b => b.classList.remove('selected'));
-      if (btnElement) btnElement.classList.add('selected');
-
-      document.getElementById('repartoHidden').value = nomeReparto;
-      document.getElementById('repartoSceltoLabel').textContent = '📍 Reparto: ' + nomeReparto;
-
-      const formBox = document.getElementById('formContainerBox');
-      formBox.style.display = 'block';
-      formBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function chiudiFormReparto() {
-      document.querySelectorAll('.reparto-btn').forEach(b => b.classList.remove('selected'));
-      document.getElementById('formContainerBox').style.display = 'none';
-    }
-
-    function aggiornaCampiContatto() {
-      const metodo = document.getElementById('metodoRicontatto').value;
-      const boxTel = document.getElementById('boxTelefono');
-      const boxMail = document.getElementById('boxEmail');
-      const inputTel = document.getElementById('telefonoCliente');
-      const inputMail = document.getElementById('emailCliente');
-
-      if (metodo === 'Telefono') {
-        boxTel.style.display = 'block';
-        boxMail.style.display = 'none';
-        inputTel.required = true;
-        inputMail.required = false;
+      if (tipo === 'legale') {
+        document.getElementById('btnTabLegale').classList.add('active');
+        document.getElementById('panelLegale').classList.add('active');
       } else {
-        boxTel.style.display = 'none';
-        boxMail.style.display = 'block';
-        inputTel.required = false;
-        inputMail.required = true;
+        document.getElementById('btnTabEstesa').classList.add('active');
+        document.getElementById('panelEstesa').classList.add('active');
       }
     }
 
-    function formattaNumero7Collaboration(rawPhone) {
-      if (!rawPhone) return "";
-      let clean = rawPhone.replace(/[\s\-\.\(\)]/g, '');
-      clean = clean.replace(/^(\+39|0039)/, '');
-      if (!clean) return "";
-      if (!clean.startsWith('0')) {
-        clean = '0' + clean;
-      }
-      return clean;
+    function toggleFormScontrino() {
+      const box = document.getElementById('boxNuovoScontrino');
+      const isHidden = box.style.display === 'none';
+      box.style.display = isHidden ? 'block' : 'none';
+      if (isHidden) document.getElementById('scontrinoData').valueAsDate = new Date();
     }
 
-    async function inviaRichiesta(e) {
-      e.preventDefault();
+    function toggleFormEstesa() {
+      const box = document.getElementById('boxNuovaEstesa');
+      const isHidden = box.style.display === 'none';
+      box.style.display = isHidden ? 'block' : 'none';
+      if (isHidden) document.getElementById('estesaData').valueAsDate = new Date();
+    }
 
-      const reparto = document.getElementById('repartoHidden').value;
-      if (!reparto) {
-        alert('Clicca prima sul pulsante del reparto desiderato.');
+    function elaboraFile(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (file.type === 'application/pdf') {
+            resolve({ dataUrl: e.target.result, mime: 'application/pdf' });
+            return;
+          }
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const maxDim = 1400;
+            let w = img.width, h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+              else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+            }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve({ dataUrl: canvas.toDataURL('image/jpeg', 0.78), mime: 'image/jpeg' });
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function salvaScontrinoNelCassetto() {
+      const prod = document.getElementById('scontrinoProdotto').value.trim();
+      const dataAcq = document.getElementById('scontrinoData').value;
+      const fileInput = document.getElementById('scontrinoFile');
+
+      if (!prod || !dataAcq || !fileInput.files.length) {
+        alert("Compila tutti i campi e allega lo scontrino.");
         return;
       }
 
-      const btn = document.getElementById('btnSubmit');
-      btn.disabled = true;
-      btn.textContent = '⏳ Invio in corso...';
-
-      const nome = document.getElementById('nomeCliente').value.trim();
-      const cognome = document.getElementById('cognomeCliente').value.trim();
-      const metodo = document.getElementById('metodoRicontatto').value;
-      const telInserito = document.getElementById('telefonoCliente').value.trim();
-      const telefono7Collab = formattaNumero7Collaboration(telInserito);
-      const email = document.getElementById('emailCliente').value.trim();
-      const note = document.getElementById('noteCliente').value.trim();
-
-      const idPratica = "REQ-" + Date.now();
-      const timestamp = new Date().toLocaleString("it-IT");
-
-      const payload = {
-        action: "create",
-        id: idPratica,
-        timestamp: timestamp,
-        reparto: reparto,
-        tipoRichiesta: reparto === 'RITIRO RAEE' ? 'Ritiro RAEE (in negozio)' : 'Richiesta Cliente',
-        nomeCliente: `${nome} ${cognome}`.trim(),
-        telefono: telefono7Collab,
-        emailCliente: email,
-        preferenzaContatto: metodo,
-        noteCliente: note,
-        stato: "Aperta",
-        image: croppedBase64
-      };
+      const btn = document.getElementById('btnSalvaScontrino');
+      btn.disabled = true; btn.textContent = "⏳ Salvataggio...";
 
       try {
-        const lista = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
-        lista.unshift(payload);
-        localStorage.setItem(REQ_KEY, JSON.stringify(lista.slice(0, 60)));
-      } catch (err) {}
-
-      fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
-        method: 'POST',
-        body: JSON.stringify({ ...payload, image: "" })
-      }).catch(() => {});
-
-      try {
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
+        const fileData = await elaboraFile(fileInput.files[0]);
+        const db = await apriDB();
+        const tx = db.transaction(STORE_LEGALE, 'readwrite');
+        tx.objectStore(STORE_LEGALE).put({
+          id: 'LEG-' + Date.now(),
+          prodotto: prod,
+          dataAcquisto: dataAcq,
+          fileUrl: fileData.dataUrl,
+          mime: fileData.mime
         });
-      } catch (err) {}
+        await new Promise((res) => { tx.oncomplete = res; });
 
-      btn.disabled = false;
-      btn.textContent = '🚀 Invia Richiesta al Reparto';
-      resetCampiTemporanei();
+        document.getElementById('scontrinoProdotto').value = '';
+        fileInput.value = '';
+        document.getElementById('boxNuovoScontrino').style.display = 'none';
+        caricaListeGaranzie();
+      } catch (e) { alert("Errore nel salvataggio."); }
 
-      const toast = document.getElementById('confirmToast');
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 4000);
+      btn.disabled = false; btn.textContent = "💾 Salva Scontrino";
     }
 
-    function resetCampiTemporanei() {
-      const form = document.getElementById('requestForm');
-      if (form) form.reset();
-
-      aggiornaCampiContatto();
-      chiudiFormReparto();
-      fermaScannerFotocamera();
-      chiudiGuidaWhatsApp();
-
-      const searchInput = document.getElementById('pdfSearchInput');
-      if (searchInput) searchInput.value = '';
-
-      searchMatches = [];
-      const searchNavBar = document.getElementById('searchNavBar');
-      if (searchNavBar) searchNavBar.style.display = 'none';
-
-      annullaRitaglio();
-      rimuoviRitaglio();
-    }
-
-    let timerInattivita;
-    function riavviaTimer() {
-      clearTimeout(timerInattivita);
-      timerInattivita = setTimeout(resetCampiTemporanei, 180000);
-    }
-
-    ['click', 'touchstart', 'keydown', 'scroll', 'input'].forEach(ev => {
-      document.addEventListener(ev, riavviaTimer, { passive: true });
-    });
-
-    window.addEventListener('pageshow', () => {
-      aggiornaStatoNegozio();
-      caricaTessera();
-      riavviaTimer();
-      if (!pdfDoc) caricaPdf('volantino.pdf', 'btnTabVolantino');
-    });
-
-    setInterval(aggiornaStatoNegozio, 60000);
-  </script>
-</body>
-</html>
+    async function salvaEstesaNelCassetto() {
+      const prod = document.getElementById('estesaProdotto').value.trim();
+      const anni = document.getElementById('estesaAnni').value;
+      const dataInizio = document.getElementById('estesaData').value;
