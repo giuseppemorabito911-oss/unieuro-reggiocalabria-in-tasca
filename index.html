@@ -137,9 +137,10 @@
       padding: 0 14px;
     }
 
+    /* PULSANTI MAPS E SOCIAL CON COLORI E LOGHI ORIGINALI */
     .quick-links {
       display: grid;
-      grid-template-columns: 1.3fr 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr 1fr;
       gap: 8px;
       margin-bottom: 14px;
     }
@@ -159,9 +160,9 @@
       text-align: center;
     }
 
-    .btn-maps { background: linear-gradient(135deg, #10B981, #059669); }
-    .btn-instagram { background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF); }
-    .btn-facebook { background: linear-gradient(135deg, #1877F2, #0C5DC7); }
+    .btn-maps { background: #EA4335; } /* Rosso Google Maps */
+    .btn-instagram { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); } /* Gradiente Instagram */
+    .btn-facebook { background: #1877F2; } /* Blu Facebook */
 
     /* BOX FACILITATO WHATSAPP AUDIO */
     .wa-helper-box {
@@ -702,13 +703,13 @@
 
   <div class="container">
 
-    <!-- PULSANTI MAPS E SOCIAL -->
+    <!-- PULSANTI MAPS E SOCIAL CON COLORI E LOGHI ORIGINALI -->
     <div class="quick-links">
       <a href="https://maps.app.goo.gl/EuhFSxA1GGnfu1mJ7" target="_blank" rel="noopener" class="quick-btn btn-maps">
         📍 Raggiungi Negozio
       </a>
       <a href="https://www.instagram.com/unieuroreggiocalabria/" target="_blank" rel="noopener" class="quick-btn btn-instagram">
-        📸 Instagram
+        📷 Instagram
       </a>
       <a href="https://www.facebook.com/search/top?q=unieuro%20reggio%20calabria" target="_blank" rel="noopener" class="quick-btn btn-facebook">
         👍 Facebook
@@ -1108,23 +1109,27 @@
       }
     }
 
-    function toggleOrari() {
+    // Funzione orari resa globale e perfettamente reattiva
+    window.toggleOrari = function() {
       const box = document.getElementById('orariPopup');
+      if (!box) return;
       box.style.display = box.style.display === 'block' ? 'none' : 'block';
-    }
+    };
 
-    function mostraSchermataWhatsAppAperta() {
-      document.getElementById('waGuideModal').style.display = 'flex';
-    }
+    window.mostraSchermataWhatsAppAperta = function() {
+      const modal = document.getElementById('waGuideModal');
+      if (modal) modal.style.display = 'flex';
+    };
 
-    function chiudiGuidaWhatsApp() {
+    window.chiudiGuidaWhatsApp = function() {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
-      document.getElementById('waGuideModal').style.display = 'none';
-    }
+      const modal = document.getElementById('waGuideModal');
+      if (modal) modal.style.display = 'none';
+    };
 
-    function leggiIstruzioniAVoce() {
+    window.leggiIstruzioniAVoce = function() {
       if (!('speechSynthesis' in window)) {
         alert("La lettura vocale non è supportata su questo dispositivo.");
         return;
@@ -1135,7 +1140,7 @@
       msg.lang = 'it-IT';
       msg.rate = 0.92;
       window.speechSynthesis.speak(msg);
-    }
+    };
 
     // 1. TESSERA UNIEURO
     function disegnaBarcodeCassa(code) {
@@ -1166,22 +1171,22 @@
       }
     }
 
-    function salvaTessera(codicePassato) {
+    window.salvaTessera = function(codicePassato) {
       const val = (codicePassato || document.getElementById('cardInput').value).trim();
       if (!val) return;
       localStorage.setItem(CARD_KEY, val);
       fermaScannerFotocamera();
       caricaTessera();
-    }
+    };
 
-    function modificaTessera() {
+    window.modificaTessera = function() {
       fermaScannerFotocamera();
       document.getElementById('cardInput').value = localStorage.getItem(CARD_KEY) || '';
       document.getElementById('cardForm').style.display = 'block';
       document.getElementById('cardSaved').style.display = 'none';
-    }
+    };
 
-    async function avviaScannerFotocamera() {
+    window.avviaScannerFotocamera = async function() {
       const box = document.getElementById('cameraScannerBox');
       box.style.display = 'block';
 
@@ -1202,9 +1207,9 @@
         alert("Impossibile accedere alla fotocamera. Inserisci il codice manualmente.");
         fermaScannerFotocamera();
       }
-    }
+    };
 
-    async function fermaScannerFotocamera() {
+    window.fermaScannerFotocamera = async function() {
       const box = document.getElementById('cameraScannerBox');
       if (html5QrCodeScanner) {
         try {
@@ -1214,9 +1219,9 @@
         html5QrCodeScanner = null;
       }
       if (box) box.style.display = 'none';
-    }
+    };
 
-    // 2. GESTIONE LE MIE GARANZIE (FUNZIONI TESTATE E CORRETTE)
+    // 2. GESTIONE LE MIE GARANZIE
     const DB_NAME = 'UnieuroGaranzieDB';
     const STORE_LEGALE = 'scontrini_legali';
     const STORE_ESTESA = 'garanzie_estese';
@@ -1305,7 +1310,7 @@
       });
     }
 
-    async function salvaScontrinoNelCassetto() {
+    window.salvaScontrinoNelCassetto = async function() {
       const prod = document.getElementById('scontrinoProdotto').value.trim();
       const dataAcq = document.getElementById('scontrinoData').value;
       const fileInput = document.getElementById('scontrinoFile');
@@ -1338,9 +1343,9 @@
       } catch (e) { alert("Errore nel salvataggio."); }
 
       btn.disabled = false; btn.textContent = "💾 Salva Scontrino";
-    }
+    };
 
-    async function salvaEstesaNelCassetto() {
+    window.salvaEstesaNelCassetto = async function() {
       const prod = document.getElementById('estesaProdotto').value.trim();
       const anni = document.getElementById('estesaAnni').value;
       const dataInizio = document.getElementById('estesaData').value;
@@ -1375,13 +1380,12 @@
       } catch (e) { alert("Errore nel salvataggio."); }
 
       btn.disabled = false; btn.textContent = "💾 Salva Estensione";
-    }
+    };
 
     async function caricaListeGaranzie() {
       try {
         const db = await apriDB();
 
-        // 1. Carica Garanzia Legale
         const txLegale = db.transaction(STORE_LEGALE, 'readonly');
         const reqLegale = txLegale.objectStore(STORE_LEGALE).getAll();
         reqLegale.onsuccess = () => {
@@ -1414,7 +1418,6 @@
           }).join('');
         };
 
-        // 2. Carica Garanzia Estesa
         const txEstesa = db.transaction(STORE_ESTESA, 'readonly');
         const reqEstesa = txEstesa.objectStore(STORE_ESTESA).getAll();
         reqEstesa.onsuccess = () => {
@@ -1483,7 +1486,7 @@
     };
 
     // 3. VOLANTINO & RICERCA
-    async function caricaPdf(url, tabId) {
+    window.caricaPdf = async function(url, tabId) {
       annullaRitaglio();
       searchMatches = [];
       const nav = document.getElementById('searchNavBar');
@@ -1501,7 +1504,7 @@
         currentPage = 1;
         await renderPagina(currentPage);
       } catch (e) {}
-    }
+    };
 
     async function renderPagina(num) {
       if (!pdfDoc) return;
