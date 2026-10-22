@@ -6,6 +6,10 @@
   <title>UNIEURO REGGIO CALABRIA IN TASCA</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="icona.png">
+  <link rel="apple-touch-icon" href="icona.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Unieuro RC">
   <meta name="theme-color" content="#002D62">
 
   <!-- Cropper.js CSS -->
@@ -135,6 +139,74 @@
       max-width: 600px;
       margin: 16px auto 0;
       padding: 0 14px;
+    }
+
+    /* BANNER FISSO DI INSTALLazione RAPIDA (SE NON ANCORA INSTALLATA) */
+    #topInstallBanner {
+      display: none;
+      background: linear-gradient(135deg, #FF6700, #E65100);
+      color: white;
+      padding: 12px 14px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(255, 103, 0, 0.3);
+      cursor: pointer;
+    }
+
+    /* POPUP AUTOMATICO ALL'APERTURA PER INSTALLARE L'APP */
+    .install-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 24, 56, 0.85);
+      z-index: 10000;
+      padding: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .install-modal-card {
+      background: white;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 20px;
+      padding: 22px 20px;
+      text-align: center;
+      border-top: 8px solid var(--unieuro-orange);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.4);
+      animation: popIn 0.25s ease-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .install-modal-card img {
+      width: 68px;
+      height: 68px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      object-fit: contain;
+      background: var(--unieuro-blue);
+      padding: 6px;
+    }
+
+    .ios-instructions {
+      display: none;
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: left;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #1E293B;
+      margin: 12px 0;
     }
 
     /* PULSANTI MAPS E SOCIAL CON COLORI E LOGHI ORIGINALI */
@@ -714,6 +786,34 @@
 </head>
 <body>
 
+  <!-- POPUP AUTOMATICO ALL'APERTURA PER INSTALLARE L'APP SULLA HOME -->
+  <div id="installPwaModal" class="install-modal-overlay">
+    <div class="install-modal-card">
+      <img src="icona.png" alt="Unieuro RC" onerror="this.style.display='none'">
+      <h2 style="color:var(--unieuro-blue); font-size:1.2rem; margin-bottom:6px;">📲 Installa l'App nella tua Home!</h2>
+      <p style="font-size:0.9rem; color:#475569; line-height:1.4; margin-bottom:14px;">
+        Aggiungi <strong>Unieuro Reggio Calabria in Tasca</strong> alla schermata principale del tuo telefono per aprirla con un solo tocco.
+      </p>
+
+      <!-- Pulsante diretto per Android / Chrome / Samsung / Edge -->
+      <button type="button" id="btnTriggerInstall" class="btn btn-orange btn-block" style="padding:14px; font-size:1rem; margin-bottom:10px;" onclick="eseguiInstallazioneHome()">
+        ➕ INSTALLA E AGGIUNGI ALLA HOME
+      </button>
+
+      <!-- Istruzioni automatiche se aperto da iPhone / iPad -->
+      <div id="iosInstallBox" class="ios-instructions">
+        <strong>🍏 Come inserirla sulla Home del tuo iPhone:</strong><br>
+        1. Tocca l'icona <strong>Condividi</strong> <span style="font-size:1.1rem;">⬆️</span> in basso sullo schermo.<br>
+        2. Scorri e tocca <strong>"Aggiungi alla schermata Home" ➕</strong>.<br>
+        3. Tocca <strong>Aggiungi</strong> in alto a destra.
+      </div>
+
+      <button type="button" class="btn btn-outline btn-block" onclick="chiudiPopupInstallazione()" style="padding:10px; font-size:0.85rem;">
+        Continua senza installare
+      </button>
+    </div>
+  </div>
+
   <!-- HEADER + STATO APERTO/CHIUSO + ORARI -->
   <header>
     <div class="header-brand">
@@ -737,6 +837,18 @@
   </header>
 
   <div class="container">
+
+    <!-- Banner rapido sempre disponibile se l'utente chiude il popup iniziale -->
+    <div id="topInstallBanner" onclick="apriPopupInstallazioneManuale()">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:1.5rem;">📲</span>
+        <div style="font-size:0.85rem; line-height:1.25;">
+          <strong style="font-size:0.92rem; display:block;">METTI L'APP SULLA SCHERMATA HOME</strong>
+          Tocca qui per installarla subito sul telefono
+        </div>
+      </div>
+      <span style="background:white; color:var(--unieuro-orange); padding:6px 10px; border-radius:8px; font-weight:900; font-size:0.78rem;">INSTALLA</span>
+    </div>
 
     <!-- PULSANTI MAPS E SOCIAL CON LOGHI ORIGINALI -->
     <div class="quick-links">
@@ -1145,6 +1257,89 @@
 
     let searchMatches = [];
     let currentMatchIdx = 0;
+
+    // -------------------------------------------------------------------------
+    // GESTIONE INSTALLAZIONE PWA SULLA SCHERMATA HOME ALL'APERTURA
+    // -------------------------------------------------------------------------
+    let deferredInstallPrompt = null;
+
+    function isAppGiaInstallata() {
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    }
+
+    function isDispositivoIOS() {
+      return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      if (!isAppGiaInstallata()) {
+        document.getElementById('topInstallBanner').style.display = 'flex';
+        document.getElementById('btnTriggerInstall').style.display = 'inline-flex';
+        document.getElementById('iosInstallBox').style.display = 'none';
+        document.getElementById('installPwaModal').style.display = 'flex';
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      document.getElementById('installPwaModal').style.display = 'none';
+      document.getElementById('topInstallBanner').style.display = 'none';
+    });
+
+    function verificaPropostaInstallazioneAllApertura() {
+      if (isAppGiaInstallata()) {
+        document.getElementById('installPwaModal').style.display = 'none';
+        document.getElementById('topInstallBanner').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('topInstallBanner').style.display = 'flex';
+
+      if (isDispositivoIOS()) {
+        document.getElementById('btnTriggerInstall').style.display = 'none';
+        document.getElementById('iosInstallBox').style.display = 'block';
+        document.getElementById('installPwaModal').style.display = 'flex';
+      } else {
+        // Su Android/PC mostra subito il popup all'apertura
+        document.getElementById('installPwaModal').style.display = 'flex';
+      }
+    }
+
+    window.apriPopupInstallazioneManuale = function() {
+      if (deferredInstallPrompt) {
+        eseguiInstallazioneHome();
+      } else {
+        if (isDispositivoIOS()) {
+          document.getElementById('btnTriggerInstall').style.display = 'none';
+          document.getElementById('iosInstallBox').style.display = 'block';
+        }
+        document.getElementById('installPwaModal').style.display = 'flex';
+      }
+    };
+
+    window.eseguiInstallazioneHome = async function() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') {
+          document.getElementById('installPwaModal').style.display = 'none';
+          document.getElementById('topInstallBanner').style.display = 'none';
+        }
+        deferredInstallPrompt = null;
+      } else {
+        alert("Per aggiungere l'app alla schermata Home, tocca il menu del browser (i 3 puntini ⋮ in alto a destra) e seleziona 'Aggiungi a schermata Home' o 'Installa app'.");
+      }
+    };
+
+    window.chiudiPopupInstallazione = function() {
+      document.getElementById('installPwaModal').style.display = 'none';
+    };
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
 
     function aggiornaStatoNegozio() {
       const now = new Date();
@@ -1698,6 +1893,7 @@
       aggiornaStatoNegozio();
       caricaTessera();
       impostaMinimoDataSaltaFila();
+      verificaPropostaInstallazioneAllApertura();
       riavviaTimer();
       if (!pdfDoc) caricaPdf('volantino.pdf', 'btnTabVolantino');
     });
