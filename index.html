@@ -156,8 +156,14 @@
       font-weight: 800;
       text-decoration: none;
       color: white;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
       text-align: center;
+    }
+
+    .quick-btn svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
     }
 
     .btn-maps { background: #EA4335; }
@@ -319,6 +325,7 @@
     }
 
     .card.orange-border { border-top-color: var(--unieuro-orange); }
+    .card.purple-border { border-top-color: #7C3AED; }
 
     .card-title {
       font-size: 1.05rem;
@@ -462,6 +469,69 @@
     #pdfCanvas { max-width: 100%; height: auto; display: block; }
     .crop-toolbar { display: none; gap: 8px; margin-top: 10px; }
 
+    /* SEZIONE SALTA FILA */
+    .saltafila-banner {
+      width: 100%;
+      background: linear-gradient(135deg, #6D28D9, #4C1D95);
+      color: white;
+      border: 2px solid #C4B5FD;
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+      box-shadow: 0 6px 16px rgba(109, 40, 217, 0.25);
+      transition: transform 0.15s;
+    }
+
+    .saltafila-banner:active { transform: scale(0.98); }
+
+    .saltafila-icon {
+      font-size: 2rem;
+      background: white;
+      color: #6D28D9;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+
+    .saltafila-text strong {
+      display: block;
+      font-size: 1.02rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .saltafila-text span {
+      font-size: 0.85rem;
+      color: #EDE9FE;
+      line-height: 1.35;
+      display: block;
+    }
+
+    #saltaFilaBox {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 2px dashed #C4B5FD;
+    }
+
+    .datetime-highlight {
+      background: #F5F3FF;
+      border: 1.5px solid #C4B5FD;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
     /* PULSANTI REPARTI SEPARATI */
     .reparti-grid {
       display: grid;
@@ -545,6 +615,7 @@
     input[type="tel"],
     input[type="email"],
     input[type="search"],
+    input[type="date"],
     select,
     textarea {
       width: 100%;
@@ -576,6 +647,7 @@
     .btn-orange { background: var(--unieuro-orange); color: white; }
     .btn-green { background: #16A34A; color: white; }
     .btn-red { background: #DC2626; color: white; }
+    .btn-purple { background: #6D28D9; color: white; }
     .btn-outline { background: white; color: var(--unieuro-blue); border: 1.5px solid var(--unieuro-blue); }
     .btn-block { width: 100%; }
 
@@ -632,16 +704,19 @@
 
   <div class="container">
 
-    <!-- PULSANTI MAPS E SOCIAL CON COLORI E LOGHI ORIGINALI -->
+    <!-- PULSANTI MAPS E SOCIAL CON LOGHI VETTORIALI UFFICIALI -->
     <div class="quick-links">
       <a href="https://maps.app.goo.gl/EuhFSxA1GGnfu1mJ7" target="_blank" rel="noopener" class="quick-btn btn-maps">
-        📍 Raggiungi Negozio
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Maps
       </a>
       <a href="https://www.instagram.com/unieuroreggiocalabria/" target="_blank" rel="noopener" class="quick-btn btn-instagram">
-        📸 Instagram
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        Instagram
       </a>
       <a href="https://www.facebook.com/search/top?q=unieuro%20reggio%20calabria" target="_blank" rel="noopener" class="quick-btn btn-facebook">
-        👍 Facebook
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/></svg>
+        Facebook
       </a>
     </div>
 
@@ -750,7 +825,127 @@
       </div>
     </div>
 
-    <!-- 3. REPARTI E RICHIESTE -->
+    <!-- 3. SEZIONE SALTA FILA (PRENOTAZIONE DAL GIORNO DOPO) -->
+    <div class="card purple-border" id="sezioneSaltaFilaCard">
+      <div class="card-title">
+        <span style="color:#5B21B6;">🎟️ Servizio Salta Fila</span>
+      </div>
+
+      <button type="button" class="saltafila-banner" onclick="toggleSaltaFila()">
+        <div class="saltafila-icon">⏳</div>
+        <div class="saltafila-text">
+          <strong>SALTA FILA: Prenota qui il tuo turno senza fare file in negozio</strong>
+          <span>(Da prenotare con almeno 1 giorno d'anticipo) • Tocca qui per prenotare</span>
+        </div>
+      </button>
+
+      <div id="saltaFilaBox">
+        <div class="selected-reparto-banner" style="background:#5B21B6;">
+          <span>📅 Prenota Appuntamento Salta Fila</span>
+          <button type="button" onclick="chiudiSaltaFila()" style="background:none; border:none; color:white; font-weight:800; cursor:pointer;">✖ Chiudi</button>
+        </div>
+
+        <form id="saltaFilaForm" onsubmit="inviaSaltaFila(event)" autocomplete="off">
+          <div class="form-group">
+            <label for="sfReparto">Seleziona il Reparto *</label>
+            <select id="sfReparto" required>
+              <option value="">-- Scegli Reparto --</option>
+              <option value="GRANDI ELETTRODOMESTICI">🧺 GRANDI ELETTRODOMESTICI</option>
+              <option value="PICCOLI ELETTRODOMESTICI">☕ PICCOLI ELETTRODOMESTICI</option>
+              <option value="TELEFONIA">📱 TELEFONIA</option>
+              <option value="TV">📺 TV</option>
+              <option value="INFORMATICA">💻 INFORMATICA</option>
+              <option value="ASSISTENZA">🛠️ ASSISTENZA</option>
+              <option value="RITIRO RAEE">♻️ RITIRO RAEE</option>
+            </select>
+          </div>
+
+          <div class="datetime-highlight">
+            <div style="font-size:0.8rem; font-weight:800; color:#5B21B6; margin-bottom:8px;">
+              ⏰ Scegli Giorno e Ora (Disponibile solo a partire da domani, Lun-Sab)
+            </div>
+            <div class="grid-2">
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="sfData">Data (da domani) *</label>
+                <input type="date" id="sfData" required onchange="verificaGiornoSaltaFila()">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="sfOra">Ora Appuntamento *</label>
+                <select id="sfOra" required>
+                  <option value="">-- Scegli Ora --</option>
+                  <optgroup label="Mattina (09:00 - 13:00)">
+                    <option value="09:00">09:00</option>
+                    <option value="09:30">09:30</option>
+                    <option value="10:00">10:00</option>
+                    <option value="10:30">10:30</option>
+                    <option value="11:00">11:00</option>
+                    <option value="11:30">11:30</option>
+                    <option value="12:00">12:00</option>
+                    <option value="12:30">12:30</option>
+                  </optgroup>
+                  <optgroup label="Pomeriggio (15:00 - 20:00)">
+                    <option value="15:00">15:00</option>
+                    <option value="15:30">15:30</option>
+                    <option value="16:00">16:00</option>
+                    <option value="16:30">16:30</option>
+                    <option value="17:00">17:00</option>
+                    <option value="17:30">17:30</option>
+                    <option value="18:00">18:00</option>
+                    <option value="18:30">18:30</option>
+                    <option value="19:00">19:00</option>
+                    <option value="19:30">19:30</option>
+                  </optgroup>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="sfNome">Nome *</label>
+              <input type="text" id="sfNome" placeholder="Es. Mario" required>
+            </div>
+            <div class="form-group">
+              <label for="sfCognome">Cognome *</label>
+              <input type="text" id="sfCognome" placeholder="Es. Rossi" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="sfMetodo">Metodo di Ricontatto *</label>
+            <select id="sfMetodo" onchange="aggiornaCampiContattoSF()" required>
+              <option value="Telefono">📞 Telefono</option>
+              <option value="Mail">✉️ Mail</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="sfBoxTelefono">
+            <label for="sfTelefono">Numero di Telefono *</label>
+            <input type="tel" id="sfTelefono" placeholder="Inserisci il tuo numero di telefono" required>
+          </div>
+
+          <div class="form-group" id="sfBoxEmail" style="display:none;">
+            <label for="sfEmail">Indirizzo Email *</label>
+            <input type="email" id="sfEmail" placeholder="esempio@email.it">
+          </div>
+
+          <div class="form-group">
+            <label for="sfNote">Note / Prodotto di interesse *</label>
+            <textarea id="sfNote" rows="3" placeholder="Indica per quale prodotto o esigenza prenoti il turno..." required></textarea>
+          </div>
+
+          <button type="submit" id="btnSubmitSF" class="btn btn-purple btn-block" style="padding:14px; font-size:1rem;">
+            🎟️ Conferma Prenotazione Salta Fila
+          </button>
+        </form>
+      </div>
+
+      <div id="confirmToastSF" class="toast">
+        ✅ Prenotazione Salta Fila inviata! Ti aspettiamo in negozio nel giorno e nell'orario scelti.
+      </div>
+    </div>
+
+    <!-- 4. REPARTI E RICHIESTE -->
     <div class="card orange-border" id="sezioneRepartiCard">
       <div class="card-title">
         <span>📢 Seleziona il Reparto per Richiesta</span>
@@ -1187,7 +1382,162 @@
       if (prevContainer) prevContainer.style.display = 'none';
     };
 
-    // 3. REPARTI E RICHIESTE
+    // 3. SALTA FILA (PRENOTAZIONE CON MINIMO 1 GIORNO DI ANTICIPO)
+    function getDataDomaniISO() {
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+      if (d.getDay() === 0) {
+        d.setDate(d.getDate() + 1); // Se domani è domenica, propone direttamente lunedì
+      }
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const gg = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${gg}`;
+    }
+
+    function getDataMinimaAssolutaISO() {
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const gg = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${gg}`;
+    }
+
+    function impostaMinimoDataSaltaFila() {
+      const inputData = document.getElementById('sfData');
+      if (!inputData) return;
+      const minDate = getDataMinimaAssolutaISO();
+      inputData.min = minDate;
+      if (!inputData.value || inputData.value < minDate) {
+        inputData.value = getDataDomaniISO();
+      }
+    }
+
+    window.verificaGiornoSaltaFila = function() {
+      const inputData = document.getElementById('sfData');
+      if (!inputData || !inputData.value) return;
+      const minDate = getDataMinimaAssolutaISO();
+      if (inputData.value < minDate) {
+        alert("La prenotazione Salta Fila deve essere effettuata con almeno 1 giorno di anticipo (a partire da domani).");
+        inputData.value = getDataDomaniISO();
+        return;
+      }
+      const parts = inputData.value.split('-');
+      const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      if (d.getDay() === 0) {
+        alert("La domenica il negozio è chiuso. Seleziona un giorno dal Lunedì al Sabato.");
+        inputData.value = getDataDomaniISO();
+      }
+    };
+
+    window.toggleSaltaFila = function() {
+      const box = document.getElementById('saltaFilaBox');
+      if (!box) return;
+      const isHidden = box.style.display === 'none' || box.style.display === '';
+      box.style.display = isHidden ? 'block' : 'none';
+      if (isHidden) {
+        impostaMinimoDataSaltaFila();
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    };
+
+    window.chiudiSaltaFila = function() {
+      const box = document.getElementById('saltaFilaBox');
+      if (box) box.style.display = 'none';
+    };
+
+    window.aggiornaCampiContattoSF = function() {
+      const metodo = document.getElementById('sfMetodo').value;
+      const boxTel = document.getElementById('sfBoxTelefono');
+      const boxMail = document.getElementById('sfBoxEmail');
+      const inputTel = document.getElementById('sfTelefono');
+      const inputMail = document.getElementById('sfEmail');
+
+      if (metodo === 'Telefono') {
+        boxTel.style.display = 'block'; boxMail.style.display = 'none';
+        inputTel.required = true; inputMail.required = false;
+      } else {
+        boxTel.style.display = 'none'; boxMail.style.display = 'block';
+        inputTel.required = false; inputMail.required = true;
+      }
+    };
+
+    window.inviaSaltaFila = async function(e) {
+      e.preventDefault();
+      const reparto = document.getElementById('sfReparto').value;
+      const dataScelta = document.getElementById('sfData').value;
+      const oraScelta = document.getElementById('sfOra').value;
+
+      const minDate = getDataMinimaAssolutaISO();
+      if (!dataScelta || dataScelta < minDate) {
+        alert("Puoi prenotare il Salta Fila solo a partire da domani.");
+        impostaMinimoDataSaltaFila();
+        return;
+      }
+
+      const parts = dataScelta.split('-');
+      const dataFormattata = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+      const btn = document.getElementById('btnSubmitSF');
+      if (btn) { btn.disabled = true; btn.textContent = '⏳ Prenotazione in corso...'; }
+
+      const nome = document.getElementById('sfNome').value.trim();
+      const cognome = document.getElementById('sfCognome').value.trim();
+      const metodo = document.getElementById('sfMetodo').value;
+      const telInserito = document.getElementById('sfTelefono').value.trim();
+      const telefono7Collab = formattaNumero7Collaboration(telInserito);
+      const email = document.getElementById('sfEmail').value.trim();
+      const note = document.getElementById('sfNote').value.trim();
+
+      const idPratica = "REQ-" + Date.now();
+      const timestamp = new Date().toLocaleString("it-IT");
+
+      const payload = {
+        action: "create",
+        id: idPratica,
+        timestamp: timestamp,
+        reparto: reparto,
+        tipoRichiesta: `🎟️ SALTA FILA (${dataFormattata} ore ${oraScelta})`,
+        nomeCliente: `${nome} ${cognome}`.trim(),
+        telefono: telefono7Collab,
+        emailCliente: email,
+        preferenzaContatto: metodo,
+        noteCliente: `[🎟️ SALTA FILA PRENOTATO PER IL ${dataFormattata} ALLE ORE ${oraScelta}] ${note}`,
+        stato: "Aperta",
+        image: croppedBase64
+      };
+
+      try {
+        const lista = JSON.parse(localStorage.getItem(REQ_KEY) || '[]');
+        lista.unshift(payload);
+        localStorage.setItem(REQ_KEY, JSON.stringify(lista.slice(0, 60)));
+      } catch (err) {}
+
+      fetch(`https://ntfy.sh/${NTFY_TOPIC}`, { method: 'POST', body: JSON.stringify({ ...payload, image: "" }) }).catch(() => {});
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {}
+
+      if (btn) { btn.disabled = false; btn.textContent = '🎟️ Conferma Prenotazione Salta Fila'; }
+      document.getElementById('saltaFilaForm').reset();
+      aggiornaCampiContattoSF();
+      chiudiSaltaFila();
+      rimuoviRitaglio();
+
+      const toast = document.getElementById('confirmToastSF');
+      if (toast) {
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 5000);
+      }
+    };
+
+    // 4. REPARTI E RICHIESTE
     window.selezionaReparto = function(nomeReparto, btnElement) {
       document.querySelectorAll('.reparto-btn').forEach(b => b.classList.remove('selected'));
       if (btnElement) btnElement.classList.add('selected');
@@ -1292,7 +1642,14 @@
     function resetCampiTemporanei() {
       const form = document.getElementById('requestForm');
       if (form) form.reset();
-      aggiornaCampiContatto(); chiudiFormReparto(); fermaScannerFotocamera(); chiudiGuidaWhatsApp();
+      const sfForm = document.getElementById('saltaFilaForm');
+      if (sfForm) sfForm.reset();
+      aggiornaCampiContatto();
+      aggiornaCampiContattoSF();
+      chiudiFormReparto();
+      chiudiSaltaFila();
+      fermaScannerFotocamera();
+      chiudiGuidaWhatsApp();
       const searchInput = document.getElementById('pdfSearchInput');
       if (searchInput) searchInput.value = '';
       searchMatches = [];
@@ -1314,6 +1671,7 @@
     window.addEventListener('pageshow', () => {
       aggiornaStatoNegozio();
       caricaTessera();
+      impostaMinimoDataSaltaFila();
       riavviaTimer();
       if (!pdfDoc) caricaPdf('volantino.pdf', 'btnTabVolantino');
     });
