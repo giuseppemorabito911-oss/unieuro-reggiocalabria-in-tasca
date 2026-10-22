@@ -47,6 +47,7 @@
           <option value="PAOLO">PAOLO</option>
           <option value="MIMMO">MIMMO</option>
           <option value="OUSMANE">OUSMANE</option>
+          <option value="TONINO">TONINO</option>
         </select>
       </div>
 
@@ -91,7 +92,10 @@
 
       document.getElementById('infoPratica').innerHTML = `Pratica: <strong>${praticaId}</strong> • Reparto: <strong>${repartoPratica}</strong>`;
 
-      // Recupera il numero di telefono associato alla pratica direttamente da Google Sheets / Cache
+      if (repartoPratica.toUpperCase().includes('RAEE')) {
+        document.getElementById('operatore').value = 'TONINO';
+      }
+
       try {
         const res = await fetch(`${SCRIPT_URL}?action=get`, { redirect: 'follow' });
         const json = await res.json();
