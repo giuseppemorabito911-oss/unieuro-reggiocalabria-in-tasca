@@ -90,7 +90,6 @@
         <small style="color:#E9D5FF;">App Installabile • Staff Unieuro RC</small>
       </div>
       <div style="display:flex; gap:8px;">
-        <a href="reparto.html" class="btn" style="background:rgba(255,255,255,0.2); padding:8px 12px; font-size:0.82rem;">🏢 Reparti</a>
         <a href="admin.html" class="btn" style="background:rgba(255,255,255,0.2); padding:8px 12px; font-size:0.82rem;">📊 Admin</a>
       </div>
     </header>
@@ -100,7 +99,7 @@
         <div class="grid-2">
           <div class="form-group">
             <label for="reparto">Reparto Destinatario *</label>
-            <select id="reparto" required>
+            <select id="reparto" required onchange="suggerisciOperatoreReparto()">
               <option value="">-- Scegli Reparto --</option>
               <option value="GRANDI ELETTRODOMESTICI">🧺 GRANDI ELETTRODOMESTICI</option>
               <option value="PICCOLI ELETTRODOMESTICI">☕ PICCOLI ELETTRODOMESTICI</option>
@@ -123,6 +122,7 @@
               <option value="PAOLO">PAOLO</option>
               <option value="MIMMO">MIMMO</option>
               <option value="OUSMANE">OUSMANE</option>
+              <option value="TONINO">TONINO (RAEE)</option>
             </select>
           </div>
         </div>
@@ -164,6 +164,14 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCQYZvPF9TKwLqozpHQMDvM2_i1MG-J9UHKsVxdDTmLnukWua_5tmcv65UlSifCB0D/exec";
     const NTFY_TOPIC = 'unieuro_reggio_calabria_reparti_live';
     const REQ_KEY = 'unieuro_requests_db';
+
+    function suggerisciOperatoreReparto() {
+      const rep = document.getElementById('reparto').value;
+      const opSelect = document.getElementById('operatoreDest');
+      if (rep === 'RITIRO RAEE') {
+        opSelect.value = 'TONINO';
+      }
+    }
 
     function formattaNumero7Collaboration(rawPhone) {
       if (!rawPhone) return "";
@@ -235,7 +243,6 @@
       setTimeout(() => { toast.style.display = 'none'; }, 4000);
     }
 
-    // Registrazione Service Worker per renderla PWA installabile
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(() => {});
     }
