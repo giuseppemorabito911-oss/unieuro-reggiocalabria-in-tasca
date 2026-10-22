@@ -160,9 +160,9 @@
       text-align: center;
     }
 
-    .btn-maps { background: #EA4335; } /* Rosso Google Maps */
-    .btn-instagram { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); } /* Gradiente Instagram */
-    .btn-facebook { background: #1877F2; } /* Blu Facebook */
+    .btn-maps { background: #EA4335; }
+    .btn-instagram { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+    .btn-facebook { background: #1877F2; }
 
     /* BOX FACILITATO WHATSAPP AUDIO */
     .wa-helper-box {
@@ -396,75 +396,6 @@
       text-transform: uppercase;
     }
 
-    /* SEZIONE LE MIE GARANZIE */
-    .garanzie-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .garanzia-tab-btn {
-      padding: 12px 8px;
-      border-radius: 12px;
-      border: 2px solid var(--unieuro-blue);
-      background: white;
-      color: var(--unieuro-blue);
-      font-weight: 800;
-      cursor: pointer;
-      text-align: center;
-      font-size: 0.88rem;
-      line-height: 1.3;
-    }
-
-    .garanzia-tab-btn.active {
-      background: var(--unieuro-blue);
-      color: white;
-    }
-
-    .garanzia-panel { display: none; }
-    .garanzia-panel.active { display: block; }
-
-    .garanzia-info-box {
-      background: #FFF7ED;
-      border: 1.5px solid #FED7AA;
-      color: #9A3412;
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-size: 0.83rem;
-      line-height: 1.4;
-      margin-bottom: 12px;
-      font-weight: 600;
-    }
-
-    .item-card {
-      background: #F8FAFC;
-      border: 1.5px solid #CBD5E1;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .item-details { flex: 1; min-width: 180px; }
-    .item-title { font-weight: 900; color: var(--unieuro-blue); font-size: 0.95rem; margin-bottom: 3px; }
-    .item-meta { font-size: 0.8rem; color: #475569; margin-bottom: 5px; }
-
-    .badge-status {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 0.74rem;
-      font-weight: 800;
-    }
-    .badge-status.attiva { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
-    .badge-status.scaduta { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
-    .badge-status.estesa { background: #FEF3C7; color: #B45309; border: 1px solid #FDE047; }
-
     /* VOLANTINO & RICERCA MULTIPLA */
     .pdf-tabs {
       display: grid;
@@ -614,8 +545,6 @@
     input[type="tel"],
     input[type="email"],
     input[type="search"],
-    input[type="date"],
-    input[type="file"],
     select,
     textarea {
       width: 100%;
@@ -709,7 +638,7 @@
         📍 Raggiungi Negozio
       </a>
       <a href="https://www.instagram.com/unieuroreggiocalabria/" target="_blank" rel="noopener" class="quick-btn btn-instagram">
-        📷 Instagram
+        📸 Instagram
       </a>
       <a href="https://www.facebook.com/search/top?q=unieuro%20reggio%20calabria" target="_blank" rel="noopener" class="quick-btn btn-facebook">
         👍 Facebook
@@ -774,97 +703,7 @@
       </a>
     </div>
 
-    <!-- 2. LE MIE GARANZIE -->
-    <div class="card orange-border">
-      <div class="card-title">
-        <span>🛡️ Le Mie Garanzie</span>
-      </div>
-
-      <div class="garanzie-tabs">
-        <button type="button" id="btnTabLegale" class="garanzia-tab-btn active" onclick="cambiaTabGaranzia('legale')">
-          📄 Garanzia Legale<br><small style="font-size:0.72rem; font-weight:normal;">Scontrini Digitali (2 Anni)</small>
-        </button>
-        <button type="button" id="btnTabEstesa" class="garanzia-tab-btn" onclick="cambiaTabGaranzia('estesa')">
-          🛡️ Estensione Garanzia<br><small style="font-size:0.72rem; font-weight:normal;">Protezione Extra (3, 5, 6 Anni)</small>
-        </button>
-      </div>
-
-      <!-- OPZIONE A: GARANZIA LEGALE -->
-      <div id="panelLegale" class="garanzia-panel active">
-        <div class="garanzia-info-box">
-          💡 Qui puoi conservare le tue <strong>Copie Digitali</strong> degli scontrini o le foto delle ricevute d'acquisto per avere sempre a portata di mano i <strong>2 anni di garanzia legale</strong>.
-        </div>
-
-        <button type="button" class="btn btn-orange btn-block" style="margin-bottom:12px;" onclick="toggleFormScontrino()">
-          ➕ Aggiungi Scontrino / Copia Digitale
-        </button>
-
-        <div id="boxNuovoScontrino" style="display:none; background:#F8FAFC; padding:14px; border-radius:12px; border:1.5px solid #CBD5E1; margin-bottom:14px;">
-          <div class="form-group">
-            <label for="scontrinoProdotto">Prodotto Acquistato *</label>
-            <input type="text" id="scontrinoProdotto" placeholder="Es. Lavatrice Samsung, TV LG...">
-          </div>
-          <div class="form-group">
-            <label for="scontrinoData">Data di Acquisto *</label>
-            <input type="date" id="scontrinoData">
-          </div>
-          <div class="form-group">
-            <label for="scontrinoFile">Carica Copia Digitale (PDF/Foto) o Scatta Foto *</label>
-            <input type="file" id="scontrinoFile" accept="image/*,application/pdf">
-          </div>
-          <div style="display:flex; gap:8px;">
-            <button type="button" id="btnSalvaScontrino" class="btn btn-green btn-block" onclick="salvaScontrinoNelCassetto()">💾 Salva Scontrino</button>
-            <button type="button" class="btn btn-red" onclick="toggleFormScontrino()">✖</button>
-          </div>
-        </div>
-
-        <div id="listaScontriniBox"></div>
-      </div>
-
-      <!-- OPZIONE B: ESTENSIONE DI GARANZIA -->
-      <div id="panelEstesa" class="garanzia-panel">
-        <div class="garanzia-info-box" style="background:#EFF6FF; border-color:#BFDBFE; color:#1E40AF;">
-          ✨ Proteggi i tuoi acquisti più a lungo! Puoi acquistare in qualsiasi momento l'<strong>Estensione di Garanzia a 3, 5 o 6 anni</strong> direttamente nel nostro punto vendita.
-        </div>
-
-        <button type="button" class="btn btn-blue btn-block" style="margin-bottom:12px;" onclick="toggleFormEstesa()">
-          ➕ Registra Estensione Acquistata
-        </button>
-
-        <div id="boxNuovaEstesa" style="display:none; background:#F8FAFC; padding:14px; border-radius:12px; border:1.5px solid #CBD5E1; margin-bottom:14px;">
-          <div class="form-group">
-            <label for="estesaProdotto">Prodotto Protetto *</label>
-            <input type="text" id="estesaProdotto" placeholder="Es. Frigorifero Bosch, OLED TV...">
-          </div>
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="estesaAnni">Durata Protezione *</label>
-              <select id="estesaAnni">
-                <option value="3">3 Anni</option>
-                <option value="5" selected>5 Anni</option>
-                <option value="6">6 Anni</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="estesaData">Data Inizio Copertura *</label>
-              <input type="date" id="estesaData">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="estesaCertificato">Foto Certificato / Ricevuta Estensione *</label>
-            <input type="file" id="estesaCertificato" accept="image/*,application/pdf">
-          </div>
-          <div style="display:flex; gap:8px;">
-            <button type="button" id="btnSalvaEstesa" class="btn btn-green btn-block" onclick="salvaEstesaNelCassetto()">💾 Salva Estensione</button>
-            <button type="button" class="btn btn-red" onclick="toggleFormEstesa()">✖</button>
-          </div>
-        </div>
-
-        <div id="listaEsteseBox"></div>
-      </div>
-    </div>
-
-    <!-- 3. VOLANTINO & PROMO -->
+    <!-- 2. VOLANTINO & PROMO -->
     <div class="card">
       <div class="card-title">
         <span>📖 Sfoglia Offerte e Ritaglia</span>
@@ -911,7 +750,7 @@
       </div>
     </div>
 
-    <!-- 4. REPARTI E RICHIESTE -->
+    <!-- 3. REPARTI E RICHIESTE -->
     <div class="card orange-border" id="sezioneRepartiCard">
       <div class="card-title">
         <span>📢 Seleziona il Reparto per Richiesta</span>
@@ -1109,7 +948,7 @@
       }
     }
 
-    // Funzione orari resa globale e perfettamente reattiva
+    // Funzione orari globale e reattiva
     window.toggleOrari = function() {
       const box = document.getElementById('orariPopup');
       if (!box) return;
@@ -1221,271 +1060,7 @@
       if (box) box.style.display = 'none';
     };
 
-    // 2. GESTIONE LE MIE GARANZIE
-    const DB_NAME = 'UnieuroGaranzieDB';
-    const STORE_LEGALE = 'scontrini_legali';
-    const STORE_ESTESA = 'garanzie_estese';
-
-    function apriDB() {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME, 1);
-        req.onupgradeneeded = (e) => {
-          const db = e.target.result;
-          if (!db.objectStoreNames.contains(STORE_LEGALE)) db.createObjectStore(STORE_LEGALE, { keyPath: 'id' });
-          if (!db.objectStoreNames.contains(STORE_ESTESA)) db.createObjectStore(STORE_ESTESA, { keyPath: 'id' });
-        };
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
-    }
-
-    window.cambiaTabGaranzia = function(tipo) {
-      const btnLegale = document.getElementById('btnTabLegale');
-      const btnEstesa = document.getElementById('btnTabEstesa');
-      const panelLegale = document.getElementById('panelLegale');
-      const panelEstesa = document.getElementById('panelEstesa');
-
-      if (!btnLegale || !btnEstesa || !panelLegale || !panelEstesa) return;
-
-      btnLegale.classList.remove('active');
-      btnEstesa.classList.remove('active');
-      panelLegale.classList.remove('active');
-      panelEstesa.classList.remove('active');
-
-      if (tipo === 'legale') {
-        btnLegale.classList.add('active');
-        panelLegale.classList.add('active');
-      } else {
-        btnEstesa.classList.add('active');
-        panelEstesa.classList.add('active');
-      }
-    };
-
-    window.toggleFormScontrino = function() {
-      const box = document.getElementById('boxNuovoScontrino');
-      if (!box) return;
-      const isHidden = box.style.display === 'none' || box.style.display === '';
-      box.style.display = isHidden ? 'block' : 'none';
-      if (isHidden) {
-        const dt = document.getElementById('scontrinoData');
-        if (dt && !dt.value) dt.valueAsDate = new Date();
-      }
-    };
-
-    window.toggleFormEstesa = function() {
-      const box = document.getElementById('boxNuovaEstesa');
-      if (!box) return;
-      const isHidden = box.style.display === 'none' || box.style.display === '';
-      box.style.display = isHidden ? 'block' : 'none';
-      if (isHidden) {
-        const dt = document.getElementById('estesaData');
-        if (dt && !dt.value) dt.valueAsDate = new Date();
-      }
-    };
-
-    function elaboraFile(file) {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          if (file.type === 'application/pdf') {
-            resolve({ dataUrl: e.target.result, mime: 'application/pdf' });
-            return;
-          }
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const maxDim = 1400;
-            let w = img.width, h = img.height;
-            if (w > maxDim || h > maxDim) {
-              if (w > h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
-              else { w = Math.round(w * (maxDim / h)); h = maxDim; }
-            }
-            canvas.width = w; canvas.height = h;
-            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            resolve({ dataUrl: canvas.toDataURL('image/jpeg', 0.78), mime: 'image/jpeg' });
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    window.salvaScontrinoNelCassetto = async function() {
-      const prod = document.getElementById('scontrinoProdotto').value.trim();
-      const dataAcq = document.getElementById('scontrinoData').value;
-      const fileInput = document.getElementById('scontrinoFile');
-
-      if (!prod || !dataAcq || !fileInput.files.length) {
-        alert("Compila tutti i campi e allega lo scontrino.");
-        return;
-      }
-
-      const btn = document.getElementById('btnSalvaScontrino');
-      btn.disabled = true; btn.textContent = "⏳ Salvataggio...";
-
-      try {
-        const fileData = await elaboraFile(fileInput.files[0]);
-        const db = await apriDB();
-        const tx = db.transaction(STORE_LEGALE, 'readwrite');
-        tx.objectStore(STORE_LEGALE).put({
-          id: 'LEG-' + Date.now(),
-          prodotto: prod,
-          dataAcquisto: dataAcq,
-          fileUrl: fileData.dataUrl,
-          mime: fileData.mime
-        });
-        await new Promise((res) => { tx.oncomplete = res; });
-
-        document.getElementById('scontrinoProdotto').value = '';
-        fileInput.value = '';
-        document.getElementById('boxNuovoScontrino').style.display = 'none';
-        caricaListeGaranzie();
-      } catch (e) { alert("Errore nel salvataggio."); }
-
-      btn.disabled = false; btn.textContent = "💾 Salva Scontrino";
-    };
-
-    window.salvaEstesaNelCassetto = async function() {
-      const prod = document.getElementById('estesaProdotto').value.trim();
-      const anni = document.getElementById('estesaAnni').value;
-      const dataInizio = document.getElementById('estesaData').value;
-      const fileInput = document.getElementById('estesaCertificato');
-
-      if (!prod || !dataInizio || !fileInput.files.length) {
-        alert("Compila tutti i campi e allega il certificato di estensione.");
-        return;
-      }
-
-      const btn = document.getElementById('btnSalvaEstesa');
-      btn.disabled = true; btn.textContent = "⏳ Salvataggio...";
-
-      try {
-        const fileData = await elaboraFile(fileInput.files[0]);
-        const db = await apriDB();
-        const tx = db.transaction(STORE_ESTESA, 'readwrite');
-        tx.objectStore(STORE_ESTESA).put({
-          id: 'EXT-' + Date.now(),
-          prodotto: prod,
-          anniDurata: anni,
-          dataInizio: dataInizio,
-          fileUrl: fileData.dataUrl,
-          mime: fileData.mime
-        });
-        await new Promise((res) => { tx.oncomplete = res; });
-
-        document.getElementById('estesaProdotto').value = '';
-        fileInput.value = '';
-        document.getElementById('boxNuovaEstesa').style.display = 'none';
-        caricaListeGaranzie();
-      } catch (e) { alert("Errore nel salvataggio."); }
-
-      btn.disabled = false; btn.textContent = "💾 Salva Estensione";
-    };
-
-    async function caricaListeGaranzie() {
-      try {
-        const db = await apriDB();
-
-        const txLegale = db.transaction(STORE_LEGALE, 'readonly');
-        const reqLegale = txLegale.objectStore(STORE_LEGALE).getAll();
-        reqLegale.onsuccess = () => {
-          const container = document.getElementById('listaScontriniBox');
-          if (!container) return;
-          const lista = (reqLegale.result || []).reverse();
-          if (lista.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:#64748B; font-size:0.85rem; padding:8px 0;">Nessun scontrino salvato per la garanzia legale.</div>`;
-            return;
-          }
-          container.innerHTML = lista.map(s => {
-            const dAcq = new Date(s.dataAcquisto);
-            const dScad = new Date(dAcq); dScad.setFullYear(dScad.getFullYear() + 2);
-            const inGaranzia = new Date() <= dScad;
-            return `
-              <div class="item-card">
-                <div class="item-details">
-                  <div class="item-title">📄 ${s.prodotto}</div>
-                  <div class="item-meta">Acquisto: <strong>${dAcq.toLocaleDateString('it-IT')}</strong></div>
-                  <span class="badge-status ${inGaranzia ? 'attiva' : 'scaduta'}">
-                    ${inGaranzia ? `🟢 LEGALE fino al ${dScad.toLocaleDateString('it-IT')}` : `🔴 Scaduta il ${dScad.toLocaleDateString('it-IT')}`}
-                  </span>
-                </div>
-                <div style="display:flex; gap:6px;">
-                  <button type="button" class="btn btn-blue" style="padding:8px 12px; font-size:0.8rem;" onclick="apriFileItem('${STORE_LEGALE}', '${s.id}')">👁️ Apri</button>
-                  <button type="button" class="btn btn-red" style="padding:8px 10px; font-size:0.8rem;" onclick="eliminaItem('${STORE_LEGALE}', '${s.id}')">🗑️</button>
-                </div>
-              </div>
-            `;
-          }).join('');
-        };
-
-        const txEstesa = db.transaction(STORE_ESTESA, 'readonly');
-        const reqEstesa = txEstesa.objectStore(STORE_ESTESA).getAll();
-        reqEstesa.onsuccess = () => {
-          const container = document.getElementById('listaEsteseBox');
-          if (!container) return;
-          const lista = (reqEstesa.result || []).reverse();
-          if (lista.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:#64748B; font-size:0.85rem; padding:8px 0;">Nessuna estensione di garanzia registrata.</div>`;
-            return;
-          }
-          container.innerHTML = lista.map(s => {
-            const dInizio = new Date(s.dataInizio);
-            const dScad = new Date(dInizio); dScad.setFullYear(dScad.getFullYear() + Number(s.anniDurata));
-            const inGaranzia = new Date() <= dScad;
-            return `
-              <div class="item-card">
-                <div class="item-details">
-                  <div class="item-title">🛡️ ${s.prodotto} (${s.anniDurata} Anni di Protezione)</div>
-                  <div class="item-meta">Decorrenza: <strong>${dInizio.toLocaleDateString('it-IT')}</strong></div>
-                  <span class="badge-status ${inGaranzia ? 'estesa' : 'scaduta'}">
-                    ${inGaranzia ? `⭐ ESTESA fino al ${dScad.toLocaleDateString('it-IT')}` : `🔴 Scaduta il ${dScad.toLocaleDateString('it-IT')}`}
-                  </span>
-                </div>
-                <div style="display:flex; gap:6px;">
-                  <button type="button" class="btn btn-blue" style="padding:8px 12px; font-size:0.8rem;" onclick="apriFileItem('${STORE_ESTESA}', '${s.id}')">👁️ Apri</button>
-                  <button type="button" class="btn btn-red" style="padding:8px 10px; font-size:0.8rem;" onclick="eliminaItem('${STORE_ESTESA}', '${s.id}')">🗑️</button>
-                </div>
-              </div>
-            `;
-          }).join('');
-        };
-      } catch (e) {}
-    }
-
-    window.apriFileItem = async function(storeName, id) {
-      try {
-        const db = await apriDB();
-        const tx = db.transaction(storeName, 'readonly');
-        const req = tx.objectStore(storeName).get(id);
-        req.onsuccess = () => {
-          const item = req.result;
-          if (!item) return;
-          const win = window.open();
-          if (item.mime === 'application/pdf') {
-            win.document.write(`<iframe src="${item.fileUrl}" style="width:100%; height:100vh; border:none;"></iframe>`);
-          } else {
-            win.document.write(`
-              <body style="margin:0; background:#0f172a; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; font-family:sans-serif; color:white;">
-                <h3 style="margin:14px;">🛡️ ${item.prodotto}</h3>
-                <img src="${item.fileUrl}" style="max-width:96%; max-height:85vh; border-radius:8px; background:white;">
-              </body>
-            `);
-          }
-        };
-      } catch (e) {}
-    };
-
-    window.eliminaItem = async function(storeName, id) {
-      if (!confirm("Vuoi eliminare questo documento?")) return;
-      try {
-        const db = await apriDB();
-        const tx = db.transaction(storeName, 'readwrite');
-        tx.objectStore(storeName).delete(id);
-        tx.oncomplete = () => caricaListeGaranzie();
-      } catch (e) {}
-    };
-
-    // 3. VOLANTINO & RICERCA
+    // 2. VOLANTINO & RICERCA
     window.caricaPdf = async function(url, tabId) {
       annullaRitaglio();
       searchMatches = [];
@@ -1613,7 +1188,7 @@
       if (prevContainer) prevContainer.style.display = 'none';
     };
 
-    // 4. REPARTI E RICHIESTE
+    // 3. REPARTI E RICHIESTE
     window.selezionaReparto = function(nomeReparto, btnElement) {
       document.querySelectorAll('.reparto-btn').forEach(b => b.classList.remove('selected'));
       if (btnElement) btnElement.classList.add('selected');
@@ -1740,7 +1315,6 @@
     window.addEventListener('pageshow', () => {
       aggiornaStatoNegozio();
       caricaTessera();
-      caricaListeGaranzie();
       riavviaTimer();
       if (!pdfDoc) caricaPdf('volantino.pdf', 'btnTabVolantino');
     });
