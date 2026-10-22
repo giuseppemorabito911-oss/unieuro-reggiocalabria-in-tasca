@@ -1,5 +1,5 @@
 {
-  "name": "Unieuro Reggio Calabria Staff",
+  "name": "Unieuro Reggio Calabria in Tasca",
   "short_name": "Unieuro RC",
   "start_url": "index.html",
   "display": "standalone",
@@ -8,8 +8,15 @@
   "icons": [
     {
       "src": "icona.png",
-      "sizes": "192x192 512x512",
-      "type": "image/png"
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icona.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
